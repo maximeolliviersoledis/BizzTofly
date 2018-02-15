@@ -1,0 +1,64 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{'Settings' | translate}}</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <div class="login">
+        <ion-row>
+           <!--  <img class="img" [src]="url"><br> -->
+         <img *ngIf="user.imageUrl &&!preview" class="img" src="{{user.imageUrl}}"><br> 
+         <img *ngIf="preview" class="img" [src]="preview"><br>
+         <img *ngIf="!preview &&!user.imageUrl" class="img" src="assets/img/profile.jpg"><br>
+        </ion-row>
+        <ion-row>
+            <input type="file" name="file" id="file" ng2FileSelect [uploader]="uploader" class="inputfile" aria-describedby="fileHelp" accept="image/*"
+                   (change)="readUrl($event)">
+            <label for="file" class="upload">
+                <ion-icon ios="ios-cloud-upload" md="md-cloud-upload"></ion-icon>
+            </label>
+        </ion-row>
+        <p class="name">{{user.name}}</p>
+    </div>
+        <ion-list>
+            <ion-item>
+              <ion-label>{{'Languages' | translate}}</ion-label>
+                <ion-select [(ngModel)]="value" (ionChange)="changeLanguage()">
+                  <ion-option  *ngFor="let option of options" value="{{option.value}}"> {{option.language | translate}}</ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-list>
+
+    <form (ngSubmit)="onSubmit(f)" #f="ngForm">
+        <ion-list>
+            <ion-item>
+                <ion-label primary> {{'Notifications' | translate}}</ion-label>
+                <ion-toggle primary [(ngModel)]="notification" name="notification" 
+                   id="notification" (ionChange)="changeSetting()">
+                </ion-toggle>
+            </ion-item>
+
+      <!--user info-->
+      <ion-item>
+         <ion-label>{{"User Name:" | translate}}</ion-label>
+        <ion-input type="text" name="name" id="name" placeholder="Your Name"
+                   [(ngModel)]="user.name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+      <ion-label>{{'Email:' | translate}}</ion-label>
+        <ion-input type="email" name="email" id="email" placeholder="Your Email"
+                  [(ngModel)]="user.email"></ion-input>
+      </ion-item>
+
+      <ion-item>
+      <ion-label>{{"Mobile Number:" | translate}}</ion-label>
+        <ion-input type="text" name="mobileNo" id="mobileNo" placeholder="Mobile No"
+                  [(ngModel)]="user.phone"></ion-input>
+      </ion-item>
+        </ion-list>
+        <!--button-->
+        <button class="login-btn" ion-button type="submit">{{'Save' | translate}}</button>
+    </form>
+</ion-content>

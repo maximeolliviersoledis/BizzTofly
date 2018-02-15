@@ -1,0 +1,49 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>{{"Restaurant App" | translate}}</ion-title>
+      <ion-buttons end>
+        <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
+          <ion-icon name="cart"></ion-icon>
+          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+        </button>
+      </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+ <ion-searchbar (ionInput)="getItems($event)" placeholder="{{'Type Item Name' | translate}}">
+    </ion-searchbar>
+  <ion-list *ngFor="let menuItem of items"><!-- list -->
+    <ion-item text-wrap (click)="navigate(menuItem._id)"><!-- item -->
+      <ion-row class="catagory"><!-- row -->
+        <ion-col col-6><!-- col with 50  width -->
+          <img src={{menuItem.thumb}} alt="foodname"/>
+        </ion-col>
+        <ion-col col-6><!-- col with 50% width -->
+          <p class="item-name">{{menuItem.title}}</p>
+          <p class="item-detail" text-wrap><span class="trim-info">{{menuItem.description}}</span></p>
+          <p class="item-detail">{{"Price:" | translate}}
+        <span *ngIf="!menuItem.price[0].specialPrice" class="item-price">
+             ${{menuItem.price[0].value}}</span>
+      <span *ngIf="menuItem.price[0].specialPrice" class="item-price">
+             ${{menuItem.price[0].specialPrice}}</span>
+
+          </p>
+             <div *ngIf="menuItem.rating" class="product-rating">
+            <!-- rating -->
+            <rating name="rating" id="rating"
+                    [(ngModel)]="menuItem.rating"
+                    readOnly="true"
+                    max="5"
+                    emptyStarIconName="star-outline"
+                    halfStarIconName="star-half"
+                    starIconName="star"
+                    nullable="false">
+            </rating>
+          </div>
+        </ion-col>
+      </ion-row><!--end row -->
+    </ion-item><!-- item -->
+  </ion-list>
+</ion-content>
+

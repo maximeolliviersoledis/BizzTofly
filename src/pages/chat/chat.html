@@ -1,0 +1,60 @@
+<ion-header>
+    <ion-navbar >
+        <ion-title>{{"Chat" | translate}}</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content class="chat-bg">
+    <section *ngFor="let chat of chatList">
+        <ion-row *ngIf="chat.sentBy=='sender'">
+            <ion-col col-3>
+                <img class="thumb-l" src="{{imageUrl}}">
+            </ion-col>
+
+            <ion-col class="chat-box">
+                <div class="chat-header">
+                <span *ngIf="chat.timestamp >= sevenDaysBack " class="time">
+                   {{chat.timestamp | amTimeAgo}}</span>
+                  <span *ngIf="chat.timestamp <=  sevenDaysBack" class="time">
+                   {{chat.timestamp | amCalendar}}</span>
+                </div>
+                <p class="msg" text-wrap>{{chat.message}}</p>
+            </ion-col>
+        </ion-row>
+        <ion-row *ngIf="chat.sentBy=='receiver'">
+            <ion-col class="chat-box-right">
+                <div class="chat-header">
+                <span *ngIf="chat.timestamp >= sevenDaysBack " class="time">
+                   {{chat.timestamp | amTimeAgo}}</span>
+                <span *ngIf="chat.timestamp <=  sevenDaysBack" class="time">
+                   {{chat.timestamp | amCalendar}}</span>
+                </div>
+                <p class="msg rt" text-wrap>{{chat.message}}</p>
+            </ion-col>
+
+            <ion-col col-3>
+                <img class="thumb-r" src="assets/img/admin.jpg">
+            </ion-col>
+        </ion-row>
+        
+    </section>
+    <ion-footer>
+        <form #f="ngForm" (ngSubmit)="onSend(f)">
+            <ion-row class="chat-footer">
+                <ion-col col-10>
+                    <ion-item>
+                        <ion-input class="chat-input" type="text" placeholder="{{'Type message...' | translate}}" name="message"
+                                   id="message"
+                                   [(ngModel)]=chatData.message clearInput required>
+                        </ion-input>
+                    </ion-item>
+                </ion-col>
+                <ion-col col-2>
+                    <button ion-button icon only type="submit" [disabled]="!f.valid">
+                        <ion-icon class="enter-btn" name="send"></ion-icon>
+                    </button>
+                </ion-col>
+            </ion-row>
+        </form>
+    </ion-footer>
+</ion-content>

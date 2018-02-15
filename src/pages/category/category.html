@@ -1,0 +1,19 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>Category</ion-title>
+    </ion-navbar>
+</ion-header>
+
+<ion-content>
+    <ion-card *ngFor="let category of categories">
+        <ion-list>
+            <ion-item (click)="navigate(category._id)">
+                <ion-thumbnail item-left>
+                    <img src="{{category.thumb}}">
+                </ion-thumbnail>
+                <p class="heading">{{category.title}}</p>
+                <p>{{category.description}}</p>
+            </ion-item>
+        </ion-list>
+    </ion-card>
+</ion-content>

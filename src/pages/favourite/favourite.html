@@ -1,0 +1,51 @@
+<ion-header>
+    <ion-navbar>
+        <ion-title>{{"Favourite" | translate}}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
+                <ion-icon name="cart"></ion-icon>
+                <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+            </button>
+        </ion-buttons>
+    </ion-navbar>
+</ion-header>
+<ion-content [ngClass]="{bg:!isFavourite()}">
+    <div *ngIf="!isFavourite()">
+        <ion-row>
+            <ion-icon class="empty-cart" name="heart"></ion-icon>
+        </ion-row>
+        <h4>{{"Wish List is empty!" | translate}}</h4>
+    </div>
+    <div *ngIf="isFavourite()">
+        <ion-card *ngFor="let favouriteItem of favouriteItems">
+            <ion-list>
+                <ion-item>
+                    <ion-thumbnail item-left>
+                        <img src={{favouriteItem.menuItem.thumb}}>
+                    </ion-thumbnail>
+                    <p class="heading">{{favouriteItem.menuItem.title}}</p>
+                    <p>{{favouriteItem.menuItem.description}}</p>
+                    <ion-row>
+                        <ion-col col-8 class="add-col">
+                            <button class="add" ion-button (click)="buyNow(favouriteItem.menuItem._id)">
+                                <ion-icon name="cart"></ion-icon>
+                                &nbsp; {{"Buy Now" | translate}}
+                            </button>
+                        </ion-col>
+                        <ion-col col-4>
+                            <button color="danger" class="delete" ion-button outline
+                                    (click)="removeFromFavourites(favouriteItem.menuItem._id)">
+                                <ion-icon name="trash">
+                                </ion-icon>
+                            </button>
+                        </ion-col>
+                    </ion-row>
+                    <!--  <button class="add" ion-button (click)="buyNow(favouriteItem.id)">
+                         <ion-icon name="cart"></ion-icon>
+                         &nbsp; Buy Now
+                     </button> -->
+                </ion-item>
+            </ion-list>
+        </ion-card>
+    </div>
+</ion-content>

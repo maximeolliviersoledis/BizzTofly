@@ -1,0 +1,41 @@
+<ion-header>
+  <ion-navbar color="primary">
+      <ion-title>{{"Orders" | translate}}</ion-title>
+      <ion-buttons end>
+        <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
+          <ion-icon name="cart"></ion-icon>
+          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+        </button>
+      </ion-buttons>
+  </ion-navbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="!isOrder()">
+        <ion-row>
+            <ion-icon class="empty-cart" name="cart"></ion-icon>
+        </ion-row>
+        <h4>{{"No Orders" | translate}}</h4>
+    </div>
+    <div *ngIf="isOrder()">
+  <ion-list class="orders-list">
+    <ion-card class="orders-item">
+      <ion-row *ngFor="let order of orders">
+        <ion-col col-9>
+          <p class="item-name"><strong>{{"Order Id:" | translate}} {{order.orderID}}</strong></p>
+          <p class="item-price">{{"Grandtotal:" | translate}}  ${{order.grandTotal | number:'.2-2'}}</p>
+          <p class="date">{{"Date:" | translate}} {{order.createdAt | date}}</p>
+        </ion-col>
+        <ion-col col-3>
+          <!-- <button class="btn-cart"ion-button color="danger">
+            <ion-icon ios="ios-cart" md="md-cart"></ion-icon>
+          </button> --><br>
+          <button class="btn-view"ion-button color="primary" (click)="orderDetails(order._id)">
+            {{"View" | translate}}
+          </button>
+        </ion-col>
+      </ion-row>
+    </ion-card>
+  </ion-list>
+</div>
+</ion-content>

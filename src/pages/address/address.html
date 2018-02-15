@@ -1,0 +1,56 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Add address</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content class="address" padding>
+<form (ngSubmit)="onSubmitAddress()" #f="ngForm">
+ <ion-list class="form-data">
+    <ion-item>
+      <ion-input type="text" name="name" id="name" placeholder="{{'Name' | translate}}"
+               [(ngModel)]="address.userName"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="number" name="homeNo" id="homeNo" placeholder="{{'House Number' | translate}}"
+               [(ngModel)]="address.homeNumber"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" name="apartmentName" id="apartmentName" 
+          placeholder="{{'Apartment' | translate }}"
+               [(ngModel)]="address.apartmentName"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="number" name="phone" id="phone" placeholder="{{'Mobile' | translate}}"
+               [(ngModel)]="address.contactNumber"></ion-input>
+    </ion-item>
+    <ion-item>
+          <ion-input type="text" name="landmark" id="landmark" placeholder="{{'Landmark' | translate}}"
+               [(ngModel)]="address.landmark" required></ion-input>
+    </ion-item>
+    <ion-item >
+      <ion-input type="text" name="city" id="city" placeholder="{{'City' | translate}}"
+           [(ngModel)]="address.city" required></ion-input>
+    </ion-item>
+    <ion-item >
+      <ion-input type="text" name="state" id="state" placeholder="{{'State' | translate}}"
+           [(ngModel)]="address.state" required></ion-input>
+    </ion-item>
+    
+    <ion-item>
+      <ion-input type="number" name="pincode" id="pincode" placeholder="{{'Pincode' | translate}}"
+           [(ngModel)]="address.pincode" required></ion-input>
+    </ion-item>
+<!--     <ion-item class="full-address">
+      <ion-textarea rows="4" placeholder="Address" name="address" id="address"></ion-textarea>
+    </ion-item> -->
+</ion-list>
+<ion-row class="buttons">
+   <ion-col>
+      <button ion-button class="btn-lg" type="submit" 
+          [disabled]="!f.valid">&nbsp;&nbsp;{{"Add Address" | translate}}</button>
+   </ion-col>
+</ion-row>
+</form>
+</ion-content>
