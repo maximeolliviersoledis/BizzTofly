@@ -35,6 +35,7 @@ export class MyApp {
                 public socialSharing:SocialSharing,
                 public events:Events,
                 public translateService:TranslateService) {
+         alert('ici1');
 
         platform.ready().then((res) => {
             if (res == 'cordova') {
@@ -65,6 +66,7 @@ export class MyApp {
     }
 
      ngOnInit(): any {
+        alert('ici2');
         if (!this.isLogin()) {
             this.rootPage = "LoginPage";
         }
