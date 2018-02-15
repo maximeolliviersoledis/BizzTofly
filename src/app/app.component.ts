@@ -35,9 +35,10 @@ export class MyApp {
                 public socialSharing:SocialSharing,
                 public events:Events,
                 public translateService:TranslateService) {
-         alert('ici1');
+         
 
         platform.ready().then((res) => {
+            alert('ici1');
             if (res == 'cordova') {
                 this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
