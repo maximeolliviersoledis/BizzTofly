@@ -37,6 +37,12 @@ page-product-list {
       font-weight: 700;
       color: $primary;
     }
+
+    .item-reduction{
+      font-weight: 700;
+      color: #ff0000;
+      text-decoration: line-through;
+    }
   }
 
   .list {

@@ -13,13 +13,18 @@
 
 <ion-content >
     <ion-row class="productImage">
-        <img src={{productDetails.thumb}} alt="">
+        <img src={{productDetails.image}} alt="">
         <!-- <span clear text-center (click)="toggleFavourite()"> -->
         <ion-icon class="fav" name="heart" *ngIf="like"
-                  (click)="removeFromFavourite(productDetails._id)"></ion-icon>
+                  (click)="removeFromFavourite(productDetails.id_product)"></ion-icon>
         <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
-                  (click)="addToFavourite(productDetails._id)"></ion-icon>
+                  (click)="addToFavourite(productDetails.id_product)"></ion-icon>
     <!-- </span> -->
+    </ion-row>
+    <ion-row>
+        <ion-col *ngFor="let img of productDetails.images">
+            <img src={{img}} (click)="changerImagePrincipale(img)">
+        </ion-col>
     </ion-row>
 
     <ion-row class="count-full">
@@ -38,38 +43,41 @@
         </ion-col>
 
         <ion-col col-6>
-            <a (click)="addToCart(productDetails._id)" ion-button icon-left full class="btn-add-to-cart">
+            <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
                 <ion-icon name="cart"></ion-icon>
                 {{'ADD TO CART' | translate}}
             </a>
         </ion-col>
     </ion-row>
+    <ion-row>
+        <p>{{productDetails.name}}</p>
+        <p>{{productDetails.description_short}}</p>
+        <ion-item>
+         <ion-label>Déclinaison :</ion-label>
+            <!--<ion-select>
+                <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec[1].id}}>{{dec[1].id}}. {{dec[1].name}}</ion-option>
+            </ion-select>-->
+            
+            <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()">
+                <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec.id}}>{{dec.name}}</ion-option>
+            </ion-select>
+            
 
-
-    <ion-list class="extra-list" >
-    <div *ngIf="productDetails.extraIngredients!=''">
-        <ion-list-header class="header" text-center>Add extra choice</ion-list-header>
-        <ion-item *ngFor="let option of productDetails.extraIngredients; let i= index"  class="list-item" >
-            <ion-label>{{option.name}} ({{option.selected}} USD)</ion-label>
-            <ion-toggle (ionChange)="checkOptions(option)"></ion-toggle>
         </ion-item>
-        </div>
-    </ion-list>
+            <div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
 
-    <!-- size and price check box -->
-    <ion-list radio-group class="size-list">
-        <ion-list-header class="size-list-header" text-center>
-            {{'Size and prices' |translate}}
-        </ion-list-header>
-        <ion-item *ngFor="let price of productDetails.price" class="size-list-item">
-            <ion-label *ngIf="!price.specialPrice">{{price.pname}} ${{price.value}}</ion-label>
-            <ion-label *ngIf="price.specialPrice">{{price.pname}} ${{price.specialPrice}}</ion-label>
-            <ion-radio class="checked" (ionSelect)="sizeOptions(price)"></ion-radio>
-        </ion-item>
-    </ion-list>
+            <!--<ng-template #thenBlock><ion-label>Quantité : {{declinaison.combination.quantity}}</ion-label></ng-template>-->
+            <ng-template #thenBlock>En stock : {{quantity}}</ng-template>
+            <ng-template #elseBlock>Stock total : {{productDetails.quantity}}</ng-template>
+
+
+        
+       <!-- <span *ngIf="productDetails.available_now == 'En stock'">Produit disponible</span>-->
+        <p>Prix : {{productDetails.price | number:'.2-2'}}</p>
+    </ion-row>
     <ion-row>
         <ion-col col-6>
-            <a (click)="addToCart(productDetails._id)" ion-button icon-left full class="btn-add-to-cart">
+            <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
                 <ion-icon name="cart"></ion-icon>
                 {{'CHECKOUT' | translate}}
             </a>
@@ -81,4 +89,15 @@
             </a>
         </ion-col>
     </ion-row>
+
+
+   <!-- <ion-row>
+        <ion-slides initialSlide=0 speed="3000" loop="true" pager="true" dir="rtl">
+            <ion-slide *ngFor="let img of productDetails.images">
+                <div class="overlay">
+                    <img src={{img}} class="slider-img">
+                </div>
+            </ion-slide>
+        </ion-slides>
+    </ion-row>-->
 </ion-content>

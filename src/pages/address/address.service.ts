@@ -12,8 +12,12 @@ export class AddressService {
                 public constService:ConstService) {
     }
 
+    addAddress(data){
+        var urlDir = this.constService.baseDir + this.constService.adresses + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, data).map((data: Response) => data.json() || {})
+    }
 
-    addAddress(body) {
+    /*addAddress(body) {
         console.log("body-"+body);
          const headers = new Headers();
          headers.append('Content-Type', 'application/json');
@@ -24,7 +28,7 @@ export class AddressService {
         })
             .map((data: Response)=> data.json()|| {})
           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
+    }*/
 
     updateAddress(addressId,address){
          console.log("addressId-"+addressId);

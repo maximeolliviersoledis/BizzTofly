@@ -138,7 +138,16 @@ export class CheckoutPage {
             this.showAlert('Amount should be greater than $50.');
         }
         } else {
-            this.placeOrder();
+            //this.placeOrder();
+            let body: any = {};
+           // body.id_address_delivery = 76;
+            this.checkoutService.postOrder(body).subscribe(order =>{
+                console.log(order);
+                this.navCtrl.setRoot("ThankyouPage");
+
+                //Si la réponse est ok, effacé le panier
+            })
+
         }
 
     }

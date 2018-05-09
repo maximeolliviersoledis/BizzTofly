@@ -11,7 +11,7 @@ export class ProductDetailsService {
 
     }
 
-    getMenuItemDetails(menuItemId) {
+    /*getMenuItemDetails(menuItemId) {
         const headers = new Headers();
         return this.http.get(this.constService.base_url + 'api/menuItems/' + menuItemId, {
             headers: headers
@@ -19,6 +19,27 @@ export class ProductDetailsService {
 
             .map((data: Response) => data.json() || {})
         //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+    getMenuItemDetails(menuItemId) {
+        const headers = new Headers();
+       // var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + user_id;;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        })
+
+            .map((data: Response) => data.json() || {})
+        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+    }
+
+    getDeclinaisons(declinaisonId){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir+this.constService.combinationDir+"/"+declinaisonId+this.constService.keyDir+this.constService.formatDir;
+        //var urlDir = "http://www.bizztofly.com/api/combinations/"+declinaisonId+"?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON";
+        return this.http.get(urlDir,{
+            headers: headers
+        }).map((data: Response) => data.json() || {})
     }
 
     addToFavourite(productId) {

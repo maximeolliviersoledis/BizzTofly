@@ -24,6 +24,14 @@ export class CheckoutService {
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     }
 
+    postOrder(body){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, body, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})     
+    }
+
     chargeStripe(token, currency, amount, stripe_secret_key) {
         let secret_key = stripe_secret_key;
         var headers = new Headers();

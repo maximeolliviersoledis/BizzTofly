@@ -42,10 +42,10 @@
  <ion-list radio-group class="address-radio">
   <ion-item  *ngFor="let address of addressList">  
     <ion-label>
-      <p class="show-address">{{address.userName}} </p>
-      <p class="show-address">{{address.landmark}}</p>
-      <p class="show-address">{{address.city}}</p>
-      <p class="show-address">{{address.pincode}}</p>   
+      <p class="show-address">{{address.address.firstname}} {{address.address.lastname}} </p>
+      <p class="show-address">{{address.address.address1}}</p>
+      <p class="show-address">{{address.address.city}}</p>
+      <p class="show-address">{{address.address.postcode}}</p>   
     </ion-label> 
         <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>   
   </ion-item>  

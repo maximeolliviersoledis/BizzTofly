@@ -5,13 +5,16 @@
 </ion-header>
 
 <ion-content>
+    <button ion-button (click)=goBack() *ngIf="level > 2"><ion-icon name='arrow-back'></ion-icon>
+        Back
+    </button>
     <ion-card *ngFor="let category of categories">
         <ion-list>
-            <ion-item (click)="navigate(category._id)">
+            <ion-item (click)="navigate(category)" *ngIf="level == category.level && lastCategoryId == category.id_parent">
                 <ion-thumbnail item-left>
-                    <img src="{{category.thumb}}">
+                    <img src="{{category.image}}">
                 </ion-thumbnail>
-                <p class="heading">{{category.title}}</p>
+                <p class="heading">{{category.name}}</p>
                 <p>{{category.description}}</p>
             </ion-item>
         </ion-list>

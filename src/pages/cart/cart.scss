@@ -34,6 +34,10 @@ page-cart {
         font-weight: 700;
         font-size: 17px;
       }
+      .item-declinaison {
+        font-weight: 350;
+        font-size: 15px;
+      }
       .item-detail {
         font-size: 13px;
         line-height: 1.3em;
@@ -73,6 +77,13 @@ page-cart {
   }
   .continue-btn {
     background-color: $primary !important;
+    height: 46px;
+    font-size: 1.8rem;
+    border-radius: 0;
+    margin-top: 1em;
+  }
+  .empty-all-btn {
+    background-color: #ff0000;
     height: 46px;
     font-size: 1.8rem;
     border-radius: 0;

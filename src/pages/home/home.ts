@@ -40,6 +40,7 @@ export class HomePage {
         this.homeService.getCategories()
             .subscribe(response => {
                 this.categories = response;
+                console.log(this.categories);
                 loader.dismiss();
             }, error => {
                 loader.dismiss();
@@ -51,6 +52,7 @@ export class HomePage {
     }
 
     navigate(MenuId) {
+        console.log(MenuId);
         this.navCtrl.push("ProductListPage",
             {MenuId: MenuId}
         );

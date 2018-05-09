@@ -45,6 +45,11 @@ page-product-details {
     .show-count {
       background-color: $primary !important;
     }
+
+    .item-price {
+      font-weight: 700;
+      color: $primary;
+    }
   }
   }
   .label {

@@ -38,7 +38,7 @@ export class MyApp {
          
 
         platform.ready().then((res) => {
-            alert('ici11');
+           // alert('ici11');
             if (res == 'cordova') {
                 this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
@@ -67,7 +67,7 @@ export class MyApp {
     }
 
      ngOnInit(): any {
-        alert('ici22');
+       // alert('ici22');
         if (!this.isLogin()) {
             this.rootPage = "LoginPage";
         }

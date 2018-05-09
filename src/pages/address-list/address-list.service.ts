@@ -12,8 +12,24 @@ export class AddressListService {
                 public constService:ConstService) {
     }
 
+    getAddressList(customerId){
+        //http://www.bizztofly.com/api/addresses?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON&filter[id_customer]=55&filter[deleted]=0
+        var urlDir = this.constService.baseDir+this.constService.adresses+this.constService.keyDir+this.constService.formatDir+this.constService.filterIdCustomer+customerId;
+        const headers = new Headers();
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json()|| {})
+    }
 
-    getAddressList():Observable<Address[]> {
+    getAddress(addressId){
+        var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
+        const headers = new Headers();
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+    }
+
+   /* getAddressList():Observable<Address[]> {
          const headers = new Headers();
          let authtoken = localStorage.getItem('token');
          headers.append('Authorization', authtoken);
@@ -22,6 +38,10 @@ export class AddressListService {
         })
             .map((data: Response)=> data.json()|| {})
           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+   /* getAddress(){
+        //Exemple url pour récupérer les adresses liées à un client
     }
 
      getAvailablePincodes() {
@@ -44,7 +64,7 @@ export class AddressListService {
         })
             .map((data: Response)=> data.json()|| {})
           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
+    }*/
  
 
  

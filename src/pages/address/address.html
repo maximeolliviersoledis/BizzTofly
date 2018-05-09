@@ -9,6 +9,48 @@
 <form (ngSubmit)="onSubmitAddress()" #f="ngForm">
  <ion-list class="form-data">
     <ion-item>
+      <ion-input type="text" name="firstname" id="firstname" placeholder="{{'Prénom' | translate}}"
+               [(ngModel)]="address.address.firstname" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" name="lastname" id="lastname" placeholder="{{'Nom' | translate}}"
+               [(ngModel)]="address.address.lastname" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" name="address1" id="address1" placeholder="{{'Adresse' | translate}}"
+               [(ngModel)]="address.address.address1" required></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="text" name="address2" id="address2" placeholder="{{'Complément Adresse' | translate}}"
+               [(ngModel)]="address.address.address2"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-input type="number" name="postcode" id="postcode" placeholder="{{'Code Postal' | translate}}"
+               [(ngModel)]="address.address.postcode" required minlength="5" maxlength="5"></ion-input>
+    </ion-item>
+    <ion-item >
+      <ion-input type="text" name="city" id="city" placeholder="{{'Ville' | translate}}"
+           [(ngModel)]="address.address.city" required></ion-input>
+    </ion-item>
+    <ion-item >
+      <ion-input type="text" name="alias" id="alias" placeholder="{{'Intitulé Adresse' | translate}}"
+           [(ngModel)]="address.address.alias" required></ion-input>
+    </ion-item>
+</ion-list>
+<ion-row class="buttons">
+   <ion-col>
+      <button ion-button class="btn-lg" type="submit" 
+          [disabled]="!f.valid">&nbsp;&nbsp;{{"Add Address" | translate}}</button>
+   </ion-col>
+</ion-row>
+</form>
+</ion-content>
+
+<!--
+<ion-content class="address" padding>
+<form (ngSubmit)="onSubmitAddress()" #f="ngForm">
+ <ion-list class="form-data">
+    <ion-item>
       <ion-input type="text" name="name" id="name" placeholder="{{'Name' | translate}}"
                [(ngModel)]="address.userName"></ion-input>
     </ion-item>
@@ -42,9 +84,6 @@
       <ion-input type="number" name="pincode" id="pincode" placeholder="{{'Pincode' | translate}}"
            [(ngModel)]="address.pincode" required></ion-input>
     </ion-item>
-<!--     <ion-item class="full-address">
-      <ion-textarea rows="4" placeholder="Address" name="address" id="address"></ion-textarea>
-    </ion-item> -->
 </ion-list>
 <ion-row class="buttons">
    <ion-col>
@@ -54,3 +93,4 @@
 </ion-row>
 </form>
 </ion-content>
+-->
