@@ -32,6 +32,7 @@ var MyApp = /** @class */ (function () {
         this.imageUrl = 'assets/img/profile.jpg';
         platform.ready().then(function (res) {
             // alert('ici11');
+            
             if (res == 'cordova') {
                 _this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 _this.oneSignal.inFocusDisplaying(_this.oneSignal.OSInFocusDisplayOption.InAppAlert);
