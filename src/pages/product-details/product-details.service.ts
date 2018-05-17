@@ -42,48 +42,12 @@ export class ProductDetailsService {
         }).map((data: Response) => data.json() || {})
     }
 
-    addToFavourite(productId) {
-        let productInfo: any = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'LIKE';
+    addToFavourite(productId, productAttributeId, quantity, token){
         const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites', productInfo, {
+        var urlDir = "http://www.bizztofly.com/modules/blockwishlist/cart.php?action=add&id_product="+productId+"&quantity="+quantity+"&token="+token+"&id_product_attribute="+productAttributeId+"&id_wishlist=undefined&_=1526561392412"
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-           // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }
-
-    removeToFavourite(productId) {
-        let productInfo: any = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'DISLIKE';
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/delete/', productInfo, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-           // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }
-
-    checkFavourite(productId) {
-        let productInfo: any = {};
-        productInfo.menuItem = productId;
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/check', productInfo, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map((data: Response) => data.json() || {})
     }
 
 }

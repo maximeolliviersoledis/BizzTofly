@@ -6,7 +6,7 @@ import {Service} from '../app/service';
 import {OneSignal} from '@ionic-native/onesignal';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {SocketService } from '../providers/socket-service';
-import {UserService} from '../providers/user-service';
+//import {UserService} from '../providers/user-service';
 import {TranslateService} from 'ng2-translate';
 
 
@@ -28,7 +28,7 @@ export class MyApp {
     constructor(public platform: Platform,
                 public service: Service,
                 public socketService:SocketService,
-                private userService:UserService,
+                //private userService:UserService,
                 statusBar: StatusBar,
                 splashScreen: SplashScreen,
                 public oneSignal: OneSignal,
@@ -92,13 +92,16 @@ export class MyApp {
     }
     
    private renderImage(){
-       if(this.isLogin()){
+       /*if(this.isLogin()){
         this.userService.getUser()
         .subscribe(user=>{
          this.imageUrl=user.imageUrl!=null?this.imageUrl=user.imageUrl:this.imageUrl='assets/img/profile.jpg';
         }, error =>{
          this.nav.setRoot("LoginPage");
         })
+       }*/
+       if(!this.isLogin()){
+           this.nav.setRoot("LoginPage");
        }
         
     }
@@ -113,7 +116,7 @@ export class MyApp {
 
 
     isLogin() {
-        return localStorage.getItem('token') != null;
+        return localStorage.getItem('user') != null;
     }
 
 
@@ -137,21 +140,21 @@ export class MyApp {
         this.nav.push("FavouritePage");
     }
 
-    bookTable(){
+    /*bookTable(){
         this.nav.push("TableBookingPage");
     }
 
     bookHistory(){
         this.nav.push("BookingHistoryPage");
-    }
+    }*/
 
     offer() {
         this.nav.push("OfferPage");
     }
 
-    news() {
+    /*news() {
         this.nav.push("NewsPage");
-    }
+    }*/
 
     contact() {
         this.nav.push("ContactPage");
@@ -164,13 +167,13 @@ export class MyApp {
     aboutUs() {
         this.nav.push("AboutUsPage");
     }
-     invite() {
+    /* invite() {
     this.socialSharing.share("share Restaurant App with friends to get credits", null, null, 'https://ionicfirebaseapp.com/#/');
   }
     
     chat(){
       this.nav.push("ChatPage");
-    }
+    }*/
      orderStatus(){
       this.nav.push("OrderStatusPage");
     }
@@ -180,6 +183,7 @@ export class MyApp {
 
     logout() {
         localStorage.removeItem('token');
+        localStorage.removeItem('user');
         this.events.publish('imageUrl','assets/img/profile.jpg')
         this.nav.setRoot("LoginPage");
     }

@@ -1,0 +1,70 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Carrier</ion-title>
+  </ion-navbar>
+</ion-header>
+
+
+<ion-content>
+	<ion-list radio-group>
+		<ion-item *ngFor="let carrier of carriers">
+			<ion-label>
+				<ion-row>
+					<ion-col col-3>
+						<img *ngIf="carrier.image" src="{{carrier.image}}">
+					</ion-col>
+					<ion-col col-9>
+					<p><strong>{{objectToArray(carrier.carrier_list)[0].instance.name}}</strong></p>
+					<p>Délai de livraison : {{objectToArray(objectToArray(carrier.carrier_list)[0].instance.delay)[0]}}</p>
+					<p>Prix : {{carrier.total_price_with_tax}}</p>
+					<p *ngIf="carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide et au meilleur prix !</p>
+					<p *ngIf="carrier.is_best_price && !carrier.is_best_grade">Transporteur au meilleur prix !</p>
+					<p *ngIf="!carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide !</p>
+				</ion-col>
+				</ion-row>
+			</ion-label>
+			<!--<ion-label>
+				<p><strong>{{carrier.instance.name}}</strong></p>
+				<p>Délai de livraison : {{objectToArray(carrier.instance.delay)[0]}}</p>
+				<!--<p>Délai de livraison: {{carrier.instance.delay[0].value}}</p>
+				<p>Prix : {{carrier.price_with_tax}}</p>
+
+			</ion-label>-->
+			<ion-radio (ionSelect)="selectCarrier(carrier)"></ion-radio>
+		</ion-item>
+	</ion-list>
+
+	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button> 
+</ion-content>
+
+
+<!--<ion-content>
+	<ion-list radio-group>
+		<ion-item *ngFor="let carrier of carriers">
+			<img src="{{carrier.image}}">
+			<ion-label>
+				<p><strong>{{objectToArray(carrier.carrier_list)[0].instance.name}}</strong></p>
+				<p>Délai de livraison : {{objectToArray(objectToArray(carrier.carrier_list)[0].instance.delay)[0]}}</p>
+				<p>Prix : {{carrier.total_price_with_tax}}</p>
+				<p *ngIf="carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide et au meilleur prix !</p>
+				<p *ngIf="carrier.is_best_price && !carrier.is_best_grade">Transporteur au meilleur prix !</p>
+				<p *ngIf="!carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide !</p>
+			</ion-label>
+			<!--<ion-label>
+				<p><strong>{{carrier.instance.name}}</strong></p>
+				<p>Délai de livraison : {{objectToArray(carrier.instance.delay)[0]}}</p>
+				<!--<p>Délai de livraison: {{carrier.instance.delay[0].value}}</p>
+				<p>Prix : {{carrier.price_with_tax}}</p>
+
+			</ion-label>
+			<ion-radio (ionSelect)="selectCarrier(carrier)"></ion-radio>
+		</ion-item>
+	</ion-list>
+
+	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button> 
+</ion-content>
+-->

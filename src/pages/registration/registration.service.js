@@ -24,7 +24,7 @@ var RegistrationService = /** @class */ (function () {
         })
             .map(function (data) { return data.json() || {}; });
         //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    };
+    };    
     RegistrationService = __decorate([
         Injectable(),
         __metadata("design:paramtypes", [Http,

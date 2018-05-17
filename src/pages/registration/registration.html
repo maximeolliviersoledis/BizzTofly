@@ -8,17 +8,40 @@
 
 </ion-header>
 
-<ion-content class="login">
+<ion-content class="login" *ngIf="!isLogin()">
     <img class="logo" src="assets/img/logo-icon.png">
 
     <!--inputs-->
     <!--name-->
+    <ion-row radio-group [formControl]="user.controls['gender']">
+        <ion-item>
+            <ion-label>Civilité:</ion-label>
+        </ion-item>
+        <ion-item>
+            <ion-label>Mr:</ion-label>
+            <ion-radio value="1">Mr</ion-radio>
+        </ion-item>
+        <ion-item>
+            <ion-label>Mme:</ion-label>
+            <ion-radio value="2">Mme</ion-radio>
+        </ion-item>
+    </ion-row>
+
+
     <form [formGroup]="user" (ngSubmit)="onRegister()">
         <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{"Name:" | translate}}</ion-label>
-                    <ion-input type="text" formControlName="name"></ion-input>
+                    <ion-label>{{"First name:" | translate}}</ion-label>
+                    <ion-input type="text" formControlName="firstName"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>{{"Last name:" | translate}}</ion-label>
+                    <ion-input type="text" formControlName="lastName"></ion-input>
                 </ion-item>
             </ion-col>
         </ion-row>
@@ -31,16 +54,6 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--Mobile No-->
-        <ion-row>
-            <ion-col col-12>
-                <ion-item>
-                    <ion-label>{{"Mobile No:" | translate}}</ion-label>
-                    <ion-input type="number" formControlName="phone"></ion-input>
-                </ion-item>
-            </ion-col>
-        </ion-row>
-
         <!--password-->
         <ion-row>
             <ion-col col-12>
@@ -50,7 +63,26 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-
+        <!--password-->
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>{{"Password confirmation:" | translate}}</ion-label>
+                    <ion-input type="password" formControlName="passwordConfirmation"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
+        <div class="invalid-feedback" *ngIf="user.errors?.mismatch && (user.controls['passwordConfirmation'].dirty || user.controls['passwordConfirmation'].touched)">
+            Passwords don't match.
+        </div>
+      <!--  <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>{{"Souhaitez vous recevoir des newsletter:" | translate}}</ion-label>
+                    <ion-checkbox formControlName="newsletter"></ion-checkbox>
+                </ion-item>
+            </ion-col>
+        </ion-row>-->
         <!--button-->
         <ion-row>
             <ion-col col-12>

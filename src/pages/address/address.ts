@@ -21,7 +21,8 @@ export class AddressPage {
         pincode:''
       };*/
 
-      address={
+      /* Possibilité d'ajouter un numéro de téléphone */
+      address: any = {
         address: 
         {
           firstname:'',
@@ -33,10 +34,11 @@ export class AddressPage {
           id_customer: 0,
           city:'',
           alias:''
+          //phone: ''
+          //phone_mobile: ''
         }
       };
-      addressId:'';
-      orderData:any;
+      //orderData:any;
       selectedAddress:any;
 
       constructor(public navCtrl: NavController,
@@ -44,38 +46,64 @@ export class AddressPage {
         public loadingCtrl:LoadingController,
         public addressService:AddressService) {
 
-        this.orderData=this.navParams.get('orderData');
+        //this.orderData=this.navParams.get('orderData');
       }
 
       ngOnInit() {
-        /*if(this.navParams.get('selectedAddress')){  
-          this.selectedAddress=this.navParams.get('selectedAddress');
-          if(this.selectedAddress._id){
-            this.addressService.getAddressById(this.selectedAddress._id)
-            .subscribe(response=>{
-              this.address.userName=response.userName;
-              this.address.homeNumber=response.homeNumber;
-              this.address.apartmentName=response.apartmentName;
-              this.address.landmark=response.landmark;
-              this.address.city=response.city;
-              this.address.state=response.state;
-              this.address.pincode=response.pincode;
-              this.address.mobileNo=response.mobileNo;
-            })
-          }
-        }*/
+        this.selectedAddress = this.navParams.get('address');
+        console.log(this.selectedAddress);
 
+        if(this.selectedAddress){
+          this.address.address.id = this.selectedAddress.id;
+          this.address.address.firstname = this.selectedAddress.firstname;
+          this.address.address.lastname = this.selectedAddress.lastname;
+          this.address.address.address1 = this.selectedAddress.address1;
+          this.address.address.address2 = this.selectedAddress.address2;
+          this.address.address.postcode = this.selectedAddress.postcode;
+          this.address.address.id_country = this.selectedAddress.id_country;
+          this.address.address.id_customer = this.selectedAddress.id_customer;
+          this.address.address.city = this.selectedAddress.city;
+          this.address.address.alias = this.selectedAddress.alias;
+        }
       }
 
       onSubmitAddress(){
-        var user = JSON.parse(localStorage.getItem('user'));
-        this.address.address.id_customer = user.id_customer;
-        console.log(this.address);
-        this.addressService.addAddress(this.address).subscribe(data => {
-          this.navCtrl.push('AddressListPage',{
-            amountDetails:this.navParams.get('amountDetails')
-          })
+        let loader =this.loadingCtrl.create({
+          content:'please wait'
         })
+        loader.present();
+        let addressList = this.navParams.get('addressList');
+        if(this.navParams.get('address')){
+          this.addressService.putAddress(this.address.address.id, this.address).subscribe(data => {
+            for(var i= 0; i<addressList.length;i++){
+              if(addressList[i].address.id === this.address.address.id){
+                addressList[i] = data;
+                console.log(addressList[i]);
+                break;
+              }
+            }
+            console.log(addressList);
+            loader.dismiss();
+            this.navCtrl.push('AddressListPage',{
+              amountDetails:this.navParams.get('amountDetails'),
+              cartData: this.navParams.get('cartData'),
+              addressList: addressList
+            })
+          })
+        }else{
+          var user = JSON.parse(localStorage.getItem('user'));
+          this.address.address.id_customer = user.id_customer;
+          console.log(this.address);
+          this.addressService.addAddress(this.address).subscribe(data => {
+            addressList.push(data);
+            loader.dismiss();
+            this.navCtrl.push('AddressListPage',{
+              amountDetails:this.navParams.get('amountDetails'),
+              cartData: this.navParams.get('cartData'),
+              addressList: addressList
+            })
+          })
+        }
 
         /*let loader =this.loadingCtrl.create({
           content:'please wait'

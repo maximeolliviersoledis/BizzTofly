@@ -82,6 +82,7 @@ export class LoginPage {
         var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
         //Possibilité de se connecter que lorsque l'utilisateur saisit une adresse mail conforme à la regex si dessus
         //De plus, le mot de passe saisit doit faire au minimum 5 caractères (se mettre en accord avec la page d'inscription)
+        
         this.user = this.fb.group({
             email: ['test2@test.fr', Validators.compose(
                 [Validators.required,Validators.pattern(emailRegex)])],
@@ -175,10 +176,11 @@ export class LoginPage {
         this.loginService.getCartForCustomer(user.id_customer).subscribe(data => {
             console.log(data);
             
-            if(data.carts && data.carts[0].id){
+            //Récupères le dernier panier s'il n'est pas vide et n'a pas été commandé
+            if(data.carts && data.carts[0].id){//&& data.carts[0].id_address_invoice == 0 && data.carts[0].associations
                 let alert = this.alertCtrl.create({
                     title: "Panier trouvé",
-                    subTitle: "Un panier à votre nom a été trouvé en ligne.\n Souhaitez vous le chargez ?",
+                    subTitle: "Un panier à votre nom a été trouvé en ligne.\n Souhaitez vous le chargez ? (Attention, si vous aviez déjà un panier d'enregistré celui-ci sera perdu)",
                     buttons: [
                     {
                         text: 'Oui',
@@ -192,6 +194,7 @@ export class LoginPage {
                         text: 'Non',
                         handler: () => {
                             console.log('Non clicked');
+                            localStorage.removeItem('id_cart');
                         }
                     }
                     ]
@@ -256,8 +259,17 @@ export class LoginPage {
                 if(!productAlreadyFind){
                     this.loginService.getMenuItemDetails(productId).subscribe(data => {
                         this.products.push(data);
+                        console.log(data);
                         declinaison.selectedQuantity = parseInt(quantity);
-                        declinaison.endPrice = data.price;
+                        //declinaison.endPrice = data.price;
+
+                        var id = declinaison.combination.id;
+                        var index =  this.objectToArray(data.declinaisons).findIndex(function(elem){
+                            return elem.id === id;
+                        })
+
+                        declinaison.endPrice = parseFloat(this.objectToArray(data.declinaisons)[index].price);
+                        console.log(declinaison.endPrice);                          
                         product.name = data.name;
                         product.productId = productId;
                         product.quantity += parseInt(quantity);

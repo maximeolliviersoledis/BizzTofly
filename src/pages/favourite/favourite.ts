@@ -31,9 +31,14 @@ export class FavouritePage {
             this.noOfItems = this.cartItems.length;
         }
     }
-
+    favouriteList: any[] = [];
     ngOnInit() {
-        this.getWishlist();
+        this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
+        for(var favourite of this.favouriteList){
+            this.favouriteService.getProduct(favourite).subscribe(data => {
+                this.favouriteItems.push(data);
+            })
+        }
     }
 
     navcart() {
@@ -46,43 +51,28 @@ export class FavouritePage {
         });
     }
 
+    removeFromFavourites(productId){
+        console.log("remove : "+productId);
+        for(var i=0; i<this.favouriteItems.length;i++){
+            if(this.favouriteItems[i].id == productId){
+                this.favouriteItems.splice(i,1);
+            }
+
+            if(this.favouriteList[i] == productId){
+                this.favouriteList.splice(i,1);
+                localStorage.setItem('favourite',JSON.stringify(this.favouriteList));
+            }
+        }
+    }
+
 
     isFavourite(): boolean {
         return this.favouriteItems.length == 0 ? false : true;
     }
 
 
-    removeFromFavourites(productId) {
-        this.favouriteService.removeFromFavourite(productId)
-            .subscribe(response => {
-                console.log("res--" + JSON.stringify(response));
-                this.getWishlist();
-            })
-
-    }
-
-    getWishlist() {
-        if (this.isLoggedin()) {
-            let loader = this.loadingCtrl.create({
-                content: 'please wait...'
-            })
-            loader.present();
-            this.userService.getUser()
-                .subscribe(user => {
-                    this.favouriteService.getFavourites(user._id)
-                        .subscribe(response => {
-                            this.favouriteItems = response;
-                            console.log("fav-list-"+JSON.stringify(response));
-                            loader.dismiss();
-                        }, (error) => {
-                            loader.dismiss();
-                        })
-                })
-        }
-    }
-
     isLoggedin(): boolean {
-        return localStorage.getItem('token') ? true : false;
+        return JSON.parse(localStorage.getItem('user')).token ? true : false;
     }
 
 

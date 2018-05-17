@@ -23,4 +23,12 @@ export class RegistrationService {
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     }
 
+    postCustomer(body){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, body, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+    }
+
 }

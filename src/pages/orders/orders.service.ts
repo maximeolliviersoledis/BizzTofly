@@ -13,7 +13,7 @@ export class OrdersService {
     }
 
 
-    getOrders() {
+    /*getOrders() {
         const headers = new Headers();
         let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
@@ -22,7 +22,21 @@ export class OrdersService {
         })
             .map((data: Response) => data.json() || {})
           //  .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+    getOrders(customerId) {
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId + this.constService.sortIdDesc;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
     }
 
-
+    getOrderById(orderId){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + "/" + orderId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+    }
 }

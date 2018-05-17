@@ -42,18 +42,6 @@ export class ProductListPage {
             content: 'please wait'
         })
         loader.present();
-        /*this.productListService.getMenuItems(this.menuId)
-            .subscribe(response => {
-                //console.log(JSON.stringify(response));
-                loader.dismiss();
-                this.menuItems = response;
-                console.log(this.menuItems[0]);
-                for(var i=0; i<5;i++)
-                    this.items.push(this.menuItems[i]);
-            }, error => {
-                loader.dismiss();
-            })*/
-
             this.productListService.getCategory(this.menuId).subscribe(data => {
                 console.log(data);
                 this.allProductsId = data.category.associations.products;
@@ -91,7 +79,8 @@ export class ProductListPage {
         let val = ev.target.value;
         if (val && val.trim() != '') {
             this.items = this.items.filter((data) => {
-                return (data.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
+                console.log(data);
+               // return (data.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
             })
         }
     }
@@ -146,6 +135,8 @@ export class ProductListPage {
             event.complete();
         }*/
     }
-
+    priceIsReduced(product){
+        return product.prices.specific_price < product.prices.normal_price ? true : false; 
+    }
 
 }

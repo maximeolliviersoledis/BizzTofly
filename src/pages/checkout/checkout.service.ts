@@ -12,7 +12,7 @@ export class CheckoutService {
 
     }
 
-    placeOrder(body) {
+    /*placeOrder(body) {
         const headers = new Headers();
         headers.append('Content-Type', 'application/json');
         let authtoken = localStorage.getItem('token');
@@ -22,6 +22,15 @@ export class CheckoutService {
         })
             .map((data: Response) => data.json() || {})
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+    getAvailablePayments(paymentId){
+        //paymentId = 0, retourne tous les moyens de payments disponibles
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.paymentDir + "/" + paymentId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
     }
 
     postOrder(body){
@@ -32,7 +41,7 @@ export class CheckoutService {
         }).map((data: Response) => data.json() || {})     
     }
 
-    chargeStripe(token, currency, amount, stripe_secret_key) {
+    /*chargeStripe(token, currency, amount, stripe_secret_key) {
         let secret_key = stripe_secret_key;
         var headers = new Headers();
         var params = new URLSearchParams();
@@ -52,9 +61,9 @@ export class CheckoutService {
                     resolve(data);
                 });
         });
-    }
+    }*/
 
-    savePaymentDetails(orderId, paymentDetails) {
+    /*savePaymentDetails(orderId, paymentDetails) {
         const headers = new Headers();
         let body: any = {};
         body.payment = paymentDetails;
@@ -66,9 +75,9 @@ export class CheckoutService {
         })
             .map((data: Response) => data.json() || {})
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }
+    }*/
 
-    saveLoyaltyPoints(userId, loyaltyData) {
+    /*saveLoyaltyPoints(userId, loyaltyData) {
         const headers = new Headers();
         const body = loyaltyData;
         headers.append('Content-Type', 'application/json');
@@ -79,5 +88,24 @@ export class CheckoutService {
         })
             .map((data: Response) => data.json() || {})
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }
+    }*/
+
+    postCart(cartId, body){
+         const headers = new Headers();
+         //var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+         var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+
+         return this.http.post(urlDir, body, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
+
+     putCart(cartId, body){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+
+         return this.http.put(urlDir, body, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
 }

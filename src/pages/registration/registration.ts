@@ -34,7 +34,7 @@ export class RegistrationPage {
             content: 'please wait'
         })
         loader.present();
-        this.registrationService.createUser(this.user.value)
+        /*this.registrationService.createUser(this.user.value)
             .subscribe(user => {
                 loader.dismiss();
                 localStorage.setItem('token', "bearer " + user.token);
@@ -43,7 +43,33 @@ export class RegistrationPage {
                 this.displayToast('User Successfully added!', 5000);
             }, error => {
                 loader.dismiss();
-            })
+            })*/
+        console.log(this.user);
+        var newUser: any = {
+            customer:{
+                firstname: this.user.value.firstName,
+                lastname: this.user.value.lastName,
+                email: this.user.value.email,
+                passwd: this.user.value.password,
+                active: '1',
+                id_lang: '1',
+                id_default_group: '3',
+                id_gender: this.user.value.gender
+            }
+        }
+         this.registrationService.postCustomer(newUser).subscribe(res => {
+             console.log(res);
+             var connect = {
+                     token: res.customer.secure_key,
+                     id_customer: res.customer.id,
+                     email: res.customer.email,
+                     firstname: res.customer.firstname,
+                     lastname: res.customer.lastname      
+             }
+             localStorage.setItem('user',JSON.stringify(connect));
+         })
+
+        loader.dismiss();      
     }
 
     displayToast(message, duration) {
@@ -55,14 +81,35 @@ export class RegistrationPage {
     }
 
     ngOnInit(): any {
+        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+        var userRegex = "^[a-zA-Z- ]+";
+        //On peut également appliquer des patterns au mot de passe
         this.user = this.fb.group({
-            name: ['', Validators.required],
-            email: ['', Validators.required],
-            phone: ['', Validators.required],
-            password: ['', Validators.required],
-
-        });
+            firstName: ['', Validators.compose(
+                [Validators.required, Validators.pattern(userRegex)]
+                )],
+            lastName: ['', Validators.compose(
+                [Validators.required, Validators.pattern(userRegex)]
+                )],
+            email: ['', Validators.compose(
+                [Validators.required,Validators.pattern(emailRegex)]
+                )],
+            password: ['', Validators.compose(
+                [Validators.required, Validators.minLength(8)]
+                )],
+            passwordConfirmation: ['', Validators.compose(
+                [Validators.required, Validators.minLength(8)]
+                )],
+            gender: [1, Validators.required]
+            //newsletter: [false]
+        },{validator: this.passwordMatch});
     }
+
+    //Vérifie que les mots de passe soit identiques
+    passwordMatch(control: FormGroup){
+        return control.controls['password'].value === control.controls['passwordConfirmation'].value ? null : {'mismatch': true};
+    }
+    
 
     navLogin() {
         this.navCtrl.push("LoginPage");
@@ -119,6 +166,10 @@ export class RegistrationPage {
                 })
             }
         })
+    }
+
+    isLogin(){
+        return localStorage.getItem('user') != null ? true : false;
     }
 
 

@@ -3,25 +3,44 @@
         <button ion-button menuToggle>
             <ion-icon name="menu"></ion-icon>
         </button>
-        <ion-title>{{"Restaurant App" | translate}}</ion-title>
+        <ion-title>{{"BizzToFly" | translate}}</ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="royal" (click)="navcart()" class="header-btn-cart">
                 <ion-icon name="cart"></ion-icon>
                 <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
             </button>
         </ion-buttons>
+        
     </ion-navbar>
+    <ion-searchbar
+        [(ngModel)]="searchInput"
+        [showCancelButton]="shouldShowCancel"
+        (ionInput)="onSearch($event)"
+        (ionCancel)="offSearch($event)"
+        animated="true"
+        autocomplete="true"
+        placeholder="{{searchPlaceholder}}">
+    </ion-searchbar>
+    <div *ngIf="searching" class="spinner-container">
+        <ion-spinner></ion-spinner>
+    </div>
+    <ion-list *ngIf="searchResults" class="search-results">
+        <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id)">
+            {{searchResult.name}}
+        </ion-item>
+    </ion-list>
 </ion-header>
 
 <ion-content>
     <ion-grid class="grid">
         <ion-row><!-- first row -->
-            <ion-slides initialSlide=0 speed="3000" loop="true" pager="true" dir="rtl">
-                <ion-slide *ngFor="let feature of featured">
-                    <div class="overlay">
-                        <img src={{feature.thumb}} class="slider-img">
-                    </div><!--overlay-->
-                    <div class="card-title">{{'Featured Product' | translate}}</div>
+         <ion-slides *ngIf="slideProducts && slideProducts.length" speed="300" loop="true" autoplay="3000" pager="true" (ionSlideTap)="goToProduct()" (ionSlideNextStart)="onChange(true)" 
+            (ionSlidePrevStart)="onChange(false)">
+                <ion-slide *ngFor="let product of slideProducts" activeSlide="true">
+                        <div class="overlay">
+                            <img src={{product.image}} class="slider-img">
+                        </div>
+                        <div class="card-title">{{product.name}}</div>
                 </ion-slide>
             </ion-slides>
         </ion-row><!-- first row -->
@@ -29,7 +48,7 @@
         <h2 text-center>{{'Categories' | translate}}</h2>
         <ion-row class="categories">
             <ion-col col-6 *ngFor="let category of categories" (click)="navigate(category.id_category)">
-                <img src={{category.thumb}}>
+                <img src={{category.image}}>
                 <p class="text-over-img">{{category.name}}</p>
             </ion-col>
         </ion-row>

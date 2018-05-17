@@ -1,0 +1,33 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>recap</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+<ion-list *ngFor="let item of orderData.cart">
+	<ion-item *ngFor="let product of item.declinaison">
+		<ion-row>
+			<ion-col col-3>
+                <img src="{{item.imageUrl}}" alt="{{product.name}}">
+			</ion-col>
+			<ion-col col-9>
+				<p>{{item.name}} : {{product.name}}</p>
+				<p>Quantity : {{product.selectedQuantity}}</p>
+				<p>Price : {{product.endPrice | number:'.2-2'}}</p>
+				<p>Total : {{totalProductPrice(product.endPrice, product.selectedQuantity) | number:'.2-2'}}<p>
+			</ion-col>
+		</ion-row>
+	</ion-item>
+</ion-list>
+<ion-item>
+	<p>Total TTC : {{totalPrice | number:'.2-2'}}</p>
+	<p>Total frais de port (TTC) : {{carrierData.total_price_with_tax | number:'.2-2'}}
+</ion-item>
+	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
+      <ion-icon name="arrow-forward"></ion-icon>
+    </button> 
+</ion-content>

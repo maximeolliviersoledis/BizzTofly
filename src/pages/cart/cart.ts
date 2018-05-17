@@ -19,6 +19,7 @@ export class CartPage {
     deductedPrice: number;
     coupons:Array<string>;
     promotion: any[] = [];
+    cartData: any = {};
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -42,7 +43,6 @@ export class CartPage {
 
             this.getPromotion();
             console.log(this.promotion);
-            
             this.calculatePrice();
         })
         }
@@ -180,15 +180,31 @@ export class CartPage {
        amountDetails.tax=this.taxAmount;
        amountDetails.couponDiscount=this.couponDiscount;
        amountDetails.deductedPrice=this.deductedPrice;
-      if(localStorage.getItem('token')){
+
+      if(JSON.parse(localStorage.getItem('user')).token){
           console.log(this.cartItems);
-          this.sendCart();
-          /*this.cartService.postCart(this.cartItems).subscribe(data => {
-              console.log(data);
-          })*/
-          this.navCtrl.push("AddressListPage",{
-            amountDetails:amountDetails  
-          }); 
+          var panier = this.sendCart();
+          var idCart = localStorage.getItem('id_cart');
+
+          if(idCart){
+              console.log(panier);
+              this.cartService.putCart(idCart, panier).subscribe(data => {
+                  console.log(data);                
+                  this.navCtrl.push("AddressListPage",{
+                  amountDetails:amountDetails,
+                  cartData: data  
+              }); 
+              })
+          }else{
+            this.cartService.postCart(panier).subscribe(data => {
+                console.log(data);          
+                this.navCtrl.push("AddressListPage",{
+                amountDetails:amountDetails,
+                cartData: data  
+              }); 
+            })
+
+        }
       } else {
        this.navCtrl.push("LoginPage",{
         amountDetails:amountDetails,
@@ -337,10 +353,29 @@ export class CartPage {
     sendCart(){
         var id_cart = JSON.parse(localStorage.getItem('id_cart'));
         if(id_cart){
+            var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
             console.log("panier existant");
             var modif = {
                 cart: {
                     id: id_cart,
+                    id_shop_group: null, 
+                    id_shop: null,
+                    id_address_delivery: null,
+                    id_address_invoice: null,
+                    id_carrier: 0,
+                    id_currency: 1,
+                    id_customer: id_customer,
+                    id_guest: null,
+                    id_lang: 1,
+                    recyclable: null,
+                    gift: null,
+                    gift_message: null,
+                    mobile_theme: null,
+                    delivery_option: null,
+                    secure_key: null,
+                    allow_seperated_package: 0,
+                    date_add: null,
+                    date_upd: null,
                     associations: {
                         cart_rows: {
                             cart_row: []
@@ -361,10 +396,11 @@ export class CartPage {
                 }
             }
             console.log(modif);
-
-            this.cartService.putCart(id_cart,modif).subscribe(data => {
+            return modif;
+           /*this.cartService.putCart(id_cart,modif).subscribe(data => {
                 console.log(data);
-            })
+                this.cartData = data;
+            })*/
 
         }else{
             var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
@@ -410,10 +446,11 @@ export class CartPage {
                 }
             }
             console.log(panier);
-
-            this.cartService.postCart(panier).subscribe(data => {
+            return panier;
+            /*this.cartService.postCart(panier).subscribe(data => {
                 console.log(data);
-            })
+                this.cartData = data;
+            })*/
         }
     }
 }

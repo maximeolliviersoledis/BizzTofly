@@ -24,18 +24,33 @@ export class OrdersPage {
             content:'please wait'
         })
         loader.present();
-        this.orderService.getOrders()
+        var customer = JSON.parse(localStorage.getItem('user'));
+        console.log(customer);
+        if(customer && customer.id_customer){
+            this.orderService.getOrders(customer.id_customer).subscribe(orders => {
+                console.log(orders);
+                for(var order of orders.orders){
+                    this.orderService.getOrderById(order.id).subscribe(data => {
+                        console.log(data);
+                        this.orders.push(data);
+                    })
+                }
+            })
+        }
+        loader.dismiss();
+
+        /*this.orderService.getOrders()
             .subscribe(orders => {
                 this.orders = orders;
                 loader.dismiss();
             },error=>{
                 loader.dismiss();
-            })
+            })*/
     }
 
-    orderDetails(orderId) {
+    orderDetails(order) {
         this.navCtrl.push("OrderDetailsPage", {
-            orderId: orderId
+            order: order
         });
     }
 

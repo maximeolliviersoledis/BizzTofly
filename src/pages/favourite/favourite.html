@@ -21,20 +21,20 @@
             <ion-list>
                 <ion-item>
                     <ion-thumbnail item-left>
-                        <img src={{favouriteItem.menuItem.thumb}}>
+                        <img src={{favouriteItem.image}}>
                     </ion-thumbnail>
-                    <p class="heading">{{favouriteItem.menuItem.title}}</p>
-                    <p>{{favouriteItem.menuItem.description}}</p>
+                    <p class="heading">{{favouriteItem.name}}</p>
+                    <p>{{favouriteItem.description_short}}</p>
                     <ion-row>
                         <ion-col col-8 class="add-col">
-                            <button class="add" ion-button (click)="buyNow(favouriteItem.menuItem._id)">
+                            <button class="add" ion-button (click)="buyNow(favouriteItem.id)">
                                 <ion-icon name="cart"></ion-icon>
                                 &nbsp; {{"Buy Now" | translate}}
                             </button>
                         </ion-col>
                         <ion-col col-4>
                             <button color="danger" class="delete" ion-button outline
-                                    (click)="removeFromFavourites(favouriteItem.menuItem._id)">
+                                    (click)="removeFromFavourites(favouriteItem.id)">
                                 <ion-icon name="trash">
                                 </ion-icon>
                             </button>

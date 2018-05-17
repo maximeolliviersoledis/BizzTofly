@@ -35,5 +35,9 @@ export class OrderDetailsService {
             //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));  
     }
 
+    getImageUrlForProduct(productId){
+        return this.constService.baseDir + this.constService.imageDir + "/products/" + productId + "/1" + this.constService.keyDir;
+    }
+
 
 }

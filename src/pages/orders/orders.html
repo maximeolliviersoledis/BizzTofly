@@ -22,15 +22,15 @@
     <ion-card class="orders-item">
       <ion-row *ngFor="let order of orders">
         <ion-col col-9>
-          <p class="item-name"><strong>{{"Order Id:" | translate}} {{order.orderID}}</strong></p>
-          <p class="item-price">{{"Grandtotal:" | translate}}  ${{order.grandTotal | number:'.2-2'}}</p>
-          <p class="date">{{"Date:" | translate}} {{order.createdAt | date}}</p>
+          <p class="item-name"><strong>{{"Order Id:" | translate}} {{order.order.id}}</strong></p>
+          <p class="item-price">{{"Grandtotal:" | translate}}  ${{order.order.total_paid_real | number:'.2-2'}}</p>
+          <p class="date">{{"Date:" | translate}} {{order.order.date_add | date}}</p>
         </ion-col>
         <ion-col col-3>
           <!-- <button class="btn-cart"ion-button color="danger">
             <ion-icon ios="ios-cart" md="md-cart"></ion-icon>
           </button> --><br>
-          <button class="btn-view"ion-button color="primary" (click)="orderDetails(order._id)">
+          <button class="btn-view"ion-button color="primary" (click)="orderDetails(order)">
             {{"View" | translate}}
           </button>
         </ion-col>

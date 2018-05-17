@@ -1,6 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController, Events , IonicPage,ToastController,LoadingController,Platform} from 'ionic-angular';
-import {NgForm} from "@angular/forms";
+import {NgForm, FormBuilder, Validators, FormGroup} from "@angular/forms";
 import {TranslateService} from 'ng2-translate';
 import {UserService} from '../../providers/user-service';
 import {FileUploader} from 'ng2-file-upload';
@@ -15,11 +15,14 @@ import {SettingsService} from './settings.service';
     providers:[SettingsService]
 })
 export class Settings {
-    user: any = {
-      flag:0
-    };
+    user: any = {};
+    /*newUserInfo: any = {
+      fieldEmpty: true
+    };*/
+    newUserInfo: FormGroup;
     preview:string;
     value: any;
+
     options = [
         {
             "language": "ENGLISH",
@@ -51,6 +54,7 @@ export class Settings {
 
     constructor(public navCtrl: NavController,
                 public events:Events,
+                public fb: FormBuilder,
                 public platform:Platform,
                 private loadingCtrl:LoadingController,
                 private toastCtrl:ToastController,
@@ -71,20 +75,66 @@ export class Settings {
         content:'please wait...'
       })
       loader.present();
-        this.userService.getUser()
-            .subscribe(res => {
-                console.log("user" + JSON.stringify(res));
-                 this.user=res;
-                 this.userId=res._id;
-                 this.user.imageUrl=res.imageUrl;
-                 this.translate.use(this.value);
-                 loader.dismiss();
-            },error=>{
-              loader.dismiss();
-            })
+      var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+      var userRegex = "^[a-zA-Z- ]+";
+      this.newUserInfo = this.fb.group({
+            firstName: ['', Validators.pattern(userRegex)],
+            lastName: ['',Validators.pattern(userRegex)],
+            email: ['', Validators.pattern(emailRegex)],
+            password: ['', Validators.minLength(8)],
+            passwordConfirmation: ['', Validators.minLength(8)]
+      },{validator: this.passwordMatch});
+
+      var userExist = JSON.parse(localStorage.getItem('user'));
+      if(userExist){
+        this.settingService.getUser(userExist.id_customer).subscribe(data => {
+          this.user = data;
+        })
+        console.log(this.newUserInfo);
+      }else{
+        this.navCtrl.push('LoginPage');
+      }
+      loader.dismiss();
     }
 
-  onSubmit(user: NgForm) {
+    //Vérifie que les mots de passe soit identiques
+    passwordMatch(control: FormGroup){
+        return control.controls['password'].value === control.controls['passwordConfirmation'].value ? null : {'mismatch': true};
+    }
+
+    onSubmit(user: NgForm){
+    let loader = this.loadingCtrl.create({
+      content:'please wait...'
+    })
+    loader.present();
+    console.log(this.newUserInfo);
+    if(this.checkIfFieldsAreEmpty()){
+      loader.dismiss();
+      console.log("form vide");
+    }else{
+      if(this.newUserInfo.value.firstName)
+        this.user.customer.firstname = this.newUserInfo.value.firstName;
+
+      if(this.newUserInfo.value.lastName)
+        this.user.customer.lastname = this.newUserInfo.value.lastName;
+
+      if(this.newUserInfo.value.email)
+        this.user.customer.email = this.newUserInfo.value.email;
+
+      if(this.newUserInfo.value.password && this.newUserInfo.value.passwordConfirmation)
+        this.user.customer.passwd = this.newUserInfo.value.password;
+
+      console.log(this.user);
+
+      this.settingService.putUser(this.user.customer.id,this.user).subscribe(data => {
+        console.log(data);
+        loader.dismiss();
+      })
+    }
+
+    }
+
+ /* onSubmit(user: NgForm) {
     let loader = this.loadingCtrl.create({
       content:'please wait...'
     })
@@ -114,8 +164,21 @@ export class Settings {
         this.createToaster('user information updated',3000);  
     })
     }
-  }
+  }*/
+  checkIfFieldsAreEmpty(){
+    if(this.newUserInfo.value.firstName)
+      return false;
 
+    if(this.newUserInfo.value.lastName)
+      return false;
+
+    if(this.newUserInfo.value.email)
+      return false;
+
+    if(this.newUserInfo.value.password && this.newUserInfo.value.passwordConfirmation)
+      return false;
+    return true;
+  }
 
     readUrl(event) {
         if (event.target.files && event.target.files[0]) {

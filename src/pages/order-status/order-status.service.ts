@@ -20,7 +20,7 @@ export class OrderStatusService {
         })
 
             .map((data: Response) => data.json() || {})
-            .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     }
 
 }

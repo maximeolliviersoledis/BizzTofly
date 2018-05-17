@@ -55,12 +55,12 @@ export class ProductDetailsPage {
         if (this.cartItems != null) {
             this.noOfItems = this.cartItems.length;
         }
-        this.storage.get('favourite').then((favourite) => {
+       /* this.storage.get('favourite').then((favourite) => {
             this.favourites = favourite;
         })
         this.storage.get('favourite').then((favourites) => {
             this.favouriteItems = favourites;
-        })
+        })*/
     }
 
     ngOnInit() {
@@ -70,8 +70,9 @@ export class ProductDetailsPage {
         })
         loader.present();
         //Plus d'appel api, on passe le produit dans la navParam
-        this.productDetails = this.navParams.get('product');
-        if(this.productDetails){
+        var product = this.navParams.get('product');
+        if(product){
+            this.productDetails = product;
             let details:any=this.productDetails;
             this.initPrice = this.productDetails.price;
             let dec = Object.keys(this.productDetails.declinaisons);
@@ -82,49 +83,35 @@ export class ProductDetailsPage {
             this.productDetails.declinaisons = goodDec;
             this.product.productId = details.id;
             this.product.name = details.name;
-            this.product.price = details.price;
+            this.product.price = details.prices.specific_price;
             this.product.imageUrl = details.image;
             console.log(this.productDetails);
             loader.dismiss();
         }else{
+            if(this.productId){
+                this.productDetailsService.getMenuItemDetails(this.productId).subscribe(data => {
+                    console.log(data);
+                    this.productDetails = data ;
+                    let details:any=this.productDetails;
+                    this.initPrice = this.productDetails.price;
+                    let dec = Object.keys(this.productDetails.declinaisons);
+                    let goodDec = [];
+                    for(var d of dec){
+                        goodDec.push(this.productDetails.declinaisons[d]);
+                    }
+                    this.productDetails.declinaisons = goodDec;
+                    this.product.productId = details.id;
+                    this.product.name = details.name;
+                    this.product.price = details.price;
+                    this.product.imageUrl = details.image;
+                    console.log(this.productDetails);
+                })
+            }
             loader.dismiss();
         }
-        /*this.productDetailsService.getMenuItemDetails(this.productId)
-            .subscribe(product => {
-                loader.dismiss();
-                let details:any=product;
-                this.productDetails = product;
-                this.initPrice = this.productDetails.price;
-                let dec = Object.keys(this.productDetails.declinaisons);
-                let goodDec = [];
-                for(var d of dec){
-                    goodDec.push(this.productDetails.declinaisons[d]);
-                }
-                this.productDetails.declinaisons = goodDec;
-                this.product.productId = details.id;
-                this.product.name = details.name;
-                this.product.price = details.price;
-                this.product.imageUrl = details.image;
-                console.log(this.productDetails);
-                //this.product.ratingFlag=0;
-                //this.product.rating=0;
-            }, error => {
-                loader.dismiss();
-            })*/
-
-
-        /*if(localStorage.getItem('token')){
-           this.checkfavourite();
-       }*/
+        this.checkFavourite();
 
    }
-
-    /*checkfavourite() {
-        this.productDetailsService.checkFavourite(this.productId)
-            .subscribe(res => {
-                this.like = res.resflag;
-            })
-        }*/
 
 
         addToCart(productId) {
@@ -145,6 +132,8 @@ export class ProductDetailsPage {
         }*/
         console.log(this.itemInCart);
         console.log(this.product);
+        console.log(this.declinaison);
+
         if(!this.declinaison){
             /**Affiche un message d'erreur indiquant qu'il faut sélectionner une déclinaison avant d'ajouter un produit au panier**/
             let alert = this.alertCtrl.create({
@@ -154,7 +143,15 @@ export class ProductDetailsPage {
             });
             alert.present();
         }else{
-            this.declinaison.endPrice = parseFloat(this.product.price) + parseFloat(this.declinaison.combination.price);
+            //this.declinaison.endPrice = parseFloat(this.product.price) + parseFloat(this.declinaison.combination.price);
+            //this.declinaison.endPrice = parseFloat(this.product.price) + parseFloat(this.declinaison.combination.price);
+            var id = this.declinaison.combination.id;
+            var index =  this.productDetails.declinaisons.findIndex(function(elem){
+                return elem.id === id;
+            })
+
+            this.declinaison.endPrice = parseFloat(this.productDetails.declinaisons[index].price);
+            console.log(this.declinaison.endPrice);
             this.Cart = JSON.parse(localStorage.getItem("cartItem"));
             /**Si le panier est vide**/
             if(this.Cart ==  null){
@@ -448,7 +445,23 @@ export class ProductDetailsPage {
 
     addToFavourite(productId) {
         console.log("addFavourite appelé : "+this.productId);
-        if (localStorage.getItem('token')) {
+        if(JSON.parse(localStorage.getItem('user')).token){
+            var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
+            if(favouriteList){
+                favouriteList.push(productId);
+            }else{
+                favouriteList = [];
+                favouriteList.push(productId);
+            }
+            localStorage.setItem('favourite', JSON.stringify(favouriteList));
+            /*this.productDetailsService.addToFavourite(productId,1,1,"d5f1da826483ec93e23dabb4c6d10539").subscribe(data => {
+                console.log(data);
+            })*/
+            this.like = true;            
+        }else{
+            this.createToaster('Please login first!', 3000);
+        }
+        /*if (localStorage.getItem('token')) {
             this.productDetailsService.addToFavourite(this.productId)
             .subscribe(res => {
                 console.log("liked!!!");
@@ -457,19 +470,41 @@ export class ProductDetailsPage {
             })
         } else {
             this.createToaster('please login first!', 3000);
-        }
+        }*/
     }
 
     removeFromFavourite(productId) {
-        if (localStorage.getItem('token')) {
-            this.productDetailsService.removeToFavourite(this.productId)
-            .subscribe(res => {
-                console.log("unliked!!!");
-                this.like = false;
-                this.createToaster('removed from favourites!', 3000);
-            })
+        console.log("productId"+productId);
+        if (JSON.parse(localStorage.getItem('user')).token) {
+            var favouriteList: any [] = JSON.parse(localStorage.getItem('favourite'));
+            if(favouriteList.length == 1)
+                localStorage.removeItem('favourite');
+            else{
+                for(var i=0; i<favouriteList.length;i++){
+                    console.log(favouriteList[i]);
+                    if(favouriteList[i] == productId){
+                        console.log("if ok");
+                        favouriteList.splice(i,1);
+                    }
+                }
+                console.log(favouriteList);
+                localStorage.setItem('favourite',JSON.stringify(favouriteList));
+            }
+            this.like = false;
         }
 
+    }
+
+    checkFavourite(){
+        console.log("checkfavourite");
+        var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
+        var idProduct = this.productId;
+        console.log(this.productId);
+        if(favouriteList){
+            this.like = favouriteList.find(function(elem){
+                return elem == idProduct;
+            })
+        }
     }
 
     createToaster(message, duration) {
@@ -512,7 +547,7 @@ export class ProductDetailsPage {
 
     updateQuantity(quantity){
         console.log("Quantité : "+quantity);
-        if(quantity>0){
+        if(quantity>=0){
             this.quantity = quantity;
         }
     }
@@ -537,8 +572,5 @@ export class ProductDetailsPage {
         }
         return false;
     }
-   /* fillArray(number){
-        return Array.from(Array(number)).map((x, i) => i );
-    }*/
 }
 

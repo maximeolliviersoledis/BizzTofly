@@ -59,24 +59,29 @@ export class AddressListPage {
     },(error)=>{
       loader.dismiss();
     });*/
+    var list = this.navParams.get('addressList');
+    if(!list){
+      this.user = JSON.parse(localStorage.getItem('user'));
+      this.addressListService.getAddressList(this.user.id_customer).subscribe(data => {
+        console.log(data);
+        if(data.addresses){
+          var addressList = this.objectToArray(data.addresses);
 
-    this.user = JSON.parse(localStorage.getItem('user'));
-    console.log(this.user);
-    this.addressListService.getAddressList(this.user.id_customer).subscribe(data => {
-      console.log(data);
-      if(data.addresses){
-        var addressList = this.objectToArray(data.addresses);
-
-        for(var address of addressList){
-          console.log(address);
-          this.addressListService.getAddress(address.id).subscribe(data => {
-            this.addressList.push(data);
-            console.log(this.addressList);
-          })
+          for(var address of addressList){
+            console.log(address);
+            this.addressListService.getAddress(address.id).subscribe(data => {
+              this.addressList.push(data);
+              console.log(this.addressList);
+            })
+          }
         }
-      }
+        loader.dismiss();
+      })
+    }else{
+      this.addressList = list;
+      console.log("addressList already loaded !");
       loader.dismiss();
-    })
+    }
 
     /*this.addressListService.getAvailablePincodes().subscribe(result=>{
       console.log("pincodes-"+JSON.stringify(result));
@@ -102,14 +107,12 @@ export class AddressListPage {
       this.orderData.status='pending';
     }
 
-    
-    //Prévoir la modification d'une adresse
-    //Prévoir la suppression d'une adresse
-
-
     addAddress(){
       this.navCtrl.push("AddressPage",
-        { amountDetails:this.amountDetails });
+        { amountDetails:this.amountDetails,
+          addressList: this.addressList,
+          cartData: this.navParams.get('cartData')
+         });
     }
 
     updateLoyality(event){
@@ -150,10 +153,16 @@ export class AddressListPage {
 
 
     checkOut(){
+      console.log(this.navParams.get('cartData'));
       if(this.orderData.shippingAddress!=null){
-        this.navCtrl.push("CheckoutPage", {
-          orderData: this.orderData
-        });
+        /*this.navCtrl.push("CheckoutPage", {
+          orderData: this.orderData,
+          cartData: this.navParams.get('cartData')
+        });*/
+        this.navCtrl.push("CarrierPage", {
+          orderData: this.orderData,
+          cartData: this.navParams.get('cartData')
+        })
       }else{
         this.showAlert('Please select address.');
       }
@@ -173,8 +182,27 @@ export class AddressListPage {
       } else {
         this.showAlert('Not available for delivery at your location yet.');
       }*/
+    }
 
+    deleteAddress(addressId){
+      this.addressListService.deleteAddress(addressId).subscribe(data => {
+        console.log(data);
+        for(var i=0; i<this.addressList.length;i++){
+          if(this.addressList[i].address.id === addressId){
+            this.addressList.splice(i,1);
+          }
+        }
+      })
+    }
 
+    modifyAddress(address){
+      console.log("modify address "+address.id);
+      this.navCtrl.push("AddressPage", {
+        amountDetails:this.amountDetails,
+        cartData: this.navParams.get('cartData'),
+        addressList: this.addressList,
+        address: address
+      })
     }
 
     private showAlert(message) {

@@ -40,6 +40,7 @@ export class CategoryPage {
                             categ.name = category.category.name[0].value;
                             categ.description = category.category.description[0].value;
                             categ.level = category.category.level_depth;
+                            categ.image = this.categoryService.getUrlForImage(categ.id);
                             if(category.category.associations && category.category.associations.categories)
                                 categ.id_enfants = category.category.associations.categories;
 
@@ -97,10 +98,12 @@ export class CategoryPage {
                     console.log(category);
                     var categ: any = {};
                     categ.id = category.category.id;
-                    this.categoryService.getImageForCategory(categ.id).subscribe(image => {
+                   /* this.categoryService.getImageForCategory(categ.id).subscribe(image => {
                         //console.log(image);
-                        categ.image = image;
-                    })
+                        //categ.image = image;
+                    })*/
+                    categ.image = this.categoryService.getUrlForImage(categ.id);
+
                     categ.id_parent = category.category.id_parent;
                     categ.name = category.category.name[0].value;
                     categ.description = category.category.description[0].value;

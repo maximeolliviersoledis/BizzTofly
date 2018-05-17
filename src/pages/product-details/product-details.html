@@ -1,6 +1,6 @@
 <ion-header>
     <ion-navbar>
-        <ion-title>Restaurant</ion-title>
+        <ion-title>BizzToFly</ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
                 <ion-icon name="cart"></ion-icon>
@@ -16,9 +16,9 @@
         <img src={{productDetails.image}} alt="">
         <!-- <span clear text-center (click)="toggleFavourite()"> -->
         <ion-icon class="fav" name="heart" *ngIf="like"
-                  (click)="removeFromFavourite(productDetails.id_product)"></ion-icon>
+                  (click)="removeFromFavourite(productDetails.id)"></ion-icon>
         <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
-                  (click)="addToFavourite(productDetails.id_product)"></ion-icon>
+                  (click)="addToFavourite(productDetails.id)"></ion-icon>
     <!-- </span> -->
     </ion-row>
     <ion-row>
@@ -53,16 +53,10 @@
         <p>{{productDetails.name}}</p>
         <p>{{productDetails.description_short}}</p>
         <ion-item>
-         <ion-label>Déclinaison :</ion-label>
-            <!--<ion-select>
-                <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec[1].id}}>{{dec[1].id}}. {{dec[1].name}}</ion-option>
-            </ion-select>-->
-            
-            <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()">
+         <ion-label>Déclinaison :</ion-label>            
+            <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="Choisir une déclinaison">
                 <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec.id}}>{{dec.name}}</ion-option>
             </ion-select>
-            
-
         </ion-item>
             <div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
 

@@ -17,6 +17,11 @@ export class AddressService {
         return this.http.post(urlDir, data).map((data: Response) => data.json() || {})
     }
 
+    putAddress(addressId, body){
+        var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, body).map((data: Response) => data.json() || {})
+    }
+
     /*addAddress(body) {
         console.log("body-"+body);
          const headers = new Headers();
@@ -30,7 +35,7 @@ export class AddressService {
           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     }*/
 
-    updateAddress(addressId,address){
+    /*updateAddress(addressId,address){
          console.log("addressId-"+addressId);
          const body =address;
          console.log("body-"+JSON.stringify(body));
@@ -43,9 +48,9 @@ export class AddressService {
         })
             .map((data: Response)=> data.json()|| {})
           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
+    }*/
 
-    getAddressById(addressId){
+    /*getAddressById(addressId){
        console.log("addressId-"+addressId);
          const headers = new Headers();
          let authtoken = localStorage.getItem('token');
@@ -55,7 +60,7 @@ export class AddressService {
         })
             .map((data: Response)=> data.json()|| {})
            //.catch((error:any) => Observable.throw(error.json().error || 'Server error')); 
-    }
+    }*/
  
 
  

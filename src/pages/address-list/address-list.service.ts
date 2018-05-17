@@ -14,7 +14,7 @@ export class AddressListService {
 
     getAddressList(customerId){
         //http://www.bizztofly.com/api/addresses?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON&filter[id_customer]=55&filter[deleted]=0
-        var urlDir = this.constService.baseDir+this.constService.adresses+this.constService.keyDir+this.constService.formatDir+this.constService.filterIdCustomer+customerId;
+        var urlDir = this.constService.baseDir+this.constService.adresses+this.constService.keyDir+this.constService.formatDir+this.constService.filterIdCustomer+customerId+this.constService.filterDeleted+"0";
         const headers = new Headers();
         return this.http.get(urlDir, {
             headers: headers
@@ -28,6 +28,23 @@ export class AddressListService {
             headers: headers
         }).map((data: Response) => data.json() || {})
     }
+
+    deleteAddress(addressId){
+        var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
+        const headers = new Headers();
+        return this.http.delete(urlDir, {
+            headers: headers
+        })
+    }
+
+    putCart(cartId, body){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, body, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+     }
+
 
    /* getAddressList():Observable<Address[]> {
          const headers = new Headers();

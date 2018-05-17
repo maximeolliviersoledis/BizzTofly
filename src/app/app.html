@@ -9,7 +9,7 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <p class="user-name">Ionic3 Restaurant</p>
+        <p class="user-name">BizzToFly</p>
       </ion-col>
     </ion-row>
     <button menuClose class="menu-item" ion-item (click)="home()">
@@ -36,7 +36,7 @@
       {{'Your Orders' | translate}}
     </button>
 
-     <button menuClose class="menu-item" ion-item *ngIf="isLogin()"
+     <!--<button menuClose class="menu-item" ion-item *ngIf="isLogin()"
             (click)="bookTable()">
       <ion-icon  name="list-box" item-left></ion-icon>
       {{'Book Table' | translate}}
@@ -46,19 +46,19 @@
             (click)="bookHistory()">
       <ion-icon  name="options" item-left></ion-icon>
       {{'Booking History' | translate}}
-    </button>
+    </button>-->
 
     <button menuClose class="menu-item" ion-item *ngIf="isLogin()"
             (click)="settings()">
       <ion-icon name="settings" item-left></ion-icon>
       {{'Settings' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item
+    <!--<button menuClose class="menu-item" ion-item
             (click)="news()">
       <ion-icon name="paper" item-left></ion-icon>
-      {{'News' | translate}}
-      <!-- <ion-badge class="menu-badge">{{newsCounter}}</ion-badge> -->
-    </button>
+      {{'News' | translate}}-->
+      <!-- <ion-badge class="menu-badge">{{newsCounter}}</ion-badge> 
+    </button>-->
     <button menuClose class="menu-item" ion-item *ngIf="isLogin()"
             (click)="favourite()">
       <ion-icon name="heart" item-left></ion-icon>
@@ -75,7 +75,7 @@
       {{'About Us' | translate}}
     </button>
 
-     <button menuClose class="menu-item" ion-item *ngIf="isLogin()" (click)="invite()">
+     <!--<button menuClose class="menu-item" ion-item *ngIf="isLogin()" (click)="invite()">
       <ion-icon name="contacts" item-left></ion-icon>
       {{'Invite Friends' | translate}}
     </button>
@@ -83,7 +83,7 @@
     <button menuClose class="menu-item" ion-item *ngIf="isLogin()" (click)="chat()">
       <ion-icon name="chatbubbles" item-left></ion-icon>
       {{'Chat' | translate}}
-    </button>
+    </button>-->
     <button menuClose class="menu-item" ion-item *ngIf="!isLogin()" (click)="login()">
       <ion-icon name="log-in" item-left></ion-icon>
       {{'Login' | translate}}
@@ -108,7 +108,7 @@
     </ion-row>
     <ion-row>
       <ion-col>
-        <p class="user-name">Ionic3 Restaurant</p>
+        <p class="user-name">BizzToFly</p>
       </ion-col>
     </ion-row>
     <button menuClose class="menu-item" ion-item (click)="home()">

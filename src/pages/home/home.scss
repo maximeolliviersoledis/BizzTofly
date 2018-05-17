@@ -30,14 +30,24 @@ page-home {
     }
 
     //banner image
-    .card-title {
+    /*.card-title {
       position: absolute;
       top: 36%;
       font-size: 2.0em;
       width: 100%;
       font-weight: bold;
       color: #fff;
-    }
+    }*/
+
+    .card-title {
+      position: absolute;
+      top: 36%;
+      font-size: 0.9em;
+      white-space:pre-wrap;
+      width: 100%;
+      font-weight: bold;
+      color: #fff;
+      }
 
     /*Categories*/
 

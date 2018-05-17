@@ -39,7 +39,25 @@
   </ion-item>
   </div>
  <!--saved address list-->
- <ion-list radio-group class="address-radio">
+<ion-list radio-group class="address-radio">
+  <ion-item-sliding *ngFor="let address of addressList">
+    <ion-item>  
+      <ion-label>
+        <p class="show-address">{{address.address.firstname}} {{address.address.lastname}} </p>
+        <p class="show-address">{{address.address.address1}}</p>
+        <p class="show-address">{{address.address.city}}</p>
+        <p class="show-address">{{address.address.postcode}}</p>   
+      </ion-label> 
+          <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>   
+    </ion-item>
+    <ion-item-options>
+      <button ion-button class="continue-btn" (click)="modifyAddress(address.address)">Modify</button>
+      <button ion-button class="delete-btn" class="delete-btn" (click)="deleteAddress(address.address.id)"><ion-icon name="trash"></ion-icon>Delete</button>
+    </ion-item-options>
+  </ion-item-sliding>  
+ </ion-list>
+
+<!-- <ion-list radio-group class="address-radio">
   <ion-item  *ngFor="let address of addressList">  
     <ion-label>
       <p class="show-address">{{address.address.firstname}} {{address.address.lastname}} </p>
@@ -49,7 +67,7 @@
     </ion-label> 
         <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>   
   </ion-item>  
- </ion-list>
+ </ion-list>-->
   </div>
      <button ion-button block class="continue-btn"  (click)="checkOut()"> {{"Continue" | translate}} &nbsp;
       <ion-icon name="arrow-forward"></ion-icon>

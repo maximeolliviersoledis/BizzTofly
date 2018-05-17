@@ -11,7 +11,7 @@ export class SettingsService {
 
     }
 
-     updateUserInfo(userId,userInfo){  
+     /*updateUserInfo(userId,userInfo){  
          let body=userInfo;   
          const headers = new Headers();
          let authtoken = localStorage.getItem('token');
@@ -22,6 +22,22 @@ export class SettingsService {
         })
             .map((data: Response)=> data.json()|| {})
            // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+    getUser(userId){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+    }
+
+    putUser(userId, userInfo){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, userInfo, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
     }
 
 }

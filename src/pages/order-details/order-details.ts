@@ -22,16 +22,15 @@ export class OrderDetailsPage {
                 public service: Service,
                 public orderDetailsService: OrderDetailsService) {
 
-                this.orderId = this.navParams.get('orderId')
     }
 
 
-    ionViewDidEnter() {
+    ngOnInit() {
         this.loader =this.loadingCtrl.create({
             content:'please wait'
         })
          this.loader.present();
-        this.orderDetailsService.getOrderDetails(this.orderId)
+        /*this.orderDetailsService.getOrderDetails(this.orderId)
             .subscribe(order => {
                 this.orderDetails = order;
                 this.loader.dismiss();
@@ -39,7 +38,16 @@ export class OrderDetailsPage {
                // this.getReviews();
             },error=>{
                  this.loader.dismiss();
-            })
+            })*/
+            this.orderDetails = this.navParams.get('order');
+            this.orderId = this.orderDetails.order.id;
+            for(var i of this.orderDetails.order.associations.order_rows){
+                i.image = this.orderDetailsService.getImageUrlForProduct(i.product_id);
+            }
+            console.log(this.orderDetails);
+            console.log(this.orderDetails.order.associations);
+            this.loader.dismiss();
+
 
     }
 

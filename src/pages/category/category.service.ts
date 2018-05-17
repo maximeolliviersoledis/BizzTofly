@@ -54,4 +54,8 @@ export class CategoryService {
         })
     }
 
+    getUrlForImage(categoryId){
+        return this.constService.baseDir + "/images" + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
+    }
+
 }

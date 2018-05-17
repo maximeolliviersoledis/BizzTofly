@@ -12,31 +12,12 @@ export class FavouriteService {
                 public constService: ConstService) {
     }
 
-
-    getFavourites(userId) {
+    getProduct(productId){
         const headers = new Headers();
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/favourites/user/fav/', {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-           // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }
-
-    removeFromFavourite(productId) {
-        let productInfo: any = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'DISLIKE';
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/delete/', productInfo, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-           // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map((data: Response) => data.json() || {})
     }
 
 
