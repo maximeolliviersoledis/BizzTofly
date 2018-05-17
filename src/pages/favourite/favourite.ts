@@ -34,10 +34,12 @@ export class FavouritePage {
     favouriteList: any[] = [];
     ngOnInit() {
         this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
-        for(var favourite of this.favouriteList){
-            this.favouriteService.getProduct(favourite).subscribe(data => {
-                this.favouriteItems.push(data);
-            })
+        if(this.favouriteList && this.favouriteList.length){
+            for(var favourite of this.favouriteList){
+                this.favouriteService.getProduct(favourite).subscribe(data => {
+                    this.favouriteItems.push(data);
+                })
+            }
         }
     }
 

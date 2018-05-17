@@ -13,3 +13,14 @@
 .md{
   //Write all Android Custom code Here
 }
+
+.ion-page .searchbar{
+  	background: $primary !important;
+  	padding: 0 8px 8px 8px;
+}
+.search-results{
+	max-height: 24.5rem;
+	overflow-y: scroll;
+	position: absolute;
+	width: 100%;
+}
