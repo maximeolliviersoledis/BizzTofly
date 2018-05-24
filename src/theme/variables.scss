@@ -32,17 +32,48 @@ $light-green:#f9ae3e;
 $light-white:#888888;
 $white-a :#f3f0f0;
 $white-b :#e9e7e7;
+
 // App iOS Variables
 // --------------------------------------------------
 // iOS only Sass variables can go here
+
+$toolbar-order-ios: (
+  menu-toggle-start: 0,
+  back-button: 1,
+  buttons-left: 2,
+  content: 3,
+  buttons-start: 4,
+  buttons-end: 5,
+  buttons-right: 6,
+  menu-toggle-end: 7,);
 
 // App Material Design Variables
 // --------------------------------------------------
 // Material Design only Sass variables can go here
 
+$toolbar-order-md: (
+  menu-toggle-start: 0,
+  back-button: 1,
+  buttons-left: 2,
+  content: 3,
+  buttons-start: 4,
+  buttons-end: 5,
+  buttons-right: 6,
+  menu-toggle-end: 7,);
+
 // App Windows Variables
 // --------------------------------------------------
 // Windows only Sass variables can go here
+
+$toolbar-order-wp: (
+  menu-toggle-start: 0,
+  back-button: 1,
+  buttons-left: 2,
+  content: 3,
+  buttons-start: 4,
+  buttons-end: 5,
+  buttons-right: 6,
+  menu-toggle-end: 7,);
 
 // App Theme
 // --------------------------------------------------

@@ -14,7 +14,7 @@ import {FavouriteService} from './favourite.service';
 export class FavouritePage {
     favouriteItems: any[] = [];
     cartItems: any[] = [];
-    noOfItems: number;
+    noOfItems: number = 0;
     bg: any;
 
     constructor(public navCtrl: NavController,
@@ -26,27 +26,48 @@ export class FavouritePage {
                 public favouriteService: FavouriteService) {
 
         this.bg = 'assets/img/bg.jpg';
-        this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-        if (this.cartItems != null) {
-            this.noOfItems = this.cartItems.length;
-        }
+        this.storage.get('cart').then((data)=>{
+            this.cartItems = data;
+            if(this.cartItems){
+                for(var items of this.cartItems){
+                    this.noOfItems += items.quantity;
+                }
+            }
+        })
     }
     favouriteList: any[] = [];
     ngOnInit() {
-        this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
-        if(this.favouriteList && this.favouriteList.length){
-            for(var favourite of this.favouriteList){
-                this.favouriteService.getProduct(favourite).subscribe(data => {
-                    this.favouriteItems.push(data);
+        //this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
+        this.storage.get('user').then((userData)=>{
+            if(userData && userData.token){
+                this.favouriteService.getFavourite(userData.id_customer).subscribe(data => {
+                    console.log(data);
+                    for(var product of data){
+                        this.favouriteService.getProduct(product.id_product).subscribe(product => {
+                            this.favouriteItems.push(product);
+                        })
+                    }                    
                 })
             }
-        }
+        })
+        /*this.storage.get('favourite').then((favourite) => {
+            this.favouriteList = favourite;
+            if(this.favouriteList && this.favouriteList.length){
+                for(var favourite of this.favouriteList){
+                    this.favouriteService.getProduct(favourite).subscribe(data => {
+                        this.favouriteItems.push(data);
+                    })
+                }
+            }
+        })*/
+
     }
 
     navcart() {
         this.navCtrl.push("CartPage");
     }
 
+    //Possibilité de réellement payer sa liste de souhait grâce au module presta
     buyNow(productId) {
         this.navCtrl.push("ProductDetailsPage", {
             productId: productId
@@ -54,7 +75,19 @@ export class FavouritePage {
     }
 
     removeFromFavourites(productId){
-        console.log("remove : "+productId);
+        this.storage.get('user').then((userData)=>{
+            if(userData && userData.token){
+                this.favouriteService.removeFromFavourite(productId, 1,userData.id_customer).subscribe(data => {
+                    console.log(data);
+                    for(var i=0; i<this.favouriteItems.length;i++){
+                        if(this.favouriteItems[i].id == productId){
+                            this.favouriteItems.splice(i,1);
+                        }
+                    }
+                })
+            }
+        })
+        /*console.log("remove : "+productId);
         for(var i=0; i<this.favouriteItems.length;i++){
             if(this.favouriteItems[i].id == productId){
                 this.favouriteItems.splice(i,1);
@@ -62,9 +95,10 @@ export class FavouritePage {
 
             if(this.favouriteList[i] == productId){
                 this.favouriteList.splice(i,1);
-                localStorage.setItem('favourite',JSON.stringify(this.favouriteList));
+                //localStorage.setItem('favourite',JSON.stringify(this.favouriteList));
+                this.storage.set('favourite', this.favouriteList);
             }
-        }
+        }*/
     }
 
 
@@ -74,7 +108,7 @@ export class FavouritePage {
 
 
     isLoggedin(): boolean {
-        return JSON.parse(localStorage.getItem('user')).token ? true : false;
+        return JSON.parse(localStorage.getItem('userLoggedIn')) ? true : false;
     }
 
 

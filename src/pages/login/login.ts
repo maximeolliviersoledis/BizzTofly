@@ -7,6 +7,7 @@ import {TwitterConnect} from '@ionic-native/twitter-connect';
 import {LoginService} from './login.service';
 import {UserService} from '../../providers/user-service';
 import {SocketService } from '../../providers/socket-service';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -30,7 +31,8 @@ export class LoginPage {
         public platform: Platform,
         public loginService: LoginService,
         public userService:UserService,
-        public socketService:SocketService) {
+        public socketService:SocketService,
+        private storage:Storage) {
     }
 
     onLogin() {
@@ -44,10 +46,11 @@ export class LoginPage {
             console.log(user);
             loader.dismiss();
             if(user.token){
-                localStorage.setItem('token',user.token);
-                localStorage.setItem('user',JSON.stringify(user));
+                /*localStorage.setItem('token',user.token);
+                localStorage.setItem('user',JSON.stringify(user));*/
                 console.log(user.id_customer)
-
+                this.storage.set('user',user);
+                localStorage.setItem('userLoggedIn',JSON.stringify(true));
                 this.checkIfCartExist(user);
                 if (this.navParams.get("flag") == 0) {
                     this.navCtrl.setRoot("CartPage");
@@ -223,13 +226,36 @@ export class LoginPage {
             if(localStorage.getItem('cartItem'))
                 localStorage.removeItem('cartItem');
 
-            for(var item of cartData.cart.associations.cart_rows){
-                //console.log(item);
-                //this.getProducts(item.id_product);
-                //this.getDeclinaisons(item.id_product_attribute);
-                this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
+            if(cartData.cart && cartData.cart.associations && cartData.cart.associations.cart_rows){
+                for(var item of cartData.cart.associations.cart_rows){
+                    //console.log(item);
+                    //this.getProducts(item.id_product);
+                    //this.getDeclinaisons(item.id_product_attribute);
+                    this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
 
-                //this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
+                    //this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
+                }
+            }else{
+                console.log("Le panier trouvé est vide");
+                let alert = this.alertCtrl.create({
+                    title: "Panier trouvé",
+                    subTitle: "Le panier trouvé est vide. Souhaitez-vous tout de même le charger? (Attention, si un panier est en cours ceci le supprimera)",
+                    buttons: [
+                    {
+                        text: 'Oui',
+                        handler: () => {
+                            console.log('Oui clicked');
+                            this.storage.remove('cart');
+                        }
+                    },
+                    {
+                        text: 'Non',
+                        handler: () => {
+                        }
+                    }
+                    ]
+                });
+                alert.present();
             }
 
             //console.log(this.products);
@@ -283,7 +309,8 @@ export class LoginPage {
 
                         console.log(product);
                         this.cart.push(product);
-                        localStorage.setItem('cartItem',JSON.stringify(this.cart));
+                        //localStorage.setItem('cartItem',JSON.stringify(this.cart));
+                        this.storage.set('cart',this.cart);
                     })
                 }
             })
@@ -291,7 +318,8 @@ export class LoginPage {
             this.loginService.getMenuItemDetails(productId).subscribe(data => {
                 this.products.push(data);
                 this.cart.push(product);
-                localStorage.setItem('cartItem',JSON.stringify(this.cart));
+                //localStorage.setItem('cartItem',JSON.stringify(this.cart));
+                this.storage.set('cart',this.cart);
             })
         }else{
             console.log("Cart was empty");

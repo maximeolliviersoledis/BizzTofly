@@ -15,63 +15,65 @@ var ProductDetailsService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
+    /*getMenuItemDetails(menuItemId) {
+        const headers = new Headers();
+        return this.http.get(this.constService.base_url + 'api/menuItems/' + menuItemId, {
+            headers: headers
+        })
+
+            .map((data: Response) => data.json() || {})
+        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
     ProductDetailsService.prototype.getMenuItemDetails = function (menuItemId) {
         var headers = new Headers();
-        return this.http.get(this.constService.base_url + 'api/menuItems/' + menuItemId, {
+        // var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + user_id;;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
             headers: headers
         })
             .map(function (data) { return data.json() || {}; });
         //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     };
-
-    ProductDetailsService.prototype.getDeclinaisons = function (declinaisonId){
-        var headers = new Headers;
-        return this.http.get(this.constService.baseDir+this.constService.combinationDir+"/"+declinaisonId+this.constService.keyDir+this.constService.formatDir;,{
-            headers: headers
-        })
-            .map(function (data) { return data.json() || {};});
-    }
-
-    ProductDetailsService.prototype.addToFavourite = function (productId) {
-        var productInfo = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'LIKE';
+    ProductDetailsService.prototype.getDeclinaisons = function (declinaisonId) {
         var headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites', productInfo, {
+        var urlDir = this.constService.baseDir + this.constService.combinationDir + "/" + declinaisonId + this.constService.keyDir + this.constService.formatDir;
+        //var urlDir = "http://www.bizztofly.com/api/combinations/"+declinaisonId+"?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON";
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
     };
-    ProductDetailsService.prototype.removeToFavourite = function (productId) {
-        var productInfo = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'DISLIKE';
+    /* addToFavourite(productId, productAttributeId, quantity, token){
+         const headers = new Headers();
+         var urlDir = "http://www.bizztofly.com/modules/blockwishlist/cart.php?action=add&id_product="+productId+"&quantity="+quantity+"&token="+token+"&id_product_attribute="+productAttributeId+"&id_wishlist=undefined&_=1526561392412"
+         return this.http.get(urlDir, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }*/
+    ProductDetailsService.prototype.addToFavourite = function (productId, attributeProductId, customerId, quantity) {
         var headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/delete/', productInfo, {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir
+            + this.constService.idProduct + productId + this.constService.idProductAttribute + attributeProductId + this.constService.idCustomer + customerId +
+            this.constService.quantity + quantity + this.constService.action + "add";
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
     };
-    ProductDetailsService.prototype.checkFavourite = function (productId) {
-        var productInfo = {};
-        productInfo.menuItem = productId;
+    ProductDetailsService.prototype.removeFromFavourite = function (productId, productAttributeId, customerId) {
         var headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/check', productInfo, {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir +
+            this.constService.idProduct + productId + this.constService.idProductAttribute + productAttributeId + this.constService.idCustomer + customerId +
+            this.constService.action + "remove";
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
+    };
+    ProductDetailsService.prototype.getFavouriteList = function (customerId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir +
+            this.constService.idCustomer + customerId;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     ProductDetailsService = __decorate([
         Injectable(),

@@ -1,7 +1,42 @@
 <ion-header>
-    <ion-navbar>
-        <ion-title>Category</ion-title>
-    </ion-navbar>
+  <ion-navbar>
+    <button ion-button menuToggle start>
+      <ion-icon name="menu"></ion-icon>
+  </button>
+      <ion-buttons end>
+        <button ion-button icon-only color="royal" (click)="showSearchBar()"><ion-icon name="search"></ion-icon></button>
+        <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
+          <ion-icon name="cart"></ion-icon>
+          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+        </button>
+      </ion-buttons>
+  <ion-title>Category</ion-title>
+</ion-navbar>
+<div *ngIf="displaySearchBar">
+    <ion-searchbar 
+    [(ngModel)]="searchInput"
+    [showCancelButton]="true"
+    (ionInput)="onSearch($event)"
+    (ionCancel)="offSearch($event)"
+    (ionFocus)="onFocus($event)"
+    animated="true"
+    autocomplete="on"
+    placeholder="{{searchPlaceholder}}">
+</ion-searchbar>
+<div *ngIf="searching" class="spinner-container">
+    <ion-spinner></ion-spinner>
+</div>
+<ion-list *ngIf="displayLastSearch" class="search-results">
+    <ion-item *ngFor="let search of lastSearch" (click)="completeUserInput(search)">
+      {{search}}
+  </ion-item>
+</ion-list>
+<ion-list *ngIf="searchResults" class="search-results">
+    <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id, searchResult.name)">
+      {{searchResult.name}}
+  </ion-item>
+</ion-list>
+</div>
 </ion-header>
 
 <ion-content>

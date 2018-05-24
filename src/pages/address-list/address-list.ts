@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams,LoadingController,AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,LoadingController,AlertController, ToastController } from 'ionic-angular';
 import { AddressListService } from './address-list.service';
 import { UserService } from '../../providers/user-service';
-
+import {Storage} from '@ionic/storage';
 @IonicPage()
 @Component({
   selector: 'page-address-list',
@@ -15,8 +15,11 @@ export class AddressListPage {
   orderData:any={ };
   showAddress: boolean = false;
   selectedAddress:any={};
-  header_data:any;
+  header_data:any;    
+  /*reductions: any[] = [];
+  reductionInput: String;*/
   user: any = {};
+  manageAddress: boolean = false;
   public amountDetails:any={};
   public pincodes:Array<any>;
   public pincode_matched:boolean=false;
@@ -34,7 +37,9 @@ export class AddressListPage {
     public loadingCtrl:LoadingController,
     public alertCtrl:AlertController,
     private userService:UserService,
-    private addressListService:AddressListService) {
+    private addressListService:AddressListService,
+    private storage:Storage,
+    public toastCtrl: ToastController) {
 
     this.amountDetails=this.navParams.get('amountDetails');
     this.orderData.grandTotal=this.amountDetails.grandTotal;
@@ -43,8 +48,15 @@ export class AddressListPage {
     this.orderData.taxAmount=this.amountDetails.tax;
     this.orderData.couponDiscountPercentage=this.amountDetails.couponDiscount;
     this.orderData.deductedAmountByCoupon=this.amountDetails.deductedPrice;
-    this.orderData.cart=JSON.parse(localStorage.getItem("cartItem"));
-    this.header_data = {ismenu: false , isHome:false, isCart: true,isSearch:false, title: 'Delivery Options'};
+    this.storage.get('cart').then((cartData)=>{
+      this.orderData.cart = cartData;
+    })
+    this.manageAddress = this.navParams.get('manageAddress');
+    if(!this.manageAddress){
+      this.manageAddress = false;
+    }
+    let pageTitle = this.manageAddress ? "Manage address" : "Delivery Options";
+    this.header_data = {ismenu: false , isHome:false, isCart: true,isSearch:false, title: pageTitle};
   }
 
   ngOnInit() {
@@ -52,30 +64,29 @@ export class AddressListPage {
       content:'please wait'
     })
     loader.present();
-    /*this.addressListService.getAddressList()
-    .subscribe(response=>{
-      this.addressList=response;
-      loader.dismiss();
-    },(error)=>{
-      loader.dismiss();
-    });*/
+
     var list = this.navParams.get('addressList');
     if(!list){
-      this.user = JSON.parse(localStorage.getItem('user'));
-      this.addressListService.getAddressList(this.user.id_customer).subscribe(data => {
-        console.log(data);
-        if(data.addresses){
-          var addressList = this.objectToArray(data.addresses);
+      this.storage.get('user').then((data)=>{
+        this.user = data;
+        /*this.addressListService.getReduction(this.user.id_customer).subscribe(reduction => {
+          this.reductions = reduction;
+        })*/
+        this.addressListService.getAddressList(this.user.id_customer).subscribe(data => {
+          console.log(data);
+          if(data.addresses){
+            var addressList = this.objectToArray(data.addresses);
 
-          for(var address of addressList){
-            console.log(address);
-            this.addressListService.getAddress(address.id).subscribe(data => {
-              this.addressList.push(data);
-              console.log(this.addressList);
-            })
+            for(var address of addressList){
+              console.log(address);
+              this.addressListService.getAddress(address.id).subscribe(data => {
+                this.addressList.push(data);
+                console.log(this.addressList);
+              })
+            }
           }
-        }
-        loader.dismiss();
+          loader.dismiss();
+        })
       })
     }else{
       this.addressList = list;
@@ -222,6 +233,34 @@ export class AddressListPage {
       return array;
     }
 
-
+    createToaster(message, duration) {
+        let toast = this.toastCtrl.create({
+            message: message,
+            duration: duration
+        });
+        toast.present();
+    }
+    
+    /*checkReduction(){
+        if(this.reductionInput){
+            var reductionMatch = false;
+            for(var availableReduction of this.reductions){
+                if(this.reductionInput === availableReduction.code){
+                    this.addressListService.applyReduction(this.user.id_customer, this.navParams.get('cartData').cart.id, availableReduction.id_cart_rule).subscribe(data => {
+                        console.log(data);
+                    })
+                    reductionMatch = true;
+                    break;
+                }
+            }
+            if(reductionMatch){
+                this.createToaster("Bon de réduction appliqué avec succès !",3000);
+            }else{
+                this.createToaster("Aucune réduction correspondant à ce code n'a été trouvée",3000);
+            }
+        }else{
+            this.createToaster("Veuillez saisir un code de réduction",3000);
+        }
+    }*/
 
   }

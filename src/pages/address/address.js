@@ -16,35 +16,48 @@ var AddressPage = /** @class */ (function () {
         this.navParams = navParams;
         this.loadingCtrl = loadingCtrl;
         this.addressService = addressService;
+        /*address={
+          userName:'',
+          homeNumber:'',
+          apartmentName:'',
+          mobileNo:'',
+          landmark:'',
+          city:'',
+          state:'',
+          pincode:''
+        };*/
+        /* Possibilité d'ajouter un numéro de téléphone */
         this.address = {
-            userName: '',
-            homeNumber: '',
-            apartmentName: '',
-            mobileNo: '',
-            landmark: '',
-            city: '',
-            state: '',
-            pincode: ''
+            address: {
+                firstname: '',
+                lastname: '',
+                address1: '',
+                address2: '',
+                postcode: '',
+                id_country: 8,
+                id_customer: 0,
+                city: '',
+                alias: ''
+                //phone: ''
+                //phone_mobile: ''
+            }
         };
-        this.orderData = this.navParams.get('orderData');
+        //this.orderData=this.navParams.get('orderData');
     }
     AddressPage.prototype.ngOnInit = function () {
-        var _this = this;
-        if (this.navParams.get('selectedAddress')) {
-            this.selectedAddress = this.navParams.get('selectedAddress');
-            if (this.selectedAddress._id) {
-                this.addressService.getAddressById(this.selectedAddress._id)
-                    .subscribe(function (response) {
-                    _this.address.userName = response.userName;
-                    _this.address.homeNumber = response.homeNumber;
-                    _this.address.apartmentName = response.apartmentName;
-                    _this.address.landmark = response.landmark;
-                    _this.address.city = response.city;
-                    _this.address.state = response.state;
-                    _this.address.pincode = response.pincode;
-                    _this.address.mobileNo = response.mobileNo;
-                });
-            }
+        this.selectedAddress = this.navParams.get('address');
+        console.log(this.selectedAddress);
+        if (this.selectedAddress) {
+            this.address.address.id = this.selectedAddress.id;
+            this.address.address.firstname = this.selectedAddress.firstname;
+            this.address.address.lastname = this.selectedAddress.lastname;
+            this.address.address.address1 = this.selectedAddress.address1;
+            this.address.address.address2 = this.selectedAddress.address2;
+            this.address.address.postcode = this.selectedAddress.postcode;
+            this.address.address.id_country = this.selectedAddress.id_country;
+            this.address.address.id_customer = this.selectedAddress.id_customer;
+            this.address.address.city = this.selectedAddress.city;
+            this.address.address.alias = this.selectedAddress.alias;
         }
     };
     AddressPage.prototype.onSubmitAddress = function () {
@@ -53,28 +66,66 @@ var AddressPage = /** @class */ (function () {
             content: 'please wait'
         });
         loader.present();
-        if (this.navParams.get('selectedAddress')) {
-            this.addressService.updateAddress(this.selectedAddress._id, this.address)
-                .subscribe(function (response) {
+        var addressList = this.navParams.get('addressList');
+        if (this.navParams.get('address')) {
+            this.addressService.putAddress(this.address.address.id, this.address).subscribe(function (data) {
+                for (var i = 0; i < addressList.length; i++) {
+                    if (addressList[i].address.id === _this.address.address.id) {
+                        addressList[i] = data;
+                        console.log(addressList[i]);
+                        break;
+                    }
+                }
+                console.log(addressList);
                 loader.dismiss();
-                _this.navCtrl.push("CheckoutConfirmPage", { selectedAddress: response,
-                    orderData: _this.orderData
+                _this.navCtrl.push('AddressListPage', {
+                    amountDetails: _this.navParams.get('amountDetails'),
+                    cartData: _this.navParams.get('cartData'),
+                    addressList: addressList
                 });
-            }, function (error) {
-                loader.dismiss();
             });
         }
         else {
-            this.addressService.addAddress(this.address)
-                .subscribe(function (response) {
+            var user = JSON.parse(localStorage.getItem('user'));
+            this.address.address.id_customer = user.id_customer;
+            console.log(this.address);
+            this.addressService.addAddress(this.address).subscribe(function (data) {
+                addressList.push(data);
                 loader.dismiss();
-                _this.navCtrl.push("AddressListPage", {
-                    amountDetails: _this.navParams.get('amountDetails')
+                _this.navCtrl.push('AddressListPage', {
+                    amountDetails: _this.navParams.get('amountDetails'),
+                    cartData: _this.navParams.get('cartData'),
+                    addressList: addressList
                 });
-            }, function (error) {
-                loader.dismiss();
             });
         }
+        /*let loader =this.loadingCtrl.create({
+          content:'please wait'
+        })
+        loader.present();
+        if(this.navParams.get('selectedAddress')){
+          this.addressService.updateAddress(this.selectedAddress._id,this.address)
+          .subscribe(response=>{
+            loader.dismiss();
+            this.navCtrl.push("CheckoutConfirmPage",
+              { selectedAddress:response,
+                orderData:this.orderData
+              });
+          },(error)=>{
+            loader.dismiss();
+          })
+        } else {
+          this.addressService.addAddress(this.address)
+          .subscribe(response=>{
+            loader.dismiss();
+            this.navCtrl.push("AddressListPage",{
+              amountDetails:this.navParams.get('amountDetails')
+            });
+
+          },(error)=>{
+            loader.dismiss();
+          })
+        }*/
     };
     AddressPage.prototype.confirm = function () {
         this.navCtrl.push("CheckoutConfirmPage");

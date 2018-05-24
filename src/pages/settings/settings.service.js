@@ -15,17 +15,31 @@ var SettingsService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    SettingsService.prototype.updateUserInfo = function (userId, userInfo) {
-        var body = userInfo;
-        var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
+    /*updateUserInfo(userId,userInfo){
+        let body=userInfo;
+        const headers = new Headers();
+        let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
         headers.append('Content-Type', 'application/json');
-        return this.http.put(this.constService.base_url + 'api/users/' + userId, body, {
+       return this.http.put(this.constService.base_url+'api/users/'+userId,body,{
+           headers: headers
+       })
+           .map((data: Response)=> data.json()|| {})
+          // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+   }*/
+    SettingsService.prototype.getUser = function (userId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
+    };
+    SettingsService.prototype.putUser = function (userId, userInfo) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, userInfo, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     SettingsService = __decorate([
         Injectable(),

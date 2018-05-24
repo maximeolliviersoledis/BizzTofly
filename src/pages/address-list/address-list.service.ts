@@ -45,6 +45,23 @@ export class AddressListService {
         }).map((data: Response) => data.json() || {})
      }
 
+    getReduction(customerId, cartId = null){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.reductionDir + "/" +  customerId + this.constService.keyDir + this.constService.formatDir + this.constService.idCart + cartId;
+         return this.http.get(urlDir, {
+             headers: headers
+         }).map((data: Response)=> data.json() || {})
+     }
+
+     applyReduction(customerId, cartId, cartRuleId){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.reductionDir + "/" + customerId + this.constService.keyDir + this.constService.formatDir
+         + this.constService.idCart + cartId + this.constService.idCartRule + cartRuleId + this.constService.action + "apply";
+         return this.http.get(urlDir, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
+
 
    /* getAddressList():Observable<Address[]> {
          const headers = new Headers();

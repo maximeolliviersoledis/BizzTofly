@@ -1,6 +1,7 @@
 import {Component} from "@angular/core";
 import {IonicPage, AlertController, NavParams, NavController, PopoverController, ToastController} from "ionic-angular";
 import {CartService} from './cart.service';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -9,44 +10,64 @@ import {CartService} from './cart.service';
     providers:[CartService]
 })
 export class CartPage {
-    cartItems: any[] = [];
+    cartItems: any[];
     subTotalPrice: number;
     taxAmount: number=0;
     otherTaxes: number;
     grandTotal: number;
-    noOfItems: number;
+    noOfItems: number = 0;
     couponDiscount:number=0;
     deductedPrice: number;
     coupons:Array<string>;
     promotion: any[] = [];
+    reductions: any[] = [];
+    reductionInput: String;
     cartData: any = {};
+    user: any = {};
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 public alertCtrl: AlertController,
                 public popoverCtrl: PopoverController,
                 public toastCtrl: ToastController,
-                private cartService:CartService) {
+                private cartService:CartService,
+                private storage:Storage) {
 
         console.log(navParams.get('product'));
 
-        this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+        //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
     }
 
     ngOnInit(){
         console.log("ngOnInit() panier appelé");
-         if (this.cartItems != null) {
-             console.log(this.cartItems);
-            this.noOfItems = this.cartItems.length;
-            this.cartService.getCoupons().subscribe(coupons=>{
-            this.coupons=coupons;
+        this.storage.get('cart').then((data)=>{
+            this.cartItems = data;
 
-            this.getPromotion();
-            console.log(this.promotion);
-            this.calculatePrice();
+            if (this.cartItems != null) {
+                console.log(this.cartItems);
+                //this.noOfItems = this.cartItems.length;
+                for(var items of this.cartItems){
+                    this.noOfItems += items.quantity
+                }
+                /*this.cartService.getCoupons().subscribe(coupons=>{
+                    this.coupons=coupons;
+
+                    this.getPromotion();
+                    console.log(this.promotion);
+                    this.calculatePrice();
+                })*/
+            }
+            if(this.cartItems)
+                this.calculatePrice();
+            this.storage.get('user').then((data)=>{
+                this.user = data;
+                if(this.user){
+                    this.cartService.getReduction(data.id_customer).subscribe(reduction => {
+                        this.reductions = reduction;
+                    })
+                }
+            })
         })
-        }
-        
     }
 
     /*deleteItem(data) {
@@ -81,12 +102,17 @@ export class CartPage {
         }
 
         if(this.cartItems.length == 0){
-            localStorage.removeItem('cartItem');
+            //localStorage.removeItem('cartItem');
+            this.storage.remove('cart');
             this.noOfItems = null;
         }else{
             this.calculatePrice();
-            localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
-            this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+            //localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
+            this.storage.set('cart',this.cartItems);
+            //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+            this.storage.get('cart').then((data)=>{
+                this.cartItems = data;
+            })
             this.noOfItems = this.noOfItems - 1;
         }
         this.applyCoupon();
@@ -149,17 +175,7 @@ export class CartPage {
 
         //Il faudrait pouvoir récupérer toutes les promos et garde seulement celles qui sont encores actives
         //Ou directement récupérer les promos atives (le serveur s'occupe du traitement)
-        this.cartService.getSpecificPrices(16).subscribe( res => {
-            console.log(res);
-            this.promotion.push(res);
-            /*(res.specific_price.id_specific_price_rule > 0){
-                //Utile de récupérer la règle de la promotion ???
-                this.cartService.getSpecificPriceRules(res.specific_price.id_specific_price_rule).subscribe( spec_rule => {
-                    console.log(spec_rule);
-                })
-            }*/
-        })
-        this.cartService.getSpecificPrices(54).subscribe( res => {
+        /*this.cartService.getSpecificPrices(54).subscribe( res => {
             console.log(res);
             this.promotion.push(res);
         })        
@@ -170,10 +186,10 @@ export class CartPage {
         this.cartService.getSpecificPrices(35).subscribe( res => {
             console.log(res);
             this.promotion.push(res);
-        })
+        })*/
     }
 
-    checkout() {
+    /*checkout() {
       let amountDetails:any={};
        amountDetails.grandTotal=this.grandTotal;
        amountDetails.subTotal=this.subTotalPrice;
@@ -212,6 +228,48 @@ export class CartPage {
       }); 
      }
 
+    }*/
+
+
+    checkout() {
+        let amountDetails:any={};
+        amountDetails.grandTotal=this.grandTotal;
+        amountDetails.subTotal=this.subTotalPrice;
+        amountDetails.tax=this.taxAmount;
+        amountDetails.couponDiscount=this.couponDiscount;
+        amountDetails.deductedPrice=this.deductedPrice;
+        this.storage.get('user').then((user)=>{
+            if(user.token){
+                console.log(this.cartItems);
+                var panier = this.sendCart(user.id_customer);
+                var idCartData = localStorage.getItem('id_cart');
+                if(idCartData){
+                    console.log(panier);
+                    this.cartService.putCart(idCartData, panier).subscribe(data => {
+                        console.log(data);                
+                        this.navCtrl.push("AddressListPage",{
+                            amountDetails:amountDetails,
+                            cartData: data  
+                        }); 
+                    })
+                }else{
+                    this.cartService.postCart(panier).subscribe(data => {
+                        console.log(data);
+                        localStorage.setItem('id_cart',data.cart.id);          
+                        this.navCtrl.push("AddressListPage",{
+                            amountDetails:amountDetails,
+                            cartData: data  
+                        }); 
+                    })
+
+                }
+            } else {
+                this.navCtrl.push("LoginPage",{
+                    amountDetails:amountDetails,
+                    flag:0
+                }); 
+            }
+        })
     }
 
     calculatePrice() {
@@ -226,8 +284,10 @@ export class CartPage {
                 this.applyReduction();
             }
         }
-        this.taxAmount = Number(((5 / 100) * this.subTotalPrice).toFixed(2));
-        this.grandTotal = Number((this.subTotalPrice + this.taxAmount).toFixed(2));
+        /*this.taxAmount = Number(((5 / 100) * this.subTotalPrice).toFixed(2));
+        this.grandTotal = Number((this.subTotalPrice + this.taxAmount).toFixed(2));*/
+        this.grandTotal = this.subTotalPrice;
+        this.taxAmount = Number((this.grandTotal - this.grandTotal * 0.80).toFixed(2));
 
         /*let proGrandTotalPrice = 0;
         for (let i = 0; i <= this.cartItems.length; i++) {
@@ -258,11 +318,10 @@ export class CartPage {
                         if(this.cartItems[i].declinaison[j].combination.id == dataDeclinaison.combination.id){
                            this.cartItems[i].declinaison[j].selectedQuantity = dataDeclinaison.selectedQuantity;
                            this.cartItems[i].quantity += 1;
-                           localStorage.setItem('cartItem',JSON.stringify(this.cartItems));
+                           this.storage.set('cart',this.cartItems);
                            break;
                         }
                     }
-
                 }
             }
         }else{
@@ -273,6 +332,7 @@ export class CartPage {
             });
             alert.present();
         }
+        this.noOfItems++;
         this.calculatePrice();
         this.applyCoupon();
        // this.applyReduction();
@@ -304,8 +364,11 @@ export class CartPage {
                 return elem.combination.id == data.combination.id;
             });
             this.cartItems[index].declinaison[indexOfDec].selectedQuantity -= 1;
-            localStorage.setItem('cartItem',JSON.stringify(this.cartItems));            
+            this.cartItems[index].quantity--;
+            //localStorage.setItem('cartItem',JSON.stringify(this.cartItems));      
+            this.storage.set('cart',this.cartItems);      
         }
+        this.noOfItems--;
         this.calculatePrice();
         this.applyCoupon();
         //this.applyReduction();
@@ -337,7 +400,9 @@ export class CartPage {
     }
 
     isCart(): boolean {
-        return localStorage.getItem('cartItem') == null || this.cartItems.length == 0 ? false : true;
+        return this.cartItems == null || this.cartItems.length == 0 ? false : true;
+        //return localStorage.getItem('cartItem') == null || this.cartItems.length == 0 ? false : true;
+        //return localStorage.getItem('id_cart') == null || this.cartItems.length ==0 ? false : true;
     }
 
     gotoHome() {
@@ -347,10 +412,112 @@ export class CartPage {
     deleteAllItem(){
         //Si on delete tout et qu'on fait un retour arrière avec la fléche, et qu'on ajoute un article dans le panier, les anciens aricles sont encore présents dans le panier
         this.cartItems.splice(0,this.cartItems.length);
-        localStorage.removeItem('cartItem');
+       // localStorage.removeItem('cartItem');
+       this.storage.remove('cart');
+
+       if(localStorage.getItem('id_cart')){
+           var customerId = this.user.id_customer;
+           this.cartService.putCart(localStorage.getItem('id_cart'),this.sendCart(customerId)).subscribe(data => {
+               console.log(data);
+           })
+       }
     }
 
-    sendCart(){
+    sendCart(customerId){
+        var id_cart = JSON.parse(localStorage.getItem('id_cart'));
+        if(id_cart){
+                console.log("panier existant");
+                var modif = {
+                    cart: {
+                        id: id_cart,
+                        id_shop_group: null, 
+                        id_shop: null,
+                        id_address_delivery: null,
+                        id_address_invoice: null,
+                        id_carrier: 0,
+                        id_currency: 1,
+                        id_customer: customerId,
+                        id_guest: null,
+                        id_lang: 1,
+                        recyclable: null,
+                        gift: null,
+                        gift_message: null,
+                        mobile_theme: null,
+                        delivery_option: null,
+                        secure_key: null,
+                        allow_seperated_package: 0,
+                        date_add: null,
+                        date_upd: null,
+                        associations: {
+                            cart_rows: {
+                                cart_row: []
+                            }
+                        }
+                    }
+                };
+                for(var items of this.cartItems){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        modif.cart.associations.cart_rows.cart_row.push(product);
+                    }
+                }
+                console.log(modif);
+                return modif;
+
+        }else{
+                console.log(customerId);
+                var panier = {
+                    cart: 
+                    {
+                        id_shop_group: null, 
+                        id_shop: null,
+                        id_address_delivery: null,
+                        id_address_invoice: null,
+                        id_carrier: 0,
+                        id_currency: 1,
+                        id_customer: customerId,
+                        id_guest: null,
+                        id_lang: 1,
+                        recyclable: null,
+                        gift: null,
+                        gift_message: null,
+                        mobile_theme: null,
+                        delivery_option: null,
+                        secure_key: null,
+                        allow_seperated_package: 0,
+                        date_add: null,
+                        date_upd: null,
+                        associations: {
+                            cart_rows: {
+                                cart_row: []
+                            }
+                        }
+                    }
+                };
+                for(var items of this.cartItems){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        panier.cart.associations.cart_rows.cart_row.push(product);
+                    }
+                }
+                console.log(panier);
+                return panier;
+        }
+    }
+
+    /*sendCart(){
         var id_cart = JSON.parse(localStorage.getItem('id_cart'));
         if(id_cart){
             var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
@@ -397,10 +564,7 @@ export class CartPage {
             }
             console.log(modif);
             return modif;
-           /*this.cartService.putCart(id_cart,modif).subscribe(data => {
-                console.log(data);
-                this.cartData = data;
-            })*/
+
 
         }else{
             var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
@@ -447,10 +611,32 @@ export class CartPage {
             }
             console.log(panier);
             return panier;
-            /*this.cartService.postCart(panier).subscribe(data => {
-                console.log(data);
-                this.cartData = data;
-            })*/
+
+        }
+    }*/
+    checkReduction(){
+        if(this.reductionInput){
+            var reductionMatch = false;
+            var reductionApplied = false;
+            for(var availableReduction of this.reductions){
+                if(this.reductionInput === availableReduction.code){
+                    this.cartService.applyReduction(this.user.id_customer, localStorage.getItem('id_cart'), availableReduction.id_cart_rule).subscribe(data => {
+                        console.log(data);
+                        reductionApplied = data;
+                    })
+                    reductionMatch = true;
+                    break;
+                }
+            }
+            if(reductionApplied){
+                this.createToaster("Bon de réduction appliqué avec succès !",3000);
+            }else if(!reductionMatch){
+                this.createToaster("Aucune réduction correspondant à ce code n'a été trouvée !",3000);
+            }else{
+                this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);
+            }
+        }else{
+            this.createToaster("Veuillez saisir un code de réduction",3000);
         }
     }
 }

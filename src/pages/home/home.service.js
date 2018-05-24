@@ -18,30 +18,26 @@ var HomeService = /** @class */ (function () {
     HomeService.prototype.getCategories = function () {
         var headers = new Headers();
         var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/0" + this.constService.keyDir + this.constService.formatDir;
-        alert(this.constService.categoryDir);
-        // var urlDir = "http://www.bizztofly.com/api-soledis/categories_listing/0?&filter[user]=0";
         return this.http.get(urlDir, {
             headers: headers
         }).map(function (data) { return data.json() || {}; });
     };
-    /*getCategories() {
-        const headers = new Headers();
-        return this.http.get(this.constService.base_url + 'api/categories', {
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-
-            //.map((data: Response) => data.json())
-    }*/
-    HomeService.prototype.getUpcomings = function () {
+    HomeService.prototype.getImageUrlForCategory = function (categoryId) {
+        return this.constService.baseDir + this.constService.imageDir + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
+    };
+    HomeService.prototype.getSlideCategorie = function () {
         var headers = new Headers();
-        return this.http.get(this.constService.base_url + 'api/upcomings', {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/14" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-        //.map((data: Response) => data.json())
+        }).map(function (data) { return data.json() || {}; });
+    };
+    HomeService.prototype.getAccueilProduct = function () {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     HomeService = __decorate([
         Injectable(),

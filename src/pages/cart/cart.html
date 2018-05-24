@@ -1,5 +1,8 @@
 <ion-header>
-    <ion-navbar>
+  <ion-navbar>
+    <button ion-button menuToggle start>
+      <ion-icon name="menu"></ion-icon>
+    </button>
         <ion-title>{{'Cart' |translate}}</ion-title>
         <ion-buttons end>
             <button ion-button icon-only color="royal"  class="header-btn-cart">
@@ -60,9 +63,9 @@
                 <div *ngIf="deductedPrice">
                     <p class="bill-detail">{{'Deducted Price' | translate}} <span> - ${{deductedPrice | number:'.2-2'}}</span></p>
                 </div>
-                <p class="bill-detail">{{"Total VAT" | translate}}(5%) <span> ${{taxAmount | number:'.2-2'}}</span></p>
+                <p class="bill-detail">{{"Total VAT" | translate}}(20%) <span> ${{taxAmount | number:'.2-2'}}</span></p>
                 <hr>
-                <ion-row>
+               <!-- <ion-row>
                     <ion-col col-4>
                         <p class="bill-detail">{{'Apply Coupon' | translate}}</p>
                     </ion-col>
@@ -79,7 +82,18 @@
                     </ion-col>
 
                 </ion-row>
-                <p class="coupon-applied" *ngIf="deductedPrice">Coupon Applied.</p>
+                <p class="coupon-applied" *ngIf="deductedPrice">Coupon Applied.</p>-->
+                <ion-row>
+                    <ion-label>{{"Code de réduction" | translate}}</ion-label>
+                    <ion-col col-6>
+                        <ion-item>      
+                            <ion-input type="text" [(ngModel)]="reductionInput" placeholder="Saisisser ici le code de réduction"></ion-input>
+                        </ion-item>
+                    </ion-col>
+                    <ion-col col-6>
+                        <button ion-button (click)="checkReduction()">Envoyer</button>
+                    </ion-col>
+                </ion-row>
                 <p class="cart-total"><strong>{{'Order Total' | translate}} </strong><span
                         class="price">${{grandTotal | number:'.2-2'}}</span>
                 </p>

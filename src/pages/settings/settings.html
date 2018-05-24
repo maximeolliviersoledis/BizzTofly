@@ -1,15 +1,18 @@
 <ion-header>
     <ion-navbar>
+      <button ion-button menuToggle start>
+        <ion-icon name="menu"></ion-icon>
+      </button>
         <ion-title>{{'Settings' | translate}}</ion-title>
     </ion-navbar>
 </ion-header>
 
 <ion-content>
     <div class="login">
-        <ion-row>
-         <img *ngIf="user.imageUrl &&!preview" class="img" src="{{user.imageUrl}}"><br> 
+        <!--<ion-row>
+         <img *ngIf="userImage &&!preview" class="img" src="{{userImage}}"><br> 
          <img *ngIf="preview" class="img" [src]="preview"><br>
-         <img *ngIf="!preview &&!user.imageUrl" class="img" src="assets/img/profile.jpg"><br>
+         <img *ngIf="!preview &&!userImage" class="img" src="assets/img/profile.jpg"><br>
         </ion-row>
         <ion-row>
             <input type="file" name="file" id="file" ng2FileSelect [uploader]="uploader" class="inputfile" aria-describedby="fileHelp" accept="image/*"
@@ -18,8 +21,28 @@
                 <ion-icon ios="ios-cloud-upload" md="md-cloud-upload"></ion-icon>
             </label>
         </ion-row>
-        <p class="name">{{user.firstname}} {{user.lastname}}</p>
+        <p class="name">{{user.firstname}} {{user.lastname}}</p>-->
+        <ion-row>
+          <label for="file" class="upload">
+           <img *ngIf="userImage &&!preview" class="img" src="{{userImage}}"><br> 
+           <img *ngIf="preview" class="img" [src]="preview"><br>
+           <img *ngIf="!preview &&!userImage" class="img" src="assets/img/profile.jpg"><br>
+         </label>
+       </ion-row>
+       <ion-row>
+        <input type="file" name="file" id="file" ng2FileSelect [uploader]="uploader" class="inputfile" aria-describedby="fileHelp" accept="image/*"
+        (change)="readUrl($event)">
+      </ion-row>
+      <p class="name">{{firstname}} {{lastname}}</p>
     </div>
+    <ion-row>
+      <ion-col col-6>
+        <button ion-button (click)="goToAddressList()">{{ 'Addresses' | translate}}</button>
+      </ion-col>
+      <ion-col col-6>
+        <button ion-button (click)="goToReductionList()">{{ 'My reduction list' | translate}}</button>
+      </ion-col>
+    </ion-row>
         <ion-list>
             <ion-item>
               <ion-label>{{'Languages' | translate}}</ion-label>
@@ -39,23 +62,27 @@
 
           <ion-item>
            <ion-label>{{"User FirstName:" | translate}}</ion-label>
-           <ion-input type="text" name="firstname" id="firstname" placeholder="Your FirstName" formControlName="firstName"></ion-input>
+           <ion-input type="text" name="firstname" id="firstname" placeholder="{{'Your FirstName' | translate}}" formControlName="firstName"></ion-input>
          </ion-item>
           <ion-item>
            <ion-label>{{"User lastname:" | translate}}</ion-label>
-           <ion-input type="text" name="lastname" id="lastname" placeholder="Your LastName" formControlName="lastName"></ion-input>
+           <ion-input type="text" name="lastname" id="lastname" placeholder="{{'Your LastName' | translate}}" formControlName="lastName"></ion-input>
          </ion-item>
           <ion-item>
            <ion-label>{{"Email:" | translate}}</ion-label>
-           <ion-input type="text" placeholder="Your Email" formControlName="email"></ion-input>
+           <ion-input type="text" placeholder="{{'Your Email' | translate}}" formControlName="email"></ion-input>
+         </ion-item>
+         <ion-item>
+            <ion-label>{{"Birthdate:" | translate}}</ion-label>
+            <ion-datetime formControlName="birthday" displayFormat="DD/MM/YYYY"></ion-datetime>
          </ion-item>
           <ion-item>
            <ion-label>{{"Password:" | translate}}</ion-label>
-           <ion-input type="password" placeholder="Your Password" formControlName="password"></ion-input>
+           <ion-input type="password" placeholder="{{'Your Password' | translate}}" formControlName="password"></ion-input>
          </ion-item>
           <ion-item>
            <ion-label>{{"Password Confirmation:" | translate}}</ion-label>
-           <ion-input type="password" name="passwordConfirmation" id="passwordConfirmation" placeholder="Your Password again" formControlName="passwordConfirmation"></ion-input>
+           <ion-input type="password" name="passwordConfirmation" id="passwordConfirmation" placeholder="{{'Your Password again' | translate}}" formControlName="passwordConfirmation"></ion-input>
          </ion-item>
        </ion-list>
         <div class="invalid-feedback" *ngIf="user.errors?.mismatch && (user.controls['passwordConfirmation'].dirty || user.controls['passwordConfirmation'].touched)">

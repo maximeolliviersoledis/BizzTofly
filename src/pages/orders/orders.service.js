@@ -15,15 +15,29 @@ var OrdersService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    OrdersService.prototype.getOrders = function () {
-        var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
+    /*getOrders() {
+        const headers = new Headers();
+        let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
         return this.http.get(this.constService.base_url + 'api/orders/user/allorders', {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; });
-        //  .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+            .map((data: Response) => data.json() || {})
+          //  .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+    OrdersService.prototype.getOrders = function (customerId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId + this.constService.sortIdDesc;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    OrdersService.prototype.getOrderById = function (orderId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + "/" + orderId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     OrdersService = __decorate([
         Injectable(),

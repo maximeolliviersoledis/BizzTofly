@@ -9,38 +9,92 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Component } from '@angular/core';
 import { NavController, NavParams, IonicPage, ToastController } from 'ionic-angular';
+import { FormBuilder, Validators } from "@angular/forms";
 import { EmailComposer } from '@ionic-native/email-composer';
+import { ContactService } from './contact.service';
 var ContactPage = /** @class */ (function () {
-    function ContactPage(navCtrl, navParams, toastCtrl, emailComposer) {
+    function ContactPage(navCtrl, navParams, toastCtrl, emailComposer, contactService, formBuilder) {
         this.navCtrl = navCtrl;
         this.navParams = navParams;
         this.toastCtrl = toastCtrl;
         this.emailComposer = emailComposer;
-        this.user = {};
+        this.contactService = contactService;
+        this.formBuilder = formBuilder;
     }
-    ContactPage.prototype.onSend = function (user) {
-        this.emailComposer.open({
-            // You just need to change this Email address to your own email where you want to receive email.
-            to: 'ionicfirebaseapp@gmail.com',
-            subject: this.user.name,
-            body: this.user.message,
-            isHtml: true
-        }, function (callback) {
-            console.log('email view dismissed');
+    ContactPage.prototype.ngOnInit = function () {
+        var _this = this;
+        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+        var userRegex = "^[a-zA-Z- ]+";
+        this.user = this.formBuilder.group({
+            name: ['', Validators.pattern(userRegex)],
+            email: ['', Validators.pattern(emailRegex)],
+            id_order: [''],
+            id_contact: ['', Validators.required],
+            message: ['', Validators.required]
         });
-        this.user = '';
+        this.contactService.getAllContacts().subscribe(function (data) {
+            _this.contacts = data;
+        });
+    };
+    /*onSend(user: NgForm) {
+        this.emailComposer.open({
+                // You just need to change this Email address to your own email where you want to receive email.
+                to: 'ionicfirebaseapp@gmail.com',
+                subject: this.user.value.name,
+                body: this.user.value.message,
+                isHtml: true
+            },
+            function (callback) {
+                console.log('email view dismissed');
+            });
+       //this.user = '';
+    }*/
+    /*onSend(user: NgForm){
+        this.contactService.postMessage("0").subscribe(data => {
+            console.log(data);
+        })
+    }*/
+    ContactPage.prototype.onSubmit = function () {
+        console.log(this.user.value);
+        /*this.contactService.postMessage(this.user.value).subscribe(data => {
+             console.log(data);
+         })*/
+        var contact = null;
+        for (var _i = 0, _a = this.contacts; _i < _a.length; _i++) {
+            var c = _a[_i];
+            if (c.id_contact == this.user.value.id_contact)
+                contact = c;
+        }
+        console.log(contact);
+        var user = {
+            to: contact.email,
+            subject: contact.name,
+            body: this.user.value.message,
+            isHtml: true
+        };
+        console.log(user);
+        this.emailComposer.open({
+            to: contact.email,
+            subject: contact.name,
+            body: this.user.value.message,
+            isHtml: true
+        }, function () {
+            console.log("email view dismissed");
+        });
     };
     ContactPage = __decorate([
         IonicPage(),
         Component({
             selector: 'page-contact',
             templateUrl: 'contact.html',
-            providers: [EmailComposer]
+            providers: [EmailComposer, ContactService]
         }),
         __metadata("design:paramtypes", [NavController,
             NavParams,
             ToastController,
-            EmailComposer])
+            EmailComposer,
+            ContactService,
+            FormBuilder])
     ], ContactPage);
     return ContactPage;
 }());

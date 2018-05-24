@@ -9,7 +9,6 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from '@angular/core';
 import { Http, Headers } from "@angular/http";
-import { Observable } from "rxjs/Observable";
 import { ConstService } from "../../providers/const-service";
 var OrderStatusService = /** @class */ (function () {
     function OrderStatusService(http, constService) {
@@ -23,8 +22,8 @@ var OrderStatusService = /** @class */ (function () {
         return this.http.get(this.constService.base_url + 'api/orders/user/status/' + orderId, {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; })
-            .catch(function (error) { return Observable.throw(error.json().error || 'Server error'); });
+            .map(function (data) { return data.json() || {}; });
+        //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
     };
     OrderStatusService = __decorate([
         Injectable(),

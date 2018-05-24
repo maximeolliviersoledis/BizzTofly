@@ -33,4 +33,12 @@ export class HomeService {
         }).map((data: Response) => data.json() || {})
     }
 
+    getAccueilProduct(){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
+    }
+
 }

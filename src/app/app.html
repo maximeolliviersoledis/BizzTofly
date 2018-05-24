@@ -16,9 +16,23 @@
       <ion-icon name="home" item-left></ion-icon>
       {{'Home' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item (click)="catagory()">
+    <button class="menu-item" ion-item (click)="catagory()">
       <ion-icon  name="apps" item-left></ion-icon>
       {{'Category' | translate}}
+    </button>
+    <ion-list *ngIf="displayAllCategories">
+      <ion-item class="menu-category" *ngFor="let categ of categories" (click)="goToProductList(categ)">
+        <div *ngIf="categ.category.level_depth <=2;then thenBlock else elseBlock"></div>
+        <ng-template #thenBlock>{{categ.category.name[0].value}}</ng-template>
+        <ng-template #elseBlock><ion-item menuClose class="menu-subcategory">{{categ.category.name[0].value}}</ion-item></ng-template>
+      </ion-item>        
+        <!--<ion-item *ngFor="let sub of categ.category.sub" class="menu-category">
+          {{sub.category.name[0].value}}
+        </ion-item>-->
+    </ion-list>
+    <button menuClose class="menu-item" ion-item (click)="categoryList()">
+      <ion-icon name="apps" item-left></ion-icon>
+      {{'Categories List' | translate}}
     </button>
     <button menuClose class="menu-item" ion-item (click)="offer()">
       <ion-icon  name="pricetag" item-left></ion-icon>

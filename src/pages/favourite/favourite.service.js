@@ -15,29 +15,29 @@ var FavouriteService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    FavouriteService.prototype.getFavourites = function (userId) {
+    FavouriteService.prototype.getProduct = function (productId) {
         var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/favourites/user/fav/', {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
     };
-    FavouriteService.prototype.removeFromFavourite = function (productId) {
-        var productInfo = {};
-        productInfo.menuItem = productId;
-        productInfo.userReaction = 'DISLIKE';
+    FavouriteService.prototype.getFavourite = function (customerId) {
         var headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url + 'api/favourites/delete/', productInfo, {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir +
+            this.constService.idCustomer + customerId;
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
+    };
+    FavouriteService.prototype.removeFromFavourite = function (productId, productAttributeId, customerId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir +
+            this.constService.idProduct + productId + this.constService.idProductAttribute + productAttributeId + this.constService.idCustomer + customerId +
+            this.constService.action + "remove";
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     FavouriteService = __decorate([
         Injectable(),

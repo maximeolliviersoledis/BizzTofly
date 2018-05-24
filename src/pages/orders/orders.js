@@ -24,17 +24,32 @@ var OrdersPage = /** @class */ (function () {
             content: 'please wait'
         });
         loader.present();
-        this.orderService.getOrders()
-            .subscribe(function (orders) {
-            _this.orders = orders;
-            loader.dismiss();
-        }, function (error) {
-            loader.dismiss();
-        });
+        var customer = JSON.parse(localStorage.getItem('user'));
+        console.log(customer);
+        if (customer && customer.id_customer) {
+            this.orderService.getOrders(customer.id_customer).subscribe(function (orders) {
+                console.log(orders);
+                for (var _i = 0, _a = orders.orders; _i < _a.length; _i++) {
+                    var order = _a[_i];
+                    _this.orderService.getOrderById(order.id).subscribe(function (data) {
+                        console.log(data);
+                        _this.orders.push(data);
+                    });
+                }
+            });
+        }
+        loader.dismiss();
+        /*this.orderService.getOrders()
+            .subscribe(orders => {
+                this.orders = orders;
+                loader.dismiss();
+            },error=>{
+                loader.dismiss();
+            })*/
     };
-    OrdersPage.prototype.orderDetails = function (orderId) {
+    OrdersPage.prototype.orderDetails = function (order) {
         this.navCtrl.push("OrderDetailsPage", {
-            orderId: orderId
+            order: order
         });
     };
     OrdersPage.prototype.navcart = function () {

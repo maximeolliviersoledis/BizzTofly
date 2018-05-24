@@ -15,24 +15,29 @@ import { Service } from '../app/service';
 import { OneSignal } from '@ionic-native/onesignal';
 import { SocialSharing } from '@ionic-native/social-sharing';
 import { SocketService } from '../providers/socket-service';
-import { UserService } from '../providers/user-service';
 import { TranslateService } from 'ng2-translate';
+import { Storage } from '@ionic/storage';
+import { CategoryService } from '../pages/category/category.service';
 var MyApp = /** @class */ (function () {
-    function MyApp(platform, service, socketService, userService, statusBar, splashScreen, oneSignal, socialSharing, events, translateService) {
+    function MyApp(platform, service, socketService, 
+    //private userService:UserService,
+    statusBar, splashScreen, oneSignal, socialSharing, events, translateService, storage, category) {
         var _this = this;
         this.platform = platform;
         this.service = service;
         this.socketService = socketService;
-        this.userService = userService;
         this.oneSignal = oneSignal;
         this.socialSharing = socialSharing;
         this.events = events;
         this.translateService = translateService;
+        this.storage = storage;
+        this.category = category;
         this.offerCounter = 0;
         this.imageUrl = 'assets/img/profile.jpg';
+        this.categories = [];
+        this.displayAllCategories = false;
         platform.ready().then(function (res) {
             // alert('ici11');
-            
             if (res == 'cordova') {
                 _this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 _this.oneSignal.inFocusDisplaying(_this.oneSignal.OSInFocusDisplayOption.InAppAlert);
@@ -80,14 +85,16 @@ var MyApp = /** @class */ (function () {
         this.translateService.use(language);
     };
     MyApp.prototype.renderImage = function () {
-        var _this = this;
-        if (this.isLogin()) {
-            this.userService.getUser()
-                .subscribe(function (user) {
-                _this.imageUrl = user.imageUrl != null ? _this.imageUrl = user.imageUrl : _this.imageUrl = 'assets/img/profile.jpg';
-            }, function (error) {
-                _this.nav.setRoot("LoginPage");
-            });
+        /*if(this.isLogin()){
+         this.userService.getUser()
+         .subscribe(user=>{
+          this.imageUrl=user.imageUrl!=null?this.imageUrl=user.imageUrl:this.imageUrl='assets/img/profile.jpg';
+         }, error =>{
+          this.nav.setRoot("LoginPage");
+         })
+        }*/
+        if (!this.isLogin()) {
+            this.nav.setRoot("LoginPage");
         }
     };
     MyApp.prototype.listenEvents = function () {
@@ -99,13 +106,83 @@ var MyApp = /** @class */ (function () {
         });
     };
     MyApp.prototype.isLogin = function () {
-        return localStorage.getItem('token') != null;
+        return JSON.parse(localStorage.getItem('userLoggedIn')) != null;
     };
     MyApp.prototype.home = function () {
         this.nav.setRoot("HomePage");
     };
     MyApp.prototype.catagory = function () {
+        //this.nav.push("CategoryPage");
+        /*this.category.categoryService.getAllCategories().subscribe(data => {
+            console.log(data);
+        })*/
+        /* if(!this.categories || this.categories.length == 0){
+             this.category.getCategories().subscribe(data=>{
+                 console.log(data);
+                 //this.categories = data;
+                 for(var category of data){
+                     if(category)
+                 }
+             })*/
+        var _this = this;
+        if (!this.categories || this.categories.length == 0) {
+            this.category.getCategory(2).subscribe(function (data) {
+                if (data.category.level_depth <= 2) {
+                    for (var _i = 0, _a = data.category.associations.categories; _i < _a.length; _i++) {
+                        var child = _a[_i];
+                        _this.category.getCategory(child.id).subscribe(function (childData) {
+                            _this.categories.push(childData);
+                        });
+                    }
+                }
+            });
+        }
+        this.displayAllCategories = !this.displayAllCategories;
+        console.log(this.displayAllCategories);
+    };
+    MyApp.prototype.categoryList = function () {
         this.nav.push("CategoryPage");
+    };
+    MyApp.prototype.goToProductList = function (category) {
+        var _this = this;
+        /*console.log("goToProductList appelé");
+        this.displayAllCategories = !this.displayAllCategories;
+        this.nav.push("ProductListPage", {
+            MenuId: categoryId
+        });*/
+        if (category.category.level_depth <= 2 && category.category.associations.categories) {
+            for (var _i = 0, _a = category.category.associations.categories; _i < _a.length; _i++) {
+                var child = _a[_i];
+                var childAlreadyPresent = this.categories.findIndex(function (elem) {
+                    return elem.category.id == child.id;
+                });
+                if (childAlreadyPresent == -1) {
+                    this.category.getCategory(child.id).subscribe(function (data) {
+                        _this.categories.splice(_this.categories.indexOf(category) + 1, 0, data);
+                        //this.categories.push(data);
+                    });
+                }
+            }
+            /*for(var i=0;i<category.category.associations.categories.length;i++){
+                var childAlreadyPresent = this.categories.find(function(elem){
+                    return elem.category.id == category.category.associations.categories[i];
+                })
+                if(!childAlreadyPresent){
+                    this.category.getCategory(category.category.associations.categories[i].id).subscribe(data => {
+                        this.categories.splice(i,0,data);
+                        //this.categories.push(data);
+                    })
+                }
+            }*/
+        }
+        else {
+            this.displayAllCategories = !this.displayAllCategories;
+            this.nav.push("ProductListPage", {
+                MenuId: category.category.id
+            });
+        }
+    };
+    MyApp.prototype.getIndex = function () {
     };
     MyApp.prototype.gotoCart = function () {
         this.nav.push("CartPage");
@@ -116,18 +193,19 @@ var MyApp = /** @class */ (function () {
     MyApp.prototype.favourite = function () {
         this.nav.push("FavouritePage");
     };
-    MyApp.prototype.bookTable = function () {
+    /*bookTable(){
         this.nav.push("TableBookingPage");
-    };
-    MyApp.prototype.bookHistory = function () {
+    }
+
+    bookHistory(){
         this.nav.push("BookingHistoryPage");
-    };
+    }*/
     MyApp.prototype.offer = function () {
         this.nav.push("OfferPage");
     };
-    MyApp.prototype.news = function () {
+    /*news() {
         this.nav.push("NewsPage");
-    };
+    }*/
     MyApp.prototype.contact = function () {
         this.nav.push("ContactPage");
     };
@@ -137,12 +215,13 @@ var MyApp = /** @class */ (function () {
     MyApp.prototype.aboutUs = function () {
         this.nav.push("AboutUsPage");
     };
-    MyApp.prototype.invite = function () {
-        this.socialSharing.share("share Restaurant App with friends to get credits", null, null, 'https://ionicfirebaseapp.com/#/');
-    };
-    MyApp.prototype.chat = function () {
-        this.nav.push("ChatPage");
-    };
+    /* invite() {
+    this.socialSharing.share("share Restaurant App with friends to get credits", null, null, 'https://ionicfirebaseapp.com/#/');
+  }
+    
+    chat(){
+      this.nav.push("ChatPage");
+    }*/
     MyApp.prototype.orderStatus = function () {
         this.nav.push("OrderStatusPage");
     };
@@ -150,13 +229,20 @@ var MyApp = /** @class */ (function () {
         this.nav.setRoot("LoginPage");
     };
     MyApp.prototype.logout = function () {
-        localStorage.removeItem('token');
+        /*localStorage.removeItem('token');
+        localStorage.removeItem('user');*/
+        this.storage.remove('user');
+        localStorage.removeItem('userLoggedIn');
         this.events.publish('imageUrl', 'assets/img/profile.jpg');
         this.nav.setRoot("LoginPage");
     };
     MyApp.prototype.isCart = function () {
-        var cart = JSON.parse(localStorage.getItem('cartItem'));
-        cart != null ? this.noOfItems = cart.length : this.noOfItems = null;
+        //let cart = JSON.parse(localStorage.getItem('cartItem'));
+        /*this.storage.get('cart').then((data)=>{
+            data != null && data.length != null ?this.noOfItems = data.length:this.noOfItems=null;
+        })*/
+        var cart = JSON.parse(localStorage.getItem('cartLength'));
+        cart != null ? this.noOfItems = cart : this.noOfItems = null;
         return true;
     };
     __decorate([
@@ -167,18 +253,19 @@ var MyApp = /** @class */ (function () {
         Component({
             templateUrl: 'app.html',
             selector: 'MyApp',
-            providers: [Service, OneSignal, SocialSharing]
+            providers: [Service, OneSignal, SocialSharing, CategoryService]
         }),
         __metadata("design:paramtypes", [Platform,
             Service,
             SocketService,
-            UserService,
             StatusBar,
             SplashScreen,
             OneSignal,
             SocialSharing,
             Events,
-            TranslateService])
+            TranslateService,
+            Storage,
+            CategoryService])
     ], MyApp);
     return MyApp;
 }());

@@ -42,12 +42,57 @@ export class ProductDetailsService {
         }).map((data: Response) => data.json() || {})
     }
 
-    addToFavourite(productId, productAttributeId, quantity, token){
+   /* addToFavourite(productId, productAttributeId, quantity, token){
         const headers = new Headers();
         var urlDir = "http://www.bizztofly.com/modules/blockwishlist/cart.php?action=add&id_product="+productId+"&quantity="+quantity+"&token="+token+"&id_product_attribute="+productAttributeId+"&id_wishlist=undefined&_=1526561392412"
         return this.http.get(urlDir, {
             headers: headers
         }).map((data: Response) => data.json() || {})
+    }*/
+
+    addToFavourite(productId, attributeProductId, customerId, quantity){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir
+        + this.constService.idProduct + productId + this.constService.idProductAttribute + attributeProductId + this.constService.idCustomer + customerId + 
+        this.constService.quantity + quantity + this.constService.action + "add";
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response) => data.json() || {})
     }
+
+    removeFromFavourite(productId, productAttributeId, customerId){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir +
+        this.constService.idProduct + productId + this.constService.idProductAttribute + productAttributeId + this.constService.idCustomer + customerId +
+        this.constService.action + "remove";
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response)=> data.json() || {})
+    }
+
+    getFavouriteList(customerId){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.favouriteDir + "/0" + this.constService.keyDir + this.constService.formatDir + 
+        this.constService.idCustomer + customerId;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response)=> data.json() || {})
+    }
+
+    postCart(body){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+         return this.http.post(urlDir, body, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
+
+     putCart(cartId, body){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+         return this.http.put(urlDir, body, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
 
 }

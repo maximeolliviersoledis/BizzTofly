@@ -23,14 +23,39 @@ var FavouritePage = /** @class */ (function () {
         this.favouriteService = favouriteService;
         this.favouriteItems = [];
         this.cartItems = [];
+        this.favouriteList = [];
         this.bg = 'assets/img/bg.jpg';
-        this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+        /*this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
         if (this.cartItems != null) {
             this.noOfItems = this.cartItems.length;
-        }
+        }*/
     }
     FavouritePage.prototype.ngOnInit = function () {
-        this.getWishlist();
+        var _this = this;
+        //this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
+        this.storage.get('user').then(function (userData) {
+            if (userData && userData.token) {
+                _this.favouriteService.getFavourite(userData.id_customer).subscribe(function (data) {
+                    console.log(data);
+                    for (var _i = 0, data_1 = data; _i < data_1.length; _i++) {
+                        var product = data_1[_i];
+                        _this.favouriteService.getProduct(product.id_product).subscribe(function (product) {
+                            _this.favouriteItems.push(product);
+                        });
+                    }
+                });
+            }
+        });
+        /*this.storage.get('favourite').then((favourite) => {
+            this.favouriteList = favourite;
+            if(this.favouriteList && this.favouriteList.length){
+                for(var favourite of this.favouriteList){
+                    this.favouriteService.getProduct(favourite).subscribe(data => {
+                        this.favouriteItems.push(data);
+                    })
+                }
+            }
+        })*/
     };
     FavouritePage.prototype.navcart = function () {
         this.navCtrl.push("CartPage");
@@ -40,39 +65,38 @@ var FavouritePage = /** @class */ (function () {
             productId: productId
         });
     };
+    FavouritePage.prototype.removeFromFavourites = function (productId) {
+        var _this = this;
+        this.storage.get('user').then(function (userData) {
+            if (userData && userData.token) {
+                _this.favouriteService.removeFromFavourite(productId, 1, userData.id_customer).subscribe(function (data) {
+                    console.log(data);
+                    for (var i = 0; i < _this.favouriteItems.length; i++) {
+                        if (_this.favouriteItems[i].id == productId) {
+                            _this.favouriteItems.splice(i, 1);
+                        }
+                    }
+                });
+            }
+        });
+        /*console.log("remove : "+productId);
+        for(var i=0; i<this.favouriteItems.length;i++){
+            if(this.favouriteItems[i].id == productId){
+                this.favouriteItems.splice(i,1);
+            }
+
+            if(this.favouriteList[i] == productId){
+                this.favouriteList.splice(i,1);
+                //localStorage.setItem('favourite',JSON.stringify(this.favouriteList));
+                this.storage.set('favourite', this.favouriteList);
+            }
+        }*/
+    };
     FavouritePage.prototype.isFavourite = function () {
         return this.favouriteItems.length == 0 ? false : true;
     };
-    FavouritePage.prototype.removeFromFavourites = function (productId) {
-        var _this = this;
-        this.favouriteService.removeFromFavourite(productId)
-            .subscribe(function (response) {
-            console.log("res--" + JSON.stringify(response));
-            _this.getWishlist();
-        });
-    };
-    FavouritePage.prototype.getWishlist = function () {
-        var _this = this;
-        if (this.isLoggedin()) {
-            var loader_1 = this.loadingCtrl.create({
-                content: 'please wait...'
-            });
-            loader_1.present();
-            this.userService.getUser()
-                .subscribe(function (user) {
-                _this.favouriteService.getFavourites(user._id)
-                    .subscribe(function (response) {
-                    _this.favouriteItems = response;
-                    console.log("fav-list-" + JSON.stringify(response));
-                    loader_1.dismiss();
-                }, function (error) {
-                    loader_1.dismiss();
-                });
-            });
-        }
-    };
     FavouritePage.prototype.isLoggedin = function () {
-        return localStorage.getItem('token') ? true : false;
+        return JSON.parse(localStorage.getItem('userLoggedIn')) ? true : false;
     };
     FavouritePage.prototype.createToaster = function (message, duration) {
         var toast = this.toastCtrl.create({

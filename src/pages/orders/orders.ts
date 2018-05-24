@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
 import {NavController, IonicPage,LoadingController} from 'ionic-angular';
 import {OrdersService} from './orders.service';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -14,38 +15,31 @@ export class OrdersPage {
 
     constructor(public navCtrl: NavController,
                 private loadingCtrl:LoadingController,
-                private orderService: OrdersService) {
+                private orderService: OrdersService,
+                private storage:Storage) {
     }
-
 
     ngOnInit() {
 
         let loader = this.loadingCtrl.create({
-            content:'please wait'
+            content:'please wait',
+            spinner: 'ios'
         })
         loader.present();
-        var customer = JSON.parse(localStorage.getItem('user'));
-        console.log(customer);
-        if(customer && customer.id_customer){
-            this.orderService.getOrders(customer.id_customer).subscribe(orders => {
-                console.log(orders);
-                for(var order of orders.orders){
-                    this.orderService.getOrderById(order.id).subscribe(data => {
-                        console.log(data);
-                        this.orders.push(data);
-                    })
-                }
-            })
-        }
+        this.storage.get('user').then((customer) => {
+            if(customer && customer.id_customer){
+                this.orderService.getOrders(customer.id_customer).subscribe(orders => {
+                    console.log(orders);
+                    for(var order of orders.orders){
+                        this.orderService.getOrderById(order.id).subscribe(data => {
+                            console.log(data);
+                            this.orders.push(data);
+                        })
+                    }
+                })
+            }
+        })
         loader.dismiss();
-
-        /*this.orderService.getOrders()
-            .subscribe(orders => {
-                this.orders = orders;
-                loader.dismiss();
-            },error=>{
-                loader.dismiss();
-            })*/
     }
 
     orderDetails(order) {

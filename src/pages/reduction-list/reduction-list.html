@@ -1,0 +1,43 @@
+<ion-header>
+  <ion-navbar>
+  	<button ion-button menuToggle start>
+        <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Reduction list</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content>
+	<ion-list *ngIf="reductions && !showInfo">
+		<ion-label>Mes bons valides</ion-label>
+		<ion-row>
+			<ion-col col-4><ion-label>Code</ion-label></ion-col>
+			<ion-col col-4><ion-label>Name</ion-label></ion-col>
+			<ion-col col-4><ion-label></ion-label></ion-col>
+		</ion-row>
+		<ion-row>
+			<ion-item *ngFor="let reduc of reductions">
+				<ion-col col-4>
+					{{reduc.code}}
+				</ion-col>
+				<ion-col col-4>
+					{{reduc.name}}
+				</ion-col>
+				<ion-col col-4>
+				 	<button ion-button (click)="showInfos(reduc)">Visualiser</button>
+				</ion-col>
+			</ion-item>
+		</ion-row>
+	</ion-list>
+
+	<div *ngIf="showInfo">
+		<p>Infos concernant le bon {{selectedReduction.code}}</p>
+		<p>Ce bon a une valeur de {{selectedReduction.value}}</p>
+		<p>Ce bon est utilisable {{selectedReduction.quantity}} à partir d'une valeur de {{selectedReduction.minimum_amount}} €</p>
+		<p>La date d'expiration de ce bon est : {{selectedReduction.date_to}}</p>
+	</div>
+
+	<div *ngIf="!reductions && !showInfo">Aucun bons de réductions valide n'a été trouvé</div>
+</ion-content>

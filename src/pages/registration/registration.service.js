@@ -24,7 +24,14 @@ var RegistrationService = /** @class */ (function () {
         })
             .map(function (data) { return data.json() || {}; });
         //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    };    
+    };
+    RegistrationService.prototype.postCustomer = function (body) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.customerDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, body, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
     RegistrationService = __decorate([
         Injectable(),
         __metadata("design:paramtypes", [Http,

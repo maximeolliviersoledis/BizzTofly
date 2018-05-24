@@ -35,6 +35,9 @@ var OrderDetailsService = /** @class */ (function () {
             .map(function (data) { return data.json() || {}; });
         //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));  
     };
+    OrderDetailsService.prototype.getImageUrlForProduct = function (productId) {
+        return this.constService.baseDir + this.constService.imageDir + "/products/" + productId + "/1" + this.constService.keyDir;
+    };
     OrderDetailsService = __decorate([
         Injectable(),
         __metadata("design:paramtypes", [Http,

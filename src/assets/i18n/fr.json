@@ -140,6 +140,18 @@
   "rating": "évaluation",
   "Submit":"Soumettre",
   "Review": "La revue",
-  "Name": "prénom"
-
+  "Name": "prénom",
+  "Addresses": "Adresses",
+  "My reduction list": "Mes bons de réductions",
+  "Reduction list": "Mes bons de réductions",
+  "Birthdate:": "Date de naissance:",
+  "User FirstName:": "Prénom:",
+  "User lastname:": "Nom:",
+  "Your FirstName": "Votre prénom",
+  "Your LastName": "Votre nom",
+  "Your Email": "Votre email",
+  "Your Password": "Votre mot de passe",
+  "Your Password again": "Votre mot de passe",
+  "Show": "Visualiser",
+  "Carrier":"Transporteur"
 }

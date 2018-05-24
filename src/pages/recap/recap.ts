@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import {Storage} from '@ionic/storage';
 
 /**
  * Generated class for the RecapPage page.
@@ -19,7 +20,7 @@ export class RecapPage {
   carrierData: any = {};
   products: any[] = [];
   totalPrice: number = 0;
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage:Storage) {
   }
 
   ngOnInit(){
@@ -30,7 +31,8 @@ export class RecapPage {
   	console.log(this.cartData);
   	console.log(this.orderData);
     console.log(this.orderData.cart[0].imageUrl);
-    this.totalPrice = this.totalPriceWithTax();
+    this.totalPriceWithTax();
+    //this.totalPrice = this.totalPriceWithTax();
   	//this.getAllProducts();
   }
 
@@ -51,22 +53,27 @@ export class RecapPage {
   }
 
   totalPriceWithTax(){
-       var cart = JSON.parse(localStorage.getItem('cartItem'));
-       var totalPrice: number = 0;       
-       for(var item of cart){
+       //var cart = JSON.parse(localStorage.getItem('cartItem'));
+       this.storage.get('cart').then((cart)=>{
+         var totalPrice: number = 0;       
+         for(var item of cart){
            for(var declinaison of item.declinaison){
-               totalPrice += declinaison.endPrice * declinaison.selectedQuantity;
+             totalPrice += declinaison.endPrice * declinaison.selectedQuantity;
            }
-       }
-       totalPrice + this.carrierData.total_price_with_tax;
-       return totalPrice;
-  }
+         }
+         totalPrice + this.carrierData.total_price_with_tax;
+         this.totalPrice = totalPrice;
+       })
+
+      //return totalPrice;
+    }
 
   goToPayment(){
     this.navCtrl.push('CheckoutPage', {
       cartData: this.cartData,
       orderData: this.orderData,
-      carrierData: this.carrierData
+      carrierData: this.carrierData,
+      totalPrice: this.totalPrice
     })
   }
 

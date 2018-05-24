@@ -15,35 +15,34 @@ var AddressListService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    AddressListService.prototype.getAddressList = function () {
+    AddressListService.prototype.getAddressList = function (customerId) {
+        //http://www.bizztofly.com/api/addresses?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON&filter[id_customer]=55&filter[deleted]=0
+        var urlDir = this.constService.baseDir + this.constService.adresses + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId + this.constService.filterDeleted + "0";
         var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/addresses/user', {
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
     };
-    AddressListService.prototype.getAvailablePincodes = function () {
+    AddressListService.prototype.getAddress = function (addressId) {
+        var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
         var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/pincodes', {
+        return this.http.get(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        }).map(function (data) { return data.json() || {}; });
     };
-    AddressListService.prototype.getLoyaltyStatus = function () {
+    AddressListService.prototype.deleteAddress = function (addressId) {
+        var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
         var headers = new Headers();
-        var authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/settings', {
+        return this.http.delete(urlDir, {
             headers: headers
-        })
-            .map(function (data) { return data.json() || {}; });
-        // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        });
+    };
+    AddressListService.prototype.putCart = function (cartId, body) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, body, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     AddressListService = __decorate([
         Injectable(),

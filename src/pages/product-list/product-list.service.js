@@ -15,14 +15,42 @@ var ProductListService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    /*ProductListService.prototype.getMenuItems = function (categoryId) {
+    /* getMenuItems(categoryId) {
+         const headers = new Headers();
+         return this.http.get(this.constService.base_url + 'api/menuItems/by/category/' + categoryId, {
+             headers: headers
+         })
+ 
+             .map((data: Response) => data.json() || {})
+         //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+     }*/
+    ProductListService.prototype.getMenuItems = function (categoryId) {
         var headers = new Headers();
-        return this.http.get(this.constService.base_url + 'api/menuItems/by/category/' + categoryId, {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/" + categoryId + "?&filter[user]=0";
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+        /*return this.http.get("http://www.bizztofly.com/api-soledis/categories_listing/"+categoryId+"?&filter[user]=0", {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; });
+
+            .map((data: Response) => data.json() || {})*/
         //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    };*/
+    };
+    ProductListService.prototype.getProduct = function (productId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    ProductListService.prototype.getCategory = function (categoryId) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
     ProductListService = __decorate([
         Injectable(),
         __metadata("design:paramtypes", [Http, ConstService])

@@ -18,10 +18,14 @@ page-settings {
     padding: 1em 0px;
     margin: 1em 0px;
   }
-  .upload{
+  /*.upload{
     position: relative;
     top: -34px;
     font-size:2em !important;
+  }*/
+  .upload{
+    margin-left: auto;
+    margin-right: auto;
   }
   .item{
     border-bottom:1px solid $light-grey;

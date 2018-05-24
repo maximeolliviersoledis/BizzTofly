@@ -10,26 +10,39 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 import { Injectable } from '@angular/core';
 import { Http, Headers } from "@angular/http";
 import { ConstService } from "../../providers/const-service";
-import { URLSearchParams } from '@angular/http';
 var CheckoutService = /** @class */ (function () {
     function CheckoutService(http, constService) {
         this.http = http;
         this.constService = constService;
     }
-    CheckoutService.prototype.placeOrder = function (body) {
-        var headers = new Headers();
+    /*placeOrder(body) {
+        const headers = new Headers();
         headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
+        let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
         return this.http.post(this.constService.base_url + 'api/orders', body, {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; });
-        //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+            .map((data: Response) => data.json() || {})
+            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+    CheckoutService.prototype.getAvailablePayments = function (paymentId) {
+        //paymentId = 0, retourne tous les moyens de payments disponibles
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.paymentDir + "/" + paymentId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
-    CheckoutService.prototype.chargeStripe = function (token, currency, amount, stripe_secret_key) {
-        var _this = this;
-        var secret_key = stripe_secret_key;
+    CheckoutService.prototype.postOrder = function (body) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.orderDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, body, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    /*chargeStripe(token, currency, amount, stripe_secret_key) {
+        let secret_key = stripe_secret_key;
         var headers = new Headers();
         var params = new URLSearchParams();
         headers.append('Content-Type', 'application/x-www-form-urlencoded');
@@ -38,40 +51,56 @@ var CheckoutService = /** @class */ (function () {
         params.append("amount", amount);
         params.append("description", "description");
         params.append("source", token);
-        console.log("params-" + JSON.stringify(params));
-        return new Promise(function (resolve) {
-            _this.http.post('https://api.stripe.com/v1/charges', params, {
+        console.log("params-"+JSON.stringify(params));
+        
+        return new Promise(resolve => {
+            this.http.post('https://api.stripe.com/v1/charges', params, {
                 headers: headers
-            }).map(function (res) { return res.json(); })
-                .subscribe(function (data) {
-                resolve(data);
-            });
+            }).map(res => res.json())
+                .subscribe(data => {
+                    resolve(data);
+                });
         });
-    };
-    CheckoutService.prototype.savePaymentDetails = function (orderId, paymentDetails) {
-        var headers = new Headers();
-        var body = {};
+    }*/
+    /*savePaymentDetails(orderId, paymentDetails) {
+        const headers = new Headers();
+        let body: any = {};
         body.payment = paymentDetails;
         headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
+        let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
         return this.http.put(this.constService.base_url + 'api/orders/' + orderId, body, {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; });
-        //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    };
-    CheckoutService.prototype.saveLoyaltyPoints = function (userId, loyaltyData) {
-        var headers = new Headers();
-        var body = loyaltyData;
+            .map((data: Response) => data.json() || {})
+            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+    /*saveLoyaltyPoints(userId, loyaltyData) {
+        const headers = new Headers();
+        const body = loyaltyData;
         headers.append('Content-Type', 'application/json');
-        var authtoken = localStorage.getItem('token');
+        let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
-        return this.http.put(this.constService.base_url + 'api/users/' + userId, body, {
+        return this.http.put(this.constService.base_url + 'api/users/'+userId, body, {
             headers: headers
         })
-            .map(function (data) { return data.json() || {}; });
-        //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+            .map((data: Response) => data.json() || {})
+            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+    CheckoutService.prototype.postCart = function (cartId, body) {
+        var headers = new Headers();
+        //var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+        var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.post(urlDir, body, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    CheckoutService.prototype.putCart = function (cartId, body) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.put(urlDir, body, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
     };
     CheckoutService = __decorate([
         Injectable(),

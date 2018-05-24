@@ -4,6 +4,7 @@ import {Service} from '../../app/service';
 import {Storage} from '@ionic/storage';
 import {ProductDetailsService} from './product-details.service';
 
+
 @IonicPage()
 @Component({
     selector: 'page-product-details',
@@ -18,8 +19,9 @@ export class ProductDetailsPage {
     initPrice: number = -1;
     count: number = 1;
     productId: number;
-    noOfItems: number;
+    noOfItems: number = 0;
     cartItems: any[];
+    user: any = {};
     ExtraOptions: any[] = [];
     itemInCart: any[] = [];
     Cart: any[] = [];
@@ -44,17 +46,30 @@ export class ProductDetailsPage {
         public alertCtrl: AlertController,
         public toastCtrl: ToastController,
         public navParams: NavParams,
-        public storage: Storage,
+        private storage: Storage,
         public service: Service,
-        public productDetailsService: ProductDetailsService) {
+        public productDetailsService: ProductDetailsService
+        ) {
 
         this.productId = navParams.get('productId');
         console.log("product id = "+this.productId);
         console.log(navParams.get('product'));
-        this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-        if (this.cartItems != null) {
-            this.noOfItems = this.cartItems.length;
-        }
+        this.storage.get('user').then((val) => {
+            console.log(val);
+        });
+
+        this.storage.get('cart').then((data)=>{
+            this.cartItems = data;
+            if (this.cartItems) {
+                for(var items of this.cartItems)
+                    this.noOfItems += items.quantity;
+            }
+        })
+
+        this.storage.get('user').then((data)=>{
+            this.user = data;
+        })
+
        /* this.storage.get('favourite').then((favourite) => {
             this.favourites = favourite;
         })
@@ -114,7 +129,7 @@ export class ProductDetailsPage {
    }
 
 
-        addToCart(productId) {
+   addToCart(productId) {
         /***BUG si on delet eun item du panier qu'on revient sur la page avec la fleche retour arrière et qu'on ajoute à ouveau cet item, le contenu précédemment effacé et de 
         nouveau dans le panier***/
         //Contenu de variable non remis à zéro, variable itemInCart gade le contenu de l'ancien panier et variable product//
@@ -143,8 +158,6 @@ export class ProductDetailsPage {
             });
             alert.present();
         }else{
-            //this.declinaison.endPrice = parseFloat(this.product.price) + parseFloat(this.declinaison.combination.price);
-            //this.declinaison.endPrice = parseFloat(this.product.price) + parseFloat(this.declinaison.combination.price);
             var id = this.declinaison.combination.id;
             var index =  this.productDetails.declinaisons.findIndex(function(elem){
                 return elem.id === id;
@@ -152,19 +165,22 @@ export class ProductDetailsPage {
 
             this.declinaison.endPrice = parseFloat(this.productDetails.declinaisons[index].price);
             console.log(this.declinaison.endPrice);
-            this.Cart = JSON.parse(localStorage.getItem("cartItem"));
-            /**Si le panier est vide**/
-            if(this.Cart ==  null){
+            this.storage.get('cart').then((val) => {
+                console.log(val);
+                this.Cart = val;
 
-                this.product.quantity = this.count;
-                for(var i of this.productDetails.declinaisons){
-                    if(this.declinaison.combination.id===i.id){
-                        this.declinaison.name = i.name;
-                        break;
+                /**Si le panier est vide**/
+                if(this.Cart ==  null){
+
+                    this.product.quantity = this.count;
+                    for(var i of this.productDetails.declinaisons){
+                        if(this.declinaison.combination.id===i.id){
+                            this.declinaison.name = i.name;
+                            break;
+                        }
                     }
-                }
-                this.declinaison.selectedQuantity = this.count;
-
+                    this.declinaison.selectedQuantity = this.count;
+                    this.noOfItems += this.count;
                 //***Correction du second bug***//
                 //On vérifie si le produit possède déjà la déclinaison que l'on souhaite ajouter
                 /*var dec = this.declinaison.combination.id;
@@ -197,7 +213,20 @@ export class ProductDetailsPage {
                 this.itemInCart.splice(0,this.itemInCart.length);
                 this.itemInCart.push(this.product);
 
-                localStorage.setItem('cartItem', JSON.stringify(this.itemInCart));
+                //localStorage.setItem('cartItem', JSON.stringify(this.itemInCart));
+                this.storage.set('cart',this.itemInCart);
+                var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();
+
+                if(localStorage.getItem('id_cart')){
+                    this.productDetailsService.putCart(localStorage.getItem('id_cart'), panier).subscribe(data => {
+                        console.log(data);
+                    });
+                }else{
+                    this.productDetailsService.postCart(panier).subscribe(data => {
+                        localStorage.setItem('id_cart',data.cart.id);
+                    });
+                }
+                this.createToaster("Successfully added to cart!",2000);
             }else{
                 /**Sinon on récupère l'item seulement l'item qui nous intéresse àcl'intérieur du panier**/
                 let itemInCart;
@@ -269,11 +298,24 @@ export class ProductDetailsPage {
                             break;
                         }
                     }  
-
+                    this.noOfItems += this.count;
                     this.product.declinaison.push(this.declinaison);
 
                     this.Cart.push(this.product);
-                    localStorage.setItem("cartItem",JSON.stringify(this.Cart));
+                    this.storage.set('cart',this.Cart);
+                    console.log(this.user);
+                    var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();
+                    console.log(panier);
+                    if(localStorage.getItem('id_cart')){
+                        this.productDetailsService.putCart(localStorage.getItem('id_cart'), panier).subscribe(data => {
+                            console.log(data);
+                        });
+                    }else{
+                        this.productDetailsService.postCart(panier).subscribe(data => {
+                            localStorage.setItem('id_cart',data.cart.id);
+                        });
+                    }
+                    this.createToaster("Successfully added to cart!",2000);
                 }else{
                     let alert = this.alertCtrl.create({
                         title: 'Quantity error',
@@ -282,85 +324,140 @@ export class ProductDetailsPage {
                     });
                     alert.present();
                 }
-                /**Vérifie que la quantité déjà présente dans le panier + la nouvelle quanité ne dépasse pas la quantité totale du produit**/
-               /* if(this.declinaison.combination.quantity >= itemInCart.quantity + this.count){
-                    this.product.quantity = itemInCart.quantity + this.count;
-                    this.declinaison.selectedQuantity = decQuantity;
-                    this.product.declinaison.push(this.declinaison);
+            }
+        })
+    }
+}
 
-                    for(var i of this.productDetails.declinaisons){
-                        if(this.declinaison.combination.id===i.id){
-                            this.product.declinaisonName = i.name;
-                            break;
+    sendCart(customerId = null){
+        var id_cart = JSON.parse(localStorage.getItem('id_cart'));
+        if(id_cart){
+                console.log("panier existant");
+                var modif = {
+                    cart: {
+                        id: id_cart,
+                        id_shop_group: null, 
+                        id_shop: null,
+                        id_address_delivery: null,
+                        id_address_invoice: null,
+                        id_carrier: 0,
+                        id_currency: 1,
+                        id_customer: customerId,
+                        id_guest: null,
+                        id_lang: 1,
+                        recyclable: null,
+                        gift: null,
+                        gift_message: null,
+                        mobile_theme: null,
+                        delivery_option: null,
+                        secure_key: null,
+                        allow_seperated_package: 0,
+                        date_add: null,
+                        date_upd: null,
+                        associations: {
+                            cart_rows: {
+                                cart_row: []
+                            }
                         }
                     }
-                    console.log("Dans le panier : "+this.product.quantity);
-                    this.Cart.push(this.product);
-                    localStorage.setItem("cartItem",JSON.stringify(this.Cart));
-                }else{
-                    let alert = this.alertCtrl.create({
-                        title: 'Quantity error',
-                        subTitle: 'Available quantity is '+this.declinaison.combination.quantity+", and you are currently asking for a quantity of "+(itemInCart.quantity+this.count),
-                        buttons: ['OK']
-                    });
-                    alert.present();
-                }*/
-            }
-        }
-        /*if (this.product.sizeOption.value == null) {
-            let alert = this.alertCtrl.create({
-                title: 'Please!',
-                subTitle: 'Select Size and Price!',
-                buttons: ['OK']
-            });
-            alert.present();
-        }
-        else {
-            this.Cart = JSON.parse(localStorage.getItem("cartItem"));
-            if (this.Cart == null) {
-                this.product.Quantity = this.count;
-                if (this.product.sizeOption.specialPrice) {
-                    this.product.itemTotalPrice = this.product.Quantity * this.product.sizeOption.specialPrice;
-                } else {
-                    this.product.itemTotalPrice = this.product.Quantity * this.product.sizeOption.value;
-                }
-                let proExtraPrice = 0;
-                for (let i = 0; i <= this.product.extraOption.length - 1; i++) {
-                    proExtraPrice = proExtraPrice + Number(this.product.extraOption[i].selected);
-                    this.product.extraPrice = proExtraPrice;
-                }
+                };
 
-                this.itemInCart.push(this.product);
-                localStorage.setItem('cartItem', JSON.stringify(this.itemInCart));
+                if(this.Cart == null)
+                    this.Cart = this.itemInCart;
 
-            }
-            else {
-
-                for (let i = 0; i <= this.Cart.length - 1; i++) {
-                    if (this.Cart[i].productId == productId && this.Cart[i].sizeOption.pname==this.product.sizeOption.pname) {
-                        this.Cart.splice(i, 1);
-
+                for(var items of this.Cart){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        modif.cart.associations.cart_rows.cart_row.push(product);
                     }
                 }
-                this.product.Quantity = this.count;
-                if (this.product.sizeOption.specialPrice) {
-                    this.product.itemTotalPrice = this.product.Quantity * this.product.sizeOption.specialPrice;
-                } else {
-                    this.product.itemTotalPrice = this.product.Quantity * this.product.sizeOption.value;
-                }
-                let proExtraPrice = 0;
-                for (let i = 0; i <= this.product.extraOption.length - 1; ++i) {
-                    proExtraPrice = proExtraPrice + Number(this.product.extraOption[i].selected);
-                    this.product.extraPrice = proExtraPrice;
+
+                /*for(var items of this.cartItems){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        modif.cart.associations.cart_rows.cart_row.push(product);
+                    }
+                }*/
+                console.log(modif);
+                return modif;
+
+        }else{
+                console.log(customerId);
+                var panier = {
+                    cart: 
+                    {
+                        id_shop_group: null, 
+                        id_shop: null,
+                        id_address_delivery: null,
+                        id_address_invoice: null,
+                        id_carrier: 0,
+                        id_currency: 1,
+                        id_customer: customerId,
+                        id_guest: null,
+                        id_lang: 1,
+                        recyclable: null,
+                        gift: null,
+                        gift_message: null,
+                        mobile_theme: null,
+                        delivery_option: null,
+                        secure_key: null,
+                        allow_seperated_package: 0,
+                        date_add: null,
+                        date_upd: null,
+                        associations: {
+                            cart_rows: {
+                                cart_row: []
+                            }
+                        }
+                    }
+                };
+
+                //Utile car si le panier est vide, cela provoque une erreur
+                if(this.Cart == null)
+                    this.Cart = this.itemInCart;
+
+                for(var items of this.Cart){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        panier.cart.associations.cart_rows.cart_row.push(product);
+                    }
                 }
 
-                this.Cart.push(this.product);
-                localStorage.setItem('cartItem', JSON.stringify(this.Cart));
-            }
-            this.navCtrl.push("CartPage");
-
-        }*/
+               /* for(var items of this.cartItems){
+                    console.log(items);
+                    for(var declinaison of items.declinaison){
+                        console.log(declinaison);    
+                        var product: any = {};
+                        product.id_product = items.productId;
+                        product.id_product_attribute = declinaison.combination.id;
+                        product.id_address_delivery = null;
+                        product.quantity = declinaison.selectedQuantity;
+                        panier.cart.associations.cart_rows.cart_row.push(product);
+                    }
+                }*/
+                console.log(panier);
+                return panier;
+        }
     }
+
 
     checkOptions(option) {
         if (this.product.extraOption.length !== 0) {
@@ -402,7 +499,11 @@ export class ProductDetailsPage {
     }
 
     checkQuantityInCart(){
-        let productInCart = JSON.parse(localStorage.getItem('cartItem'));
+        //let productInCart = JSON.parse(localStorage.getItem('cartItem'));
+        let productInCart;
+        this.storage.get('cart').then((val) =>{
+            productInCart = val;
+        })
         if(productInCart){
             for(var product of productInCart){
                 if(this.productDetails.id === product.productId){
@@ -445,40 +546,103 @@ export class ProductDetailsPage {
 
     addToFavourite(productId) {
         console.log("addFavourite appelé : "+this.productId);
-        if(JSON.parse(localStorage.getItem('user')).token){
-            var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
+        this.storage.get('user').then((val) => {
+            var user = val;
+            if(user && user.token){
+                this.storage.get('favourite').then((val) => {
+                       // favouriteList.push(productId);
+                    var favouriteList = val;
+                    if(favouriteList){
+                    }else{
+                        favouriteList = [];
+                        favouriteList.push(productId);
+                    }
+                this.storage.set('favourite',favouriteList);
+                this.productDetailsService.addToFavourite(productId, 1, user.id_customer, 1).subscribe(data => {
+                    console.log(data);
+                })
+                this.like = true;  
+            })
+
+            }else{
+                this.createToaster('Please login first!', 3000);
+            }
+        })
+    }
+
+    removeFromFavourite(productId) {
+        this.storage.get('user').then((val) => {
+            var user = val;
+            if(user.token){
+                this.storage.get('favourite').then((val)=>{
+                    var favouriteList = val;
+                    if(favouriteList.length == 1)
+                        this.storage.remove('favourite');
+                    else{
+                        for(var i=0; i<favouriteList.length;i++){
+                            if(favouriteList[i] == productId){
+                                favouriteList.splice(i,1);
+                            }
+                        }
+                        this.storage.set('favourite',favouriteList);
+                    }
+                    this.productDetailsService.removeFromFavourite(productId, 1, user.id_customer).subscribe(data => {
+                        console.log(data);
+                    })
+                    this.like = false;
+                })
+            }
+        })
+    }
+
+    /*addToFavourite(productId) {
+        console.log("addFavourite appelé : "+this.productId);
+        var user: any = {};
+        this.storage.get('user').then((val) => {
+            console.log(val);
+            user = val;
+        })
+        console.log(user);
+        //if(JSON.parse(localStorage.getItem('user')).token){
+         if(user && user.token){
+            //var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
+            var favouriteList = null;
+            this.storage.get('favourite').then((val) => {
+                favouriteList = val;
+            })
             if(favouriteList){
                 favouriteList.push(productId);
             }else{
                 favouriteList = [];
                 favouriteList.push(productId);
             }
-            localStorage.setItem('favourite', JSON.stringify(favouriteList));
-            /*this.productDetailsService.addToFavourite(productId,1,1,"d5f1da826483ec93e23dabb4c6d10539").subscribe(data => {
+            //localStorage.setItem('favourite', JSON.stringify(favouriteList));
+            this.storage.set('favourite',favouriteList);
+            this.productDetailsService.addToFavourite(productId,1,1,"d5f1da826483ec93e23dabb4c6d10539").subscribe(data => {
                 console.log(data);
-            })*/
+            })
             this.like = true;            
         }else{
             this.createToaster('Please login first!', 3000);
         }
-        /*if (localStorage.getItem('token')) {
-            this.productDetailsService.addToFavourite(this.productId)
-            .subscribe(res => {
-                console.log("liked!!!");
-                this.like = true;
-                this.createToaster('added to favourites!', 3000);
-            })
-        } else {
-            this.createToaster('please login first!', 3000);
-        }*/
-    }
+    }*/
 
-    removeFromFavourite(productId) {
+   /* removeFromFavourite(productId) {
         console.log("productId"+productId);
-        if (JSON.parse(localStorage.getItem('user')).token) {
-            var favouriteList: any [] = JSON.parse(localStorage.getItem('favourite'));
+        var user = null;
+        this.storage.get('user').then((val) => {
+            user = val;
+        })
+        //if (JSON.parse(localStorage.getItem('user')).token) {
+        if(user.token){
+            //var favouriteList: any [] = JSON.parse(localStorage.getItem('favourite'));
+            var favouriteList = null;
+            this.storage.get('favourite').then((val)=>{
+                favouriteList = val;
+            })
             if(favouriteList.length == 1)
-                localStorage.removeItem('favourite');
+                this.storage.remove('favourite');
+                //localStorage.removeItem('favourite');
             else{
                 for(var i=0; i<favouriteList.length;i++){
                     console.log(favouriteList[i]);
@@ -488,23 +652,38 @@ export class ProductDetailsPage {
                     }
                 }
                 console.log(favouriteList);
-                localStorage.setItem('favourite',JSON.stringify(favouriteList));
+                //localStorage.setItem('favourite',JSON.stringify(favouriteList));
+                this.storage.set('favourite',favouriteList);
             }
             this.like = false;
         }
-
-    }
+    }*/
 
     checkFavourite(){
-        console.log("checkfavourite");
-        var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
-        var idProduct = this.productId;
-        console.log(this.productId);
-        if(favouriteList){
-            this.like = favouriteList.find(function(elem){
-                return elem == idProduct;
-            })
-        }
+        console.log("checkFavourite appele");
+        this.storage.get('user').then((userData)=>{
+            if(userData && userData.token){
+                this.productDetailsService.getFavouriteList(userData.id_customer).subscribe(data=>{
+                    console.log(data);
+                    if(data && data.length > 0){
+                        var idProduct = this.productId;
+                        this.like = data.find(function(elem){
+                            return elem.id_product == idProduct;
+                        })
+                    }
+                })
+                /*this.storage.get('favourite').then((val)=>{
+                    var favouriteList = val;
+                    var idProduct = this.productId;
+                    console.log(this.productId);
+                    if(favouriteList){
+                        this.like = favouriteList.find(function(elem){
+                            return elem == idProduct;
+                        })
+                    }
+                })*/
+            }
+        })
     }
 
     createToaster(message, duration) {

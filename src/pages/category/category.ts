@@ -1,23 +1,41 @@
 import {Component} from '@angular/core';
 import {NavController,NavParams, IonicPage,LoadingController} from 'ionic-angular';
+import {Service} from '../../app/service';
 import {CategoryService} from './category.service';
+import {Storage} from '@ionic/storage';
 
 
 @IonicPage()
 @Component({
     selector: 'page-category',
     templateUrl: 'category.html',
-    providers: [CategoryService]
+    providers: [Service, CategoryService]
 })
 export class CategoryPage {
     categories: any[] = [];
     level: number = 2;
     lastCategoryId: number = 0;
+    noOfItems: number = 0;
+        /**Searchbar**/
+    searchInput: string;
+    searchResults: any[];
+    searching: boolean;
+    searchPlaceholder: string;
+    lastSearch: any[] = [];
     constructor(public navCtrl: NavController,
                 private loadingCtrl:LoadingController,
                 public categoryService:CategoryService,
-                public nav:NavParams) {
+                public nav:NavParams,
+                private storage:Storage,
+                public service:Service) {
 
+        this.storage.get('cart').then((data)=>{
+            if(data){
+                for(var items of data){
+                    this.noOfItems += items.quantity;
+                }
+            }
+        })
      }
 
     ionViewDidLoad(){
@@ -49,6 +67,9 @@ export class CategoryPage {
                      })
                  }
              }
+
+            this.searching = false;
+            this.searchPlaceholder = "Que recherchez-vous?";
              loader.dismiss();
         })
 
@@ -98,12 +119,7 @@ export class CategoryPage {
                     console.log(category);
                     var categ: any = {};
                     categ.id = category.category.id;
-                   /* this.categoryService.getImageForCategory(categ.id).subscribe(image => {
-                        //console.log(image);
-                        //categ.image = image;
-                    })*/
                     categ.image = this.categoryService.getUrlForImage(categ.id);
-
                     categ.id_parent = category.category.id_parent;
                     categ.name = category.category.name[0].value;
                     categ.description = category.category.description[0].value;
@@ -146,4 +162,85 @@ export class CategoryPage {
         }
     }
 
+
+    navcart() {
+        this.navCtrl.push("CartPage");
+    }
+
+    /**Searchbar**/
+    displayLastSearch: boolean = false;
+    onSearch($event){
+        this.searchPlaceholder = "Que recherchez-vous?";
+        if(this.searchInput.length > 2){
+            this.searching = true;
+            this.service.search('query='+this.searchInput+'&language=1')
+            .subscribe((response) => {     
+                this.searching = false;
+                if(response.products){                    
+                    this.searchResults = response.products;
+                }else{
+                    this.searchInput = "";
+                    this.searchPlaceholder = "Aucun résultat";
+                }
+            })
+        }else{
+            this.searchResults = [];
+        }
+       
+    }
+
+    offSearch($event){
+        console.log("offSearch");
+        this.displayLastSearch = false;
+    }
+
+    onFocus($event){
+        console.log("onFocus appelé");
+        this.displayLastSearch = true;
+
+        this.storage.get('search').then(data => {
+            this.lastSearch = data;
+            console.log(this.lastSearch);
+        })
+    }
+
+    completeUserInput(keyword){
+        this.searchInput = keyword;
+        this.displayLastSearch = false;
+        this.onSearch(null);
+    }
+
+    saveSearchInput(keyword){
+        this.storage.get('search').then(data => {
+            this.lastSearch = data;
+        })
+        if(this.lastSearch){
+            var keywordAlreadyPresent = this.lastSearch.find(function(elem){
+                return elem == keyword;
+            })
+
+            if(!keywordAlreadyPresent)
+                this.lastSearch.splice(0,0,keyword);
+        }else{
+            this.lastSearch = [];
+            this.lastSearch.push(keyword);
+        }
+        this.storage.set('search',this.lastSearch);
+    }
+
+    goToProductPage(productId, productName = null) {
+        console.log(productId);
+        this.displayLastSearch = false;
+        this.displaySearchBar = false;
+        this.saveSearchInput(productName);           
+        this.navCtrl.push("ProductDetailsPage", {
+            productId: productId
+        });
+    }
+    
+    displaySearchBar: boolean = false;
+    showSearchBar(){
+        this.displaySearchBar = !this.displaySearchBar;
+        this.displayLastSearch = false;
+    }
 }

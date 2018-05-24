@@ -5,6 +5,7 @@ import {CheckoutService} from './checkout.service';
 import {PayPal, PayPalPayment, PayPalConfiguration} from '@ionic-native/paypal';
 import {Stripe} from '@ionic-native/stripe';
 import {UserService } from '../../providers/user-service';
+import {Storage} from '@ionic/storage';
 
 
 const payPalEnvironmentSandbox = 'AcgkbqWGamMa09V5xrhVC8bNP0ec9c37DEcT0rXuh7hqaZ6EyHdGyY4FCwQC-fII-s5p8FL0RL8rWPRB';
@@ -47,7 +48,8 @@ export class CheckoutPage {
                 public loadingCtrl: LoadingController,
                 public alertCtrl:AlertController,
                 public payPal: PayPal,
-                public stripe: Stripe) {
+                public stripe: Stripe,
+                private storage:Storage) {
 
              this.orderData = this.navParams.get('orderData');
              console.log(this.navParams.get('cartData'));
@@ -82,12 +84,11 @@ export class CheckoutPage {
             console.log(payment);
             if(payment.id_module === this.orderData.paymentOption){
                 console.log(payment.id_module);
-                this.calculateTotalPrice();
+                //this.calculateTotalPrice();
                 var cart = this.navParams.get('cartData');
                 console.log(cart);
-                var customer = JSON.parse(localStorage.getItem('user'));
-                console.log(customer);
-
+                /*var customer = JSON.parse(localStorage.getItem('user'));
+                console.log(customer);*/
 
            //var modif = this.updateCartInfo(cart.cart.id);
            var modif = this.putCartInfo(cart.cart.id);
@@ -101,7 +102,7 @@ export class CheckoutPage {
                         id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
                         id_currency: 1,
                         id_cart: data.cart.id,
-                        id_customer: customer.id_customer,
+                        id_customer: this.navParams.get('cartData').cart.id_customer,
                         module: payment.name,
                         payment: payment.name,
                     //id_shop: 1,
@@ -111,7 +112,8 @@ export class CheckoutPage {
                     conversion_rate: 1,
                     current_state: 1, // "En attente de paiement par chèque"
                     //total_paid: this.orderData.grandTotal, 
-                    total_paid: this.calculateTotalPrice(), 
+                    //total_paid: this.calculateTotalPrice(), 
+                    total_paid: this.navParams.get('totalPrice'),
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -121,7 +123,9 @@ export class CheckoutPage {
                 //Fonctionne mais renvoi "paiement accepté" au lieu de "paiement en attente"
                 this.checkoutService.postOrder(commandeAEnvoyer).subscribe(order =>{
                     console.log(order);
-                    localStorage.removeItem('cartItem');
+                    /*localStorage.removeItem('cartItem');
+                    localStorage.removeItem('id_cart');*/
+                    this.storage.remove('cart');
                     localStorage.removeItem('id_cart');
                     this.navCtrl.push('RecapPaymentPage', {
                         payment: this.orderData.paymentOption,
@@ -240,7 +244,8 @@ export class CheckoutPage {
                     conversion_rate: 1,
                     //current_state: 1, // "En attente de paiement par chèque"
                     //total_paid: this.orderData.grandTotal, 
-                    total_paid: this.calculateTotalPrice(), // Donner le prix exact
+                   // total_paid: this.calculateTotalPrice(), // Donner le prix exact
+                    total_paid: this.navParams.get('totalPrice'),
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -291,7 +296,8 @@ export class CheckoutPage {
                     id_lang: 1,
                     conversion_rate: 1,
                     current_state: 10, // "En attente de virement bancaire"
-                    total_paid: this.calculateTotalPrice(), 
+                    //total_paid: this.calculateTotalPrice(), 
+                    total_paid: this.navParams.get('totalPrice'),
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -319,7 +325,7 @@ export class CheckoutPage {
     }
 
     putCartInfo(cartId){
-        var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
+        //var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
         var cart = this.navParams.get('cartData');
         console.log(cart);
         console.log("panier existant");
@@ -332,7 +338,7 @@ export class CheckoutPage {
                 id_address_invoice: this.orderData.shippingAddress.address.id,
                 id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
                 id_currency: 1,
-                id_customer: id_customer,
+                id_customer: cart.cart.id_customer,
                // id_guest: null,
                 id_lang: 1,
                // recyclable: null,
@@ -366,7 +372,7 @@ export class CheckoutPage {
     }
 
     updateCartInfo(cartId){
-        var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
+        //var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
         var cart = this.navParams.get('cartData');
         console.log(cart);
         console.log("panier existant");
@@ -379,7 +385,7 @@ export class CheckoutPage {
                 id_address_invoice: this.orderData.shippingAddress.address.id,
                 id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
                 id_currency: 1,
-                id_customer: id_customer,
+                id_customer: cart.cart.id_customer,
                // id_guest: null,
                 id_lang: 1,
                // recyclable: null,
@@ -464,7 +470,7 @@ export class CheckoutPage {
       alert.present();
    }
 
-   calculateTotalPrice(){
+   /*calculateTotalPrice(){
        var cart = JSON.parse(localStorage.getItem('cartItem'));
        var totalPrice: number = 0;
        var shippingPrice: number = this.carrier.total_price_with_tax;
@@ -480,7 +486,7 @@ export class CheckoutPage {
        totalPrice = totalPrice + shippingPrice;
        console.log(totalPrice);
        return totalPrice;
-   }
+   }*/
 
    objectToArray(object){
        let item = Object.keys(object);

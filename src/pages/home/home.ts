@@ -1,7 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, IonicPage, LoadingController, Slides} from 'ionic-angular';
+import {NavController, IonicPage, LoadingController, Slides, Searchbar} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {HomeService} from './home.service';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -13,24 +14,35 @@ export class HomePage {
     categories: any[];
    // featured: any[];
     cartItems: any[];
-    noOfItems: number;
+    displayLastSearch: boolean = false;
+    noOfItems: number = 0;
     searchInput: string;
     searchResults: any[];
     searching: boolean;
     searchPlaceholder: string;
+    lastSearch: any[] = [];
     slideProducts: any[] = [];
     currentProduct: any = {};
+    welcomeProducts: any[] = [];
     @ViewChild(Slides) slides: Slides;
+    @ViewChild(Searchbar) searchbar: Searchbar;
 
     constructor(public navCtrl: NavController,
                 public service: Service,
                 public homeService: HomeService,
-                public loadingCtrl: LoadingController) {
+                public loadingCtrl: LoadingController,
+                private storage:Storage) {
 
-        this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-        if (this.cartItems != null) {
-            this.noOfItems = this.cartItems.length;
-        }
+        //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+        this.storage.get('cart').then((cartData)=>{
+            this.cartItems = cartData;
+            if(this.cartItems != null) {
+                for(var items of this.cartItems){
+                    this.noOfItems += items.quantity;
+                }
+            }
+        })
+
         this.searching = false;
         this.searchPlaceholder = "Que recherchez-vous?";
     }
@@ -52,7 +64,10 @@ export class HomePage {
             })
 
        this.getSlideProducts();
-
+       this.homeService.getAccueilProduct().subscribe(data => {
+           console.log(data);
+           this.welcomeProducts = data;
+       })
     }
 
     navigate(MenuId) {
@@ -72,7 +87,7 @@ export class HomePage {
             this.searching = true;
             this.service.search('query='+this.searchInput+'&language=1')
             .subscribe((response) => {     
-                this.searching = false;           
+                this.searching = false;
                 if(response.products){                    
                     this.searchResults = response.products;
                 }else{
@@ -87,11 +102,46 @@ export class HomePage {
     }
 
     offSearch($event){
-
+        this.displayLastSearch = false;
+    }
+    onFocus($event){
+        console.log("onFocus appelé");
+        this.displayLastSearch = true;
+        this.storage.get('search').then(data => {
+            this.lastSearch = data;
+        })
     }
 
-    goToProductPage(productId) {
+    completeUserInput(keyword){
+        console.log(this.searchbar);
+        this.searchInput = keyword;
+        this.displayLastSearch = false;
+        this.onSearch(null);
+    }
+
+    saveSearchInput(keyword){
+        if(keyword){
+            this.storage.get('search').then(data => {
+                this.lastSearch = data;
+            })
+            if(this.lastSearch){
+                var keywordAlreadyPresent = this.lastSearch.find(function(elem){
+                    return elem == keyword;
+                })
+
+                if(!keywordAlreadyPresent)
+                    this.lastSearch.splice(0,0,keyword);
+            }else{
+                this.lastSearch = [];
+                this.lastSearch.push(keyword);
+            }
+            this.storage.set('search',this.lastSearch);
+        }
+    }
+
+    goToProductPage(productId, productName = null) {
         console.log(productId);
+        this.saveSearchInput(productName);           
         this.navCtrl.push("ProductDetailsPage", {
             productId: productId
         });

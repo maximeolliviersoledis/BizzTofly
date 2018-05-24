@@ -6,41 +6,56 @@
 
 <ion-content class="contact">
     <p class="contact-head">{{'Contact Us' | translate}}</p>
-    <form (ngSubmit)="onSend(f)" #f="ngForm">
-        <!--name-->
+    <form (ngSubmit)="onSubmit()" [formGroup]="user">
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>{{'Objet:' | translate}}</ion-label>
+                    <ion-select formControlName="id_contact" placeholder="Choisissez un objet">
+                        <ion-option *ngFor="let contact of contacts" value="{{contact.id_contact}}">{{contact.name}}</ion-option>
+                    </ion-select>
+                </ion-item>
+            </ion-col>
+        </ion-row>
         <ion-row>
             <ion-col col-12>
                 <ion-item>
                     <ion-label>{{'Name:' | translate}}</ion-label>
                     <ion-input type="text" name="name" id="name"
-                               [(ngModel)]="user.name" required></ion-input>
+                               formControlName="name" required></ion-input>
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--email-->
         <ion-row>
             <ion-col col-12>
                 <ion-item>
                     <ion-label>{{'Email:' | translate}}</ion-label>
                     <ion-input type="email" name="email" id="email"
-                               [(ngModel)]="user.email" required></ion-input>
+                               formControlName="email" required ></ion-input>
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--message-->
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label>{{'Référence de commande:' | translate}}</ion-label>
+                    <ion-input type="text" name="ref_commande" id="ref_commande"
+                               formControlName="id_order"></ion-input>
+                </ion-item>
+            </ion-col>
+        </ion-row>
         <ion-row>
             <ion-col col-12>
                 <ion-item>
                     <ion-label>{{'Message:' | translate}}</ion-label>
                     <ion-textarea rows="6" lineHeight="42" name="message" id="message"
-                                  [(ngModel)]="user.message" required></ion-textarea>
+                                  formControlName="message" required></ion-textarea>
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--button-->
         <ion-row>
             <ion-col col-12>
-                <button class="submit-btn" ion-button type='submit' [disabled]="!f.valid"> {{'Send' | translate}}</button>
+                <button class="submit-btn" ion-button type='submit' [disabled]="!user.valid"> {{'Send' | translate}}</button>
             </ion-col>
         </ion-row>
     </form>

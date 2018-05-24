@@ -23,7 +23,9 @@ export function createTranslateLoader(http: Http) {
     ],
     imports: [
         IonicModule.forRoot(MyApp),
-        IonicStorageModule.forRoot(),
+        IonicStorageModule.forRoot({
+            name: 'bizztoflydb'
+        }),
         BrowserModule,
         HttpModule,
         TranslateModule.forRoot({

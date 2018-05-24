@@ -15,12 +15,47 @@ var CategoryService = /** @class */ (function () {
         this.http = http;
         this.constService = constService;
     }
-    CategoryService.prototype.getCategories = function () {
-        var headers = new Headers();
+    /*getCategories() {
+        const headers = new Headers();
         return this.http.get(this.constService.base_url + 'api/categories', {
             headers: headers
         })
-            .map(function (data) { return data.json(); });
+
+            .map((data: Response) => data.json())
+    }*/
+    CategoryService.prototype.getCategories = function () {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/0" + this.constService.keyDir + this.constService.formatDir;
+        //alert(this.constService.categoryDir);
+        // var urlDir = "http://www.bizztofly.com/api-soledis/categories_listing/0?&filter[user]=0";
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json(); });
+    };
+    CategoryService.prototype.getAllCategories = function () {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.categoryDir + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    CategoryService.prototype.getCategory = function (id) {
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + this.constService.categoryDir + "/" + id + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map(function (data) { return data.json() || {}; });
+    };
+    CategoryService.prototype.getImageForCategory = function (categoryId) {
+        //http://www.bizztofly.com/api/images/categories/3?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL
+        var headers = new Headers();
+        var urlDir = this.constService.baseDir + "/images" + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
+        return this.http.get(urlDir, {
+            headers: headers
+        });
+    };
+    CategoryService.prototype.getUrlForImage = function (categoryId) {
+        return this.constService.baseDir + "/images" + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
     };
     CategoryService = __decorate([
         Injectable(),

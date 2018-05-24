@@ -20,23 +20,30 @@ var OrderDetailsPage = /** @class */ (function () {
         this.orderDetailsService = orderDetailsService;
         this.orderDetails = {};
         this.review = {};
-        this.orderId = this.navParams.get('orderId');
     }
-    OrderDetailsPage.prototype.ionViewDidEnter = function () {
-        var _this = this;
+    OrderDetailsPage.prototype.ngOnInit = function () {
         this.loader = this.loadingCtrl.create({
             content: 'please wait'
         });
         this.loader.present();
-        this.orderDetailsService.getOrderDetails(this.orderId)
-            .subscribe(function (order) {
-            _this.orderDetails = order;
-            _this.loader.dismiss();
-            console.log("order-details-" + JSON.stringify(_this.orderDetails));
-            // this.getReviews();
-        }, function (error) {
-            _this.loader.dismiss();
-        });
+        /*this.orderDetailsService.getOrderDetails(this.orderId)
+            .subscribe(order => {
+                this.orderDetails = order;
+                this.loader.dismiss();
+                console.log("order-details-"+JSON.stringify(this.orderDetails));
+               // this.getReviews();
+            },error=>{
+                 this.loader.dismiss();
+            })*/
+        this.orderDetails = this.navParams.get('order');
+        this.orderId = this.orderDetails.order.id;
+        for (var _i = 0, _a = this.orderDetails.order.associations.order_rows; _i < _a.length; _i++) {
+            var i = _a[_i];
+            i.image = this.orderDetailsService.getImageUrlForProduct(i.product_id);
+        }
+        console.log(this.orderDetails);
+        console.log(this.orderDetails.order.associations);
+        this.loader.dismiss();
     };
     OrderDetailsPage.prototype.getReviews = function () {
         var _this = this;

@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CarrierPage } from './carrier';
+import { TranslaterModule } from '../../app/translate.module';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { CarrierPage } from './carrier';
   ],
   imports: [
     IonicPageModule.forChild(CarrierPage),
+    TranslaterModule
   ],
 })
 export class CarrierPageModule {}

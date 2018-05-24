@@ -1,5 +1,6 @@
 export class ConstService {
 
+    action = "&action=";
     adresses = '/addresses';
     base_url = 'https://restaurantrestapi.herokuapp.com/';
     baseDir = "http://www.bizztofly.com/api";
@@ -10,11 +11,16 @@ export class ConstService {
     categoryDir = "/categories";
     categoriesListing = "/categories_listing";
     combinationDir = "/combinations";
+    contactDir = "/contacts";
     customerDir = "/customers";
     idCustomer = "&id_customer=";
     idCart = "&id_cart=";
+    idCartRule = "&id_cart_rule=";
+    idProduct = "&id_product=";
+    idProductAttribute = "&id_product_attribute=";
     imageDir = "/images";
     keyDir = "?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL";
+    favouriteDir = "/favourite";
     filterActive = "&filter[active]=";
     filterIdCart = "&filter[id_cart]=";
     filterIdCustomer = "&filter[id_customer]=";
@@ -25,6 +31,8 @@ export class ConstService {
     orderDir = "/orders";
     paymentDir = "/payments";
     productDetail = "/product_detail";
+    quantity = "&quantity="
+    reductionDir = "/reduction";
     search = "/search";
     specificPriceRulesDir = "/specific_price_rules";
     specificPriceDir = "/specific_prices";

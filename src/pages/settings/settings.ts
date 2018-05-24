@@ -6,6 +6,7 @@ import {UserService} from '../../providers/user-service';
 import {FileUploader} from 'ng2-file-upload';
 import {CloudinaryOptions, CloudinaryUploader } from 'ng2-cloudinary';
 import {SettingsService} from './settings.service';
+import {Storage} from '@ionic/storage';
 
 
 @IonicPage()
@@ -22,6 +23,8 @@ export class Settings {
     newUserInfo: FormGroup;
     preview:string;
     value: any;
+    firstname: string;
+    lastname: string;
 
     options = [
         {
@@ -49,6 +52,7 @@ export class Settings {
 
   userId:string;
   imageUrl:string='assets/img/profile.jpg';
+  userImage: string;
   public notification:any;
 
 
@@ -60,7 +64,8 @@ export class Settings {
                 private toastCtrl:ToastController,
                 public translate: TranslateService,
                 private userService: UserService,
-                private settingService:SettingsService) {
+                private settingService:SettingsService,
+                private storage:Storage) {
 
                 let value= localStorage.getItem('language');
                 this.value = value!=null ? value:'en';
@@ -81,11 +86,16 @@ export class Settings {
             firstName: ['', Validators.pattern(userRegex)],
             lastName: ['',Validators.pattern(userRegex)],
             email: ['', Validators.pattern(emailRegex)],
+            birthday: [''],
             password: ['', Validators.minLength(8)],
             passwordConfirmation: ['', Validators.minLength(8)]
       },{validator: this.passwordMatch});
 
-      var userExist = JSON.parse(localStorage.getItem('user'));
+      this.storage.get('image').then((imageData)=>{
+        this.userImage = imageData;
+      })
+
+      /*var userExist = JSON.parse(localStorage.getItem('user'));
       if(userExist){
         this.settingService.getUser(userExist.id_customer).subscribe(data => {
           this.user = data;
@@ -94,7 +104,21 @@ export class Settings {
       }else{
         this.navCtrl.push('LoginPage');
       }
-      loader.dismiss();
+      loader.dismiss();*/
+      this.storage.get('user').then((data)=>{
+        if(data && data.token){
+          this.settingService.getUser(data.id_customer).subscribe(data => {
+            this.user = data;
+            this.firstname = this.user.customer.firstname;
+            this.lastname = this.user.customer.lastname;
+          })
+        }else{
+          this.navCtrl.push('LoginPage');
+        }
+        loader.dismiss();
+      })
+
+
     }
 
     //Vérifie que les mots de passe soit identiques
@@ -123,6 +147,9 @@ export class Settings {
 
       if(this.newUserInfo.value.password && this.newUserInfo.value.passwordConfirmation)
         this.user.customer.passwd = this.newUserInfo.value.password;
+
+      if(this.newUserInfo.value.birthday)
+        this.user.customer.birthday = this.newUserInfo.value.birthday;
 
       console.log(this.user);
 
@@ -177,6 +204,9 @@ export class Settings {
 
     if(this.newUserInfo.value.password && this.newUserInfo.value.passwordConfirmation)
       return false;
+
+    if(this.newUserInfo.value.birthday)
+      return false;
     return true;
   }
 
@@ -185,7 +215,15 @@ export class Settings {
             var reader = new FileReader();
             reader.onload = (event: any) => {
                 this.preview = event.target.result;
-                this.user.flag=1;
+                //this.user.flag=1;
+
+                this.storage.set('image',this.preview);
+                this.events.publish('image:changed', this.preview);
+                //L'image se trouve supprimer si on la place dans l'objet user
+                /*this.storage.get('user').then((userData)=>{
+                  userData.image = this.preview;
+                  this.storage.set('user',userData);
+                })*/
             };
             reader.readAsDataURL(event.target.files[0]);
         }
@@ -211,8 +249,7 @@ export class Settings {
     }
 
     changeSetting(){
-      //console.log("notification-"+this.notification);
-     localStorage.setItem('notification',this.notification);
+      localStorage.setItem('notification',this.notification);
     }
 
     createToaster(message, duration) {
@@ -221,5 +258,17 @@ export class Settings {
             duration: duration
         });
         toast.present();
+    }
+
+    goToAddressList(){
+      this.navCtrl.push("AddressListPage",{
+          amountDetails: 0,
+          cartData: null,
+          manageAddress: true  
+      })
+    }
+
+    goToReductionList(){
+      this.navCtrl.push("ReductionListPage");
     }
 }

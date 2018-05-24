@@ -9,21 +9,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 };
 import { Injectable } from '@angular/core';
 import { Http } from "@angular/http";
+import { ConstService } from "../providers/const-service";
 var Service = /** @class */ (function () {
-    function Service(http) {
+    function Service(http, constService) {
         this.http = http;
+        this.constService = constService;
     }
     Service.prototype.getData = function () {
         return this.http.get('assets/json/restaurantAppJson.json')
             .map(function (response) { return response.json(); });
     };
+    Service.prototype.search = function (searchQuery) {
+        var urlDir = this.constService.baseDir + this.constService.search + this.constService.keyDir + "&" + searchQuery + this.constService.formatDir;
+        return this.http.get(urlDir)
+            .map(function (data) { return data.json() || {}; });
+    };
     Service = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [Http])
+        __metadata("design:paramtypes", [Http, ConstService])
     ], Service);
     return Service;
 }());
 export { Service };
-//local-path-->'assets/json/restaurantAppJson.json'
-//remote -->'https://s3-us-west-2.amazonaws.com/ionicfirebaseapp.com/restaurantAppJson.json'
 //# sourceMappingURL=service.js.map

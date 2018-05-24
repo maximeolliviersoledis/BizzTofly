@@ -1,19 +1,19 @@
 import {Component, ViewChild} from '@angular/core';
-import {Nav, Platform,Events} from 'ionic-angular';
+import {Nav, Platform,Events, NavController} from 'ionic-angular';
 import {StatusBar} from '@ionic-native/status-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {Service} from '../app/service';
 import {OneSignal} from '@ionic-native/onesignal';
 import {SocialSharing} from '@ionic-native/social-sharing';
 import {SocketService } from '../providers/socket-service';
-//import {UserService} from '../providers/user-service';
 import {TranslateService} from 'ng2-translate';
-
+import {Storage} from '@ionic/storage';
+import {CategoryService} from '../pages/category/category.service';
 
 @Component({
     templateUrl: 'app.html',
     selector: 'MyApp',
-    providers: [Service, OneSignal,SocialSharing]
+    providers: [Service, OneSignal,SocialSharing,CategoryService]
 
 })
 export class MyApp {
@@ -21,7 +21,6 @@ export class MyApp {
     newsCounter: number;
     offerCounter = 0;
     @ViewChild(Nav) nav: Nav;
-
     rootPage: any;
     imageUrl:string='assets/img/profile.jpg';
 
@@ -34,7 +33,9 @@ export class MyApp {
                 public oneSignal: OneSignal,
                 public socialSharing:SocialSharing,
                 public events:Events,
-                public translateService:TranslateService) {
+                public translateService:TranslateService,
+                private storage:Storage,
+                public category:CategoryService) {
          
 
         platform.ready().then((res) => {
@@ -100,23 +101,38 @@ export class MyApp {
          this.nav.setRoot("LoginPage");
         })
        }*/
+
        if(!this.isLogin()){
            this.nav.setRoot("LoginPage");
+       }else{
+           /*this.storage.get('user').then((data)=>{
+               console.log(data);
+               if(data.image)
+                   this.imageUrl = data.image;
+           })*/
+           this.storage.get('image').then((data)=>{
+               if(data)
+                   this.imageUrl = data;
+           })
        }
         
     }
 
    public listenEvents(){
-        this.events.subscribe('imageUrl',(imageUrl)=>{
+        /*this.events.subscribe('imageUrl',(imageUrl)=>{
             this.imageUrl=imageUrl;
             //console.log("listen----->>>>>>"+imageUrl);
             this.renderImage();
+        })*/
+        console.log(this.events);
+        this.events.subscribe('image:changed',(imageUrl)=>{
+            this.imageUrl = imageUrl;
+            //this.renderImage();
         })
     }
 
-
     isLogin() {
-        return localStorage.getItem('user') != null;
+        return JSON.parse(localStorage.getItem('userLoggedIn')) != null;
     }
 
 
@@ -124,8 +140,96 @@ export class MyApp {
         this.nav.setRoot("HomePage");
     }
 
+    categories: any[] = [];
+    displayAllCategories: boolean = false;
+    displayChildCategories: boolean = false;
     catagory() {
+        //this.nav.push("CategoryPage");
+        /*this.category.categoryService.getAllCategories().subscribe(data => {
+            console.log(data);
+        })*/
+       /* if(!this.categories || this.categories.length == 0){
+            this.category.getCategories().subscribe(data=>{
+                console.log(data);
+                //this.categories = data;
+                for(var category of data){
+                    if(category)
+                }
+            })*/
+
+            if(!this.categories || this.categories.length == 0){
+                this.category.getCategory(2).subscribe(data => {
+                    if(data.category.level_depth <= 2){
+                        for(var child of data.category.associations.categories){
+                            this.category.getCategory(child.id).subscribe(childData => {
+                                this.categories.push(childData);
+                            })
+                        }
+                    }
+                })
+            }
+        //this.displayChildCategories = !this.displayChildCategories;
+        this.displayAllCategories = !this.displayAllCategories;
+        console.log(this.displayAllCategories);
+    }
+
+    categoryList(){
         this.nav.push("CategoryPage");
+    }
+
+    //subCategories: any[] = [];
+    goToProductList(category){
+        /*console.log("goToProductList appelé");
+        this.displayAllCategories = !this.displayAllCategories;
+        this.nav.push("ProductListPage", {
+            MenuId: categoryId
+        });*/
+        if(category.category.level_depth <= 2 && category.category.associations.categories){
+            for(var child of category.category.associations.categories){
+                var childAlreadyPresent = this.categories.findIndex(function(elem){
+                    return elem.category.id == child.id;
+                })
+                if(childAlreadyPresent == -1){
+                    this.category.getCategory(child.id).subscribe(data => {
+                        this.categories.splice(this.categories.indexOf(category)+1,0,data);
+                        //this.categories.push(data);
+                    })
+                }
+            }
+            /*console.log(category.category.associations.categories);
+            this.displayChildCategories = !this.displayChildCategories;
+            if(!this.displayChildCategories){
+                for(var i=0; i<this.categories.length;i++){
+                            console.log(this.categories[i]);
+
+                    for(var j=0; j<category.category.associations.categories.length;j++){
+                        if(this.categories[i].category.id == category.category.associations.categories[j].id){
+                            this.categories.splice(i,1);
+                        }
+                    }
+                }
+            }*/
+            /*for(var i=0;i<category.category.associations.categories.length;i++){
+                var childAlreadyPresent = this.categories.find(function(elem){
+                    return elem.category.id == category.category.associations.categories[i];
+                })
+                if(!childAlreadyPresent){
+                    this.category.getCategory(category.category.associations.categories[i].id).subscribe(data => {
+                        this.categories.splice(i,0,data);
+                        //this.categories.push(data);
+                    })
+                }
+            }*/
+        }else{
+            this.displayAllCategories = !this.displayAllCategories;
+            this.nav.push("ProductListPage", {
+                MenuId: category.category.id
+            });
+        }
+    }
+
+    private getIndex(){
+
     }
 
     gotoCart() {
@@ -182,16 +286,23 @@ export class MyApp {
     }
 
     logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
+        /*localStorage.removeItem('token');
+        localStorage.removeItem('user');*/
+        this.storage.remove('user');
+        localStorage.removeItem('userLoggedIn');
+        localStorage.removeItem('id_cart');
         this.events.publish('imageUrl','assets/img/profile.jpg')
         this.nav.setRoot("LoginPage");
     }
 
     isCart() {
-      let cart = JSON.parse(localStorage.getItem('cartItem'));
-      cart != null?this.noOfItems = cart.length:this.noOfItems=null;
-    return true;  
+      //let cart = JSON.parse(localStorage.getItem('cartItem'));
+      /*this.storage.get('cart').then((data)=>{
+          data != null && data.length != null ?this.noOfItems = data.length:this.noOfItems=null;
+      })*/
+      var cart = JSON.parse(localStorage.getItem('cartLength'));
+      cart != null ? this.noOfItems = cart:this.noOfItems=null;
+      return true;  
   }
 
 }
