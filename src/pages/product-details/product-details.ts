@@ -3,13 +3,14 @@ import {NavController, NavParams, AlertController, LoadingController, ToastContr
 import {Service} from '../../app/service';
 import {Storage} from '@ionic/storage';
 import {ProductDetailsService} from './product-details.service';
+import {Vibration} from '@ionic-native/vibration';
 
 
 @IonicPage()
 @Component({
     selector: 'page-product-details',
     templateUrl: 'product-details.html',
-    providers: [Service, ProductDetailsService]
+    providers: [Service, ProductDetailsService, Vibration]
 })
 export class ProductDetailsPage {
     id_declinaisons: number = -1;
@@ -48,7 +49,8 @@ export class ProductDetailsPage {
         public navParams: NavParams,
         private storage: Storage,
         public service: Service,
-        public productDetailsService: ProductDetailsService
+        public productDetailsService: ProductDetailsService,
+        private vibration:Vibration
         ) {
 
         this.productId = navParams.get('productId');
@@ -227,6 +229,7 @@ export class ProductDetailsPage {
                     });
                 }
                 this.createToaster("Successfully added to cart!",2000);
+                this.vibration.vibrate(1000);
             }else{
                 /**Sinon on récupère l'item seulement l'item qui nous intéresse àcl'intérieur du panier**/
                 let itemInCart;
@@ -316,6 +319,7 @@ export class ProductDetailsPage {
                         });
                     }
                     this.createToaster("Successfully added to cart!",2000);
+                    this.vibration.vibrate(1000);
                 }else{
                     let alert = this.alertCtrl.create({
                         title: 'Quantity error',

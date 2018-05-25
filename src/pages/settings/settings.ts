@@ -17,9 +17,6 @@ import {Storage} from '@ionic/storage';
 })
 export class Settings {
     user: any = {};
-    /*newUserInfo: any = {
-      fieldEmpty: true
-    };*/
     newUserInfo: FormGroup;
     preview:string;
     value: any;
@@ -98,22 +95,12 @@ export class Settings {
             birthday: [''],
             password: ['', Validators.minLength(8)],
             passwordConfirmation: ['', Validators.minLength(8)]
-      },{validator: this.passwordMatch});
+      },{validator: [this.passwordMatch,this.checkBirthDate]});
 
       this.storage.get('image').then((imageData)=>{
         this.userImage = imageData;
       })
 
-      /*var userExist = JSON.parse(localStorage.getItem('user'));
-      if(userExist){
-        this.settingService.getUser(userExist.id_customer).subscribe(data => {
-          this.user = data;
-        })
-        console.log(this.newUserInfo);
-      }else{
-        this.navCtrl.push('LoginPage');
-      }
-      loader.dismiss();*/
       this.storage.get('user').then((data)=>{
         if(data && data.token){
           this.settingService.getUser(data.id_customer).subscribe(data => {
@@ -124,10 +111,15 @@ export class Settings {
         }else{
           this.navCtrl.push('LoginPage');
         }
-        loader.dismiss();
       })
+        loader.dismiss();
+    }
 
 
+    checkBirthDate(control: FormGroup){
+      var today = new Date().getTime();
+      var date = new Date(control.controls['birthday'].value).getTime();
+      return today - date > 0 ? null : {'invalid-date':true}; 
     }
 
     //Vérifie que les mots de passe soit identiques

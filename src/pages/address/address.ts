@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams,LoadingController } from 'ionic-angular';
 import { AddressService } from './address.service';
+import { Storage } from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -10,17 +11,6 @@ import { AddressService } from './address.service';
 })
 
 export class AddressPage {
-      /*address={
-        userName:'',
-        homeNumber:'',
-        apartmentName:'',
-        mobileNo:'',
-        landmark:'',
-        city:'',
-        state:'',
-        pincode:''
-      };*/
-
       /* Possibilité d'ajouter un numéro de téléphone */
       address: any = {
         address: 
@@ -38,13 +28,13 @@ export class AddressPage {
           //phone_mobile: ''
         }
       };
-      //orderData:any;
       selectedAddress:any;
 
       constructor(public navCtrl: NavController,
         public navParams: NavParams,
         public loadingCtrl:LoadingController,
-        public addressService:AddressService) {
+        public addressService:AddressService,
+        private storage:Storage) {
 
         //this.orderData=this.navParams.get('orderData');
       }
@@ -91,18 +81,20 @@ export class AddressPage {
             })
           })
         }else{
-          var user = JSON.parse(localStorage.getItem('user'));
-          this.address.address.id_customer = user.id_customer;
-          console.log(this.address);
-          this.addressService.addAddress(this.address).subscribe(data => {
-            addressList.push(data);
-            loader.dismiss();
-            this.navCtrl.push('AddressListPage',{
-              amountDetails:this.navParams.get('amountDetails'),
-              cartData: this.navParams.get('cartData'),
-              addressList: addressList
+          this.storage.get('user').then((data)=>{
+            this.address.address.id_customer = data.id_customer;
+            console.log(this.address);
+            this.addressService.addAddress(this.address).subscribe(data => {
+              addressList.push(data);
+              loader.dismiss();
+              this.navCtrl.push('AddressListPage',{
+                amountDetails:this.navParams.get('amountDetails'),
+                cartData: this.navParams.get('cartData'),
+                addressList: addressList
+              })
             })
           })
+
         }
 
         /*let loader =this.loadingCtrl.create({
