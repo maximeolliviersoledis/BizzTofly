@@ -68,8 +68,8 @@
           <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>   
     </ion-item>
     <ion-item-options>
-      <button ion-button class="continue-btn" (click)="modifyAddress(address.address)">Modify</button>
-      <button ion-button class="delete-btn" class="delete-btn" (click)="deleteAddress(address.address.id)"><ion-icon name="trash"></ion-icon>Delete</button>
+      <button ion-button class="continue-btn" (click)="modifyAddress(address.address)"><ion-icon name="create"></ion-icon>{{'Modify' | translate}}</button>
+      <button ion-button class="delete-btn" (click)="deleteAddress(address.address.id)"><ion-icon name="trash"></ion-icon>{{'Delete' | translate}}</button>
     </ion-item-options>
   </ion-item-sliding>  
  </ion-list>

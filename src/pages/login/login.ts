@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController,Events, AlertController, NavParams, IonicPage, LoadingController, Platform} from 'ionic-angular';
+import {NavController,Events, AlertController, NavParams, IonicPage, LoadingController, Platform, ToastController} from 'ionic-angular';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Facebook} from '@ionic-native/facebook';
 import {GooglePlus} from '@ionic-native/google-plus';
@@ -17,7 +17,7 @@ import {Storage} from '@ionic/storage';
 })
 export class LoginPage {
     user: FormGroup;
-
+    passwordReset: boolean = false;
 
     constructor(public navCtrl: NavController,
         public navParams: NavParams,
@@ -32,7 +32,9 @@ export class LoginPage {
         public loginService: LoginService,
         public userService:UserService,
         public socketService:SocketService,
-        private storage:Storage) {
+        private storage:Storage,
+        public toastCtrl:ToastController) {
+
     }
 
     onLogin() {
@@ -87,7 +89,7 @@ export class LoginPage {
         //De plus, le mot de passe saisit doit faire au minimum 5 caractères (se mettre en accord avec la page d'inscription)
         
         this.user = this.fb.group({
-            email: ['test2@test.fr', Validators.compose(
+            email: ['kevin.pidemont@groupe-soledis.com', Validators.compose(
                 [Validators.required,Validators.pattern(emailRegex)])],
             password: ['testtest', Validators.compose(
                 [Validators.required, Validators.minLength(5)])],
@@ -324,6 +326,46 @@ export class LoginPage {
         }else{
             console.log("Cart was empty");
         }
+    }
+
+    resetPassword(){
+        this.passwordReset = true;
+        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"; //Problème dans la regex (pas besoin de mettre .com pour qu'elle soit valide)
+        this.emailForPassword = this.fb.group({
+            email: ['', Validators.compose(
+                [Validators.required,Validators.pattern(emailRegex)])]
+        });
+    }
+
+    goBackToLoginPage(){
+        this.passwordReset = false;
+    }
+
+    emailForPassword: FormGroup;
+
+    sendMail(){
+        console.log(this.emailForPassword.value);
+        this.loginService.resetPassword(this.emailForPassword.value.email).subscribe(data => {
+            if(data == 1){
+                this.createToaster("Votre mot de passe a été réinitialisé. Un email a été envoyé à l'adresse indiqué",3000);
+                this.passwordReset = false;
+            }else if(data == -1){
+                this.createToaster("Vous devez attendre 360 minutes entre chaque réinitialisation de mot de passe",3000);
+                this.passwordReset = false;
+            }else if(data == -2){
+                this.createToaster("Aucun compte correspondant à cette adresse mail n'a été trouvé",3000);
+            }else {
+                this.createToaster("Votre mot de passe n'a pas pu être réinitialiser",3000);
+            }
+        })
+    }
+
+    createToaster(message, duration) {
+        let toast = this.toastCtrl.create({
+            message: message,
+            duration: duration
+        });
+        toast.present();
     }
         
 

@@ -25,6 +25,7 @@ export class Settings {
     value: any;
     firstname: string;
     lastname: string;
+    noOfItems: number = 0;
 
     options = [
         {
@@ -71,6 +72,14 @@ export class Settings {
                 this.value = value!=null ? value:'en';
                 let notification = localStorage.getItem('notification');
                 this.notification = notification!=null ? notification:true;
+
+                this.storage.get('cart').then((data)=>{
+                  if(data){
+                    for(var product of data){
+                      this.noOfItems += product.quantity;
+                    }
+                  }
+                })
                 
     }
 
@@ -153,6 +162,15 @@ export class Settings {
 
       console.log(this.user);
 
+      /*Obliger de reformater les données reçues par prestashop car sinon l'utilisateur n'appartient plus à aucun groupe*/
+      var customerGroups = this.user.customer.associations.groups;
+
+      //this.user.customer.associations.groups = [];
+      this.user.customer.associations.groups = {group :[]};
+
+      for(var g of customerGroups){
+        this.user.customer.associations.groups.group.push({id:g.id});
+      }
       this.settingService.putUser(this.user.customer.id,this.user).subscribe(data => {
         console.log(data);
         loader.dismiss();
@@ -270,5 +288,9 @@ export class Settings {
 
     goToReductionList(){
       this.navCtrl.push("ReductionListPage");
+    }
+
+    navcart(){
+      this.navCtrl.push("CartPage");
     }
 }

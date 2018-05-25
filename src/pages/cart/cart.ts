@@ -31,62 +31,28 @@ export class CartPage {
                 public popoverCtrl: PopoverController,
                 public toastCtrl: ToastController,
                 private cartService:CartService,
-                private storage:Storage) {
-
-        console.log(navParams.get('product'));
-
-        //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-    }
+                private storage:Storage) {}
 
     ngOnInit(){
-        console.log("ngOnInit() panier appelé");
         this.storage.get('cart').then((data)=>{
             this.cartItems = data;
 
             if (this.cartItems != null) {
-                console.log(this.cartItems);
-                //this.noOfItems = this.cartItems.length;
-                for(var items of this.cartItems){
+                for(var items of this.cartItems)
                     this.noOfItems += items.quantity
-                }
-                /*this.cartService.getCoupons().subscribe(coupons=>{
-                    this.coupons=coupons;
-
-                    this.getPromotion();
-                    console.log(this.promotion);
-                    this.calculatePrice();
-                })*/
-            }
-            if(this.cartItems)
+                
                 this.calculatePrice();
-            this.storage.get('user').then((data)=>{
-                this.user = data;
-                if(this.user){
-                    this.cartService.getReduction(data.id_customer).subscribe(reduction => {
-                        this.reductions = reduction;
-                    })
-                }
-            })
+                this.storage.get('user').then((data)=>{
+                    this.user = data;
+                    if(this.user){
+                        this.cartService.getReduction(data.id_customer).subscribe(reduction => {
+                            this.reductions = reduction;
+                        })
+                    }
+                })
+            }
         })
     }
-
-    /*deleteItem(data) {
-        for (let i = 0; i <= this.cartItems.length - 1; i++) {
-            if (this.cartItems[i].productId == data.productId && this.cartItems[i].sizeOption.pname==data.sizeOption.pname) {
-                this.cartItems.splice(i, 1);
-            }
-        }
-        if (this.cartItems.length == 0) {
-            localStorage.removeItem('cartItem');
-            this.noOfItems = null;
-        } else {
-            this.calculatePrice();
-            localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
-            this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-            this.noOfItems = this.noOfItems - 1;
-        }
-        this.applyCoupon();
-    }*/
 
     deleteItem(data){
         console.log(data);
@@ -102,33 +68,22 @@ export class CartPage {
         }
 
         if(this.cartItems.length == 0){
-            //localStorage.removeItem('cartItem');
             this.storage.remove('cart');
             this.noOfItems = null;
         }else{
             this.calculatePrice();
-            //localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
             this.storage.set('cart',this.cartItems);
-            //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-            this.storage.get('cart').then((data)=>{
+
+            /*A voir l'utilité de refaire un get sur ce qu'on vient de set*/
+            /*this.storage.get('cart').then((data)=>{
                 this.cartItems = data;
-            })
+            })*/
             this.noOfItems = this.noOfItems - 1;
         }
-        this.applyCoupon();
         //this.applyReduction();
     }
 
-
-    applyCoupon() {
-      let subTotals = this.subTotalPrice;
-      this.deductedPrice=Number((this.couponDiscount / 100 * subTotals).toFixed(2));
-      subTotals = subTotals - this.deductedPrice;
-      this.grandTotal = Number((subTotals+this.taxAmount).toFixed(2));
-      //this.createToaster('Coupon applied successfully', '3000');
-
-    }
-
+    /**!! Déjà géré par presta => inutile!!**/
     //Système de promotion(réduction brut et pourcentage) fonctionnel mais usine à gaz
     applyReduction(){
         console.log("Prix avant réduction = "+this.subTotalPrice);
@@ -167,6 +122,7 @@ export class CartPage {
         console.log("Prix après réduction = "+this.subTotalPrice);
     }
 
+    /*Code inutile prestashop gère déjà les promos*/
     getPromotion(){
         
         //Si aucune condition d'appliquée sur la promo, id_product = 0
@@ -175,7 +131,7 @@ export class CartPage {
 
         //Il faudrait pouvoir récupérer toutes les promos et garde seulement celles qui sont encores actives
         //Ou directement récupérer les promos atives (le serveur s'occupe du traitement)
-        /*this.cartService.getSpecificPrices(54).subscribe( res => {
+        this.cartService.getSpecificPrices(54).subscribe( res => {
             console.log(res);
             this.promotion.push(res);
         })        
@@ -186,52 +142,11 @@ export class CartPage {
         this.cartService.getSpecificPrices(35).subscribe( res => {
             console.log(res);
             this.promotion.push(res);
-        })*/
+        })
     }
 
-    /*checkout() {
-      let amountDetails:any={};
-       amountDetails.grandTotal=this.grandTotal;
-       amountDetails.subTotal=this.subTotalPrice;
-       amountDetails.tax=this.taxAmount;
-       amountDetails.couponDiscount=this.couponDiscount;
-       amountDetails.deductedPrice=this.deductedPrice;
-
-      if(JSON.parse(localStorage.getItem('user')).token){
-          console.log(this.cartItems);
-          var panier = this.sendCart();
-          var idCart = localStorage.getItem('id_cart');
-
-          if(idCart){
-              console.log(panier);
-              this.cartService.putCart(idCart, panier).subscribe(data => {
-                  console.log(data);                
-                  this.navCtrl.push("AddressListPage",{
-                  amountDetails:amountDetails,
-                  cartData: data  
-              }); 
-              })
-          }else{
-            this.cartService.postCart(panier).subscribe(data => {
-                console.log(data);          
-                this.navCtrl.push("AddressListPage",{
-                amountDetails:amountDetails,
-                cartData: data  
-              }); 
-            })
-
-        }
-      } else {
-       this.navCtrl.push("LoginPage",{
-        amountDetails:amountDetails,
-        flag:0
-      }); 
-     }
-
-    }*/
-
-
     checkout() {
+        /**Vérifier l'utilité de amountDetails sur les pages suivantes**/
         let amountDetails:any={};
         amountDetails.grandTotal=this.grandTotal;
         amountDetails.subTotal=this.subTotalPrice;
@@ -239,34 +154,29 @@ export class CartPage {
         amountDetails.couponDiscount=this.couponDiscount;
         amountDetails.deductedPrice=this.deductedPrice;
         this.storage.get('user').then((user)=>{
-            if(user.token){
-                console.log(this.cartItems);
+            if(user && user.token){
                 var panier = this.sendCart(user.id_customer);
                 var idCartData = localStorage.getItem('id_cart');
                 if(idCartData){
                     console.log(panier);
                     this.cartService.putCart(idCartData, panier).subscribe(data => {
-                        console.log(data);                
                         this.navCtrl.push("AddressListPage",{
-                            amountDetails:amountDetails,
+                            amountDetails: amountDetails,
                             cartData: data  
                         }); 
                     })
                 }else{
                     this.cartService.postCart(panier).subscribe(data => {
-                        console.log(data);
                         localStorage.setItem('id_cart',data.cart.id);          
                         this.navCtrl.push("AddressListPage",{
-                            amountDetails:amountDetails,
+                            amountDetails: amountDetails,
                             cartData: data  
                         }); 
                     })
-
                 }
             } else {
                 this.navCtrl.push("LoginPage",{
-                    amountDetails:amountDetails,
-                    flag:0
+                    amountDetails: amountDetails
                 }); 
             }
         })
@@ -281,34 +191,18 @@ export class CartPage {
                     console.log("proGrandtotalprice : "+proGrandTotalPrice);
                 }
                 this.subTotalPrice = Number(proGrandTotalPrice.toFixed(2));
-                this.applyReduction();
+                //this.applyReduction();
             }
         }
         /*this.taxAmount = Number(((5 / 100) * this.subTotalPrice).toFixed(2));
         this.grandTotal = Number((this.subTotalPrice + this.taxAmount).toFixed(2));*/
         this.grandTotal = this.subTotalPrice;
-        this.taxAmount = Number((this.grandTotal - this.grandTotal * 0.80).toFixed(2));
-
-        /*let proGrandTotalPrice = 0;
-        for (let i = 0; i <= this.cartItems.length; i++) {
-            if (this.cartItems[i] != null) {
-                if (this.cartItems[i].extraPrice != null) {
-                    proGrandTotalPrice = proGrandTotalPrice + this.cartItems[i].itemTotalPrice + this.cartItems[i].extraPrice;
-                } else {
-                    proGrandTotalPrice = proGrandTotalPrice + this.cartItems[i].itemTotalPrice;
-                }
-                this.subTotalPrice = Number(proGrandTotalPrice.toFixed(2));
-            }
-        }
-        this.taxAmount = Number(((5 / 100) * this.subTotalPrice).toFixed(2));
-        this.grandTotal = Number((this.subTotalPrice + this.taxAmount).toFixed(2));*/
+        this.taxAmount = Number((this.grandTotal - this.grandTotal * 0.80).toFixed(2));    //A voir pour récupérer la taxe
     }
 
 
     add(dataDeclinaison, dataItem) {
         //A optimiser, mets trop de temps pour seulement incrémenter la quantité de 1
-        console.log(dataDeclinaison);
-        console.log(dataItem);
 
         if(dataDeclinaison.selectedQuantity < dataDeclinaison.combination.quantity){
             dataDeclinaison.selectedQuantity += 1;
@@ -324,6 +218,9 @@ export class CartPage {
                     }
                 }
             }
+            
+            this.noOfItems++;
+            this.calculatePrice();
         }else{
             let alert = this.alertCtrl.create({
                 title: "Quantity error!",
@@ -332,26 +229,8 @@ export class CartPage {
             });
             alert.present();
         }
-        this.noOfItems++;
-        this.calculatePrice();
-        this.applyCoupon();
+        //this.applyCoupon();
        // this.applyReduction();
-        /*if (data.quantity < 20) {
-            data.quantity = data.quantity + 1;
-            for (let i = 0; i <= this.cartItems.length - 1; i++) {
-                if (this.cartItems[i].productId == data.productId && this.cartItems[i].sizeOption.pname==data.sizeOption.pname) {
-                    this.cartItems[i].quantity = data.quantity;
-                    if (this.cartItems[i].sizeOption.specialPrice) {
-                        this.cartItems[i].itemTotalPrice = (data.quantity * this.cartItems[i].sizeOption.specialPrice);
-                    } else {
-                        this.cartItems[i].itemTotalPrice = (data.quantity * this.cartItems[i].sizeOption.value);
-                    }
-                }
-            }
-            localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
-            this.calculatePrice();
-            this.applyCoupon();
-        }*/
     }
 
     remove(data) {
@@ -365,30 +244,13 @@ export class CartPage {
             });
             this.cartItems[index].declinaison[indexOfDec].selectedQuantity -= 1;
             this.cartItems[index].quantity--;
-            //localStorage.setItem('cartItem',JSON.stringify(this.cartItems));      
-            this.storage.set('cart',this.cartItems);      
-        }
-        this.noOfItems--;
-        this.calculatePrice();
-        this.applyCoupon();
-        //this.applyReduction();
+            this.storage.set('cart',this.cartItems);
 
-        /*if (data.quantity > 1) {
-            data.quantity = data.quantity - 1;
-            for (let i = 0; i <= this.cartItems.length - 1; i++) {
-                if (this.cartItems[i].productId == data.productId && this.cartItems[i].sizeOption.pname==data.sizeOption.pname) {
-                    this.cartItems[i].quantity = data.quantity;
-                    if (this.cartItems[i].sizeOption.specialPrice) {
-                        this.cartItems[i].itemTotalPrice = (data.quantity * this.cartItems[i].sizeOption.specialPrice);
-                    } else {
-                        this.cartItems[i].itemTotalPrice = (data.quantity * this.cartItems[i].sizeOption.value);
-                    }
-                }
-            }
-            localStorage.setItem('cartItem', JSON.stringify(this.cartItems));
-            this.calculatePrice();
-            this.applyCoupon();
-        }*/
+            this.noOfItems--;
+            this.calculatePrice();      
+        }
+        //this.applyCoupon();
+        //this.applyReduction();
     }
 
     createToaster(message, duration) {
@@ -401,8 +263,6 @@ export class CartPage {
 
     isCart(): boolean {
         return this.cartItems == null || this.cartItems.length == 0 ? false : true;
-        //return localStorage.getItem('cartItem') == null || this.cartItems.length == 0 ? false : true;
-        //return localStorage.getItem('id_cart') == null || this.cartItems.length ==0 ? false : true;
     }
 
     gotoHome() {
@@ -410,9 +270,7 @@ export class CartPage {
     }
 
     deleteAllItem(){
-        //Si on delete tout et qu'on fait un retour arrière avec la fléche, et qu'on ajoute un article dans le panier, les anciens aricles sont encore présents dans le panier
-        this.cartItems.splice(0,this.cartItems.length);
-       // localStorage.removeItem('cartItem');
+       this.cartItems.splice(0,this.cartItems.length);
        this.storage.remove('cart');
 
        if(localStorage.getItem('id_cart')){
@@ -456,9 +314,7 @@ export class CartPage {
                     }
                 };
                 for(var items of this.cartItems){
-                    console.log(items);
                     for(var declinaison of items.declinaison){
-                        console.log(declinaison);    
                         var product: any = {};
                         product.id_product = items.productId;
                         product.id_product_attribute = declinaison.combination.id;
@@ -467,7 +323,6 @@ export class CartPage {
                         modif.cart.associations.cart_rows.cart_row.push(product);
                     }
                 }
-                console.log(modif);
                 return modif;
 
         }else{
@@ -501,9 +356,7 @@ export class CartPage {
                     }
                 };
                 for(var items of this.cartItems){
-                    console.log(items);
                     for(var declinaison of items.declinaison){
-                        console.log(declinaison);    
                         var product: any = {};
                         product.id_product = items.productId;
                         product.id_product_attribute = declinaison.combination.id;
@@ -512,128 +365,29 @@ export class CartPage {
                         panier.cart.associations.cart_rows.cart_row.push(product);
                     }
                 }
-                console.log(panier);
                 return panier;
         }
     }
 
-    /*sendCart(){
-        var id_cart = JSON.parse(localStorage.getItem('id_cart'));
-        if(id_cart){
-            var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
-            console.log("panier existant");
-            var modif = {
-                cart: {
-                    id: id_cart,
-                    id_shop_group: null, 
-                    id_shop: null,
-                    id_address_delivery: null,
-                    id_address_invoice: null,
-                    id_carrier: 0,
-                    id_currency: 1,
-                    id_customer: id_customer,
-                    id_guest: null,
-                    id_lang: 1,
-                    recyclable: null,
-                    gift: null,
-                    gift_message: null,
-                    mobile_theme: null,
-                    delivery_option: null,
-                    secure_key: null,
-                    allow_seperated_package: 0,
-                    date_add: null,
-                    date_upd: null,
-                    associations: {
-                        cart_rows: {
-                            cart_row: []
-                        }
-                    }
-                }
-            };
-            for(var items of this.cartItems){
-                console.log(items);
-                for(var declinaison of items.declinaison){
-                    console.log(declinaison);    
-                    var product: any = {};
-                    product.id_product = items.productId;
-                    product.id_product_attribute = declinaison.combination.id;
-                    product.id_address_delivery = null;
-                    product.quantity = declinaison.selectedQuantity;
-                    modif.cart.associations.cart_rows.cart_row.push(product);
-                }
-            }
-            console.log(modif);
-            return modif;
-
-
-        }else{
-            var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
-            console.log(id_customer);
-            var panier = {
-                cart: 
-                {
-                    id_shop_group: null, 
-                    id_shop: null,
-                    id_address_delivery: null,
-                    id_address_invoice: null,
-                    id_carrier: 0,
-                    id_currency: 1,
-                    id_customer: id_customer,
-                    id_guest: null,
-                    id_lang: 1,
-                    recyclable: null,
-                    gift: null,
-                    gift_message: null,
-                    mobile_theme: null,
-                    delivery_option: null,
-                    secure_key: null,
-                    allow_seperated_package: 0,
-                    date_add: null,
-                    date_upd: null,
-                    associations: {
-                        cart_rows: {
-                            cart_row: []
-                        }
-                    }
-                }
-            };
-            for(var items of this.cartItems){
-                console.log(items);
-                for(var declinaison of items.declinaison){
-                    console.log(declinaison);    
-                    var product: any = {};
-                    product.id_product = items.productId;
-                    product.id_product_attribute = declinaison.combination.id;
-                    product.id_address_delivery = null;
-                    product.quantity = declinaison.selectedQuantity;
-                    panier.cart.associations.cart_rows.cart_row.push(product);
-                }
-            }
-            console.log(panier);
-            return panier;
-
-        }
-    }*/
     checkReduction(){
         if(this.reductionInput){
             var reductionMatch = false;
-            var reductionApplied = false;
             for(var availableReduction of this.reductions){
                 if(this.reductionInput === availableReduction.code){
                     this.cartService.applyReduction(this.user.id_customer, localStorage.getItem('id_cart'), availableReduction.id_cart_rule).subscribe(data => {
                         console.log(data);
-                        reductionApplied = data;
+                        if(data == true)
+                            this.createToaster("Bon de réduction appliqué avec succès !",3000);
+                        else
+                            this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);
+              
                     })
                     reductionMatch = true;
                     break;
                 }
             }
-            if(reductionApplied){
-                this.createToaster("Bon de réduction appliqué avec succès !",3000);
-            }else if(!reductionMatch){
+            if(!reductionMatch){
                 this.createToaster("Aucune réduction correspondant à ce code n'a été trouvée !",3000);
-            }else{
-                this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);
             }
         }else{
             this.createToaster("Veuillez saisir un code de réduction",3000);

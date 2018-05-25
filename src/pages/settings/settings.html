@@ -4,6 +4,12 @@
         <ion-icon name="menu"></ion-icon>
       </button>
         <ion-title>{{'Settings' | translate}}</ion-title>
+        <ion-buttons end>
+            <button ion-button icon-only color="royal"  class="header-btn-cart" (click)="navcart()">
+                <ion-icon name="cart"></ion-icon>
+                <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+            </button>
+        </ion-buttons>
     </ion-navbar>
 </ion-header>
 

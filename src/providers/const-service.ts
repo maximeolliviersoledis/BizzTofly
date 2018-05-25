@@ -13,6 +13,7 @@ export class ConstService {
     combinationDir = "/combinations";
     contactDir = "/contacts";
     customerDir = "/customers";
+    email = "&mail=";
     idCustomer = "&id_customer=";
     idCart = "&id_cart=";
     idCartRule = "&id_cart_rule=";
@@ -33,6 +34,7 @@ export class ConstService {
     productDetail = "/product_detail";
     quantity = "&quantity="
     reductionDir = "/reduction";
+    resetPasswordDir ="/reset_password";
     search = "/search";
     specificPriceRulesDir = "/specific_price_rules";
     specificPriceDir = "/specific_prices";

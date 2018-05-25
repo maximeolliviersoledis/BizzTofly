@@ -83,7 +83,7 @@
 
                 </ion-row>
                 <p class="coupon-applied" *ngIf="deductedPrice">Coupon Applied.</p>-->
-                <ion-row>
+                <ion-row *ngIf="user">
                     <ion-label>{{"Code de réduction" | translate}}</ion-label>
                     <ion-col col-6>
                         <ion-item>      
@@ -91,7 +91,7 @@
                         </ion-item>
                     </ion-col>
                     <ion-col col-6>
-                        <button ion-button (click)="checkReduction()">Envoyer</button>
+                        <button ion-button (click)="checkReduction()">{{'Submit' | translate}}</button>
                     </ion-col>
                 </ion-row>
                 <p class="cart-total"><strong>{{'Order Total' | translate}} </strong><span

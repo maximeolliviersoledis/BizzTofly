@@ -81,6 +81,7 @@ export class RegistrationPage {
     }
 
     ngOnInit(): any {
+        console.log("Registration Page on init");
         var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
         var userRegex = "^[a-zA-Z- ]+";
         //On peut également appliquer des patterns au mot de passe
@@ -168,8 +169,12 @@ export class RegistrationPage {
         })
     }
 
-    isLogin(){
+    /*isLogin(){
         return localStorage.getItem('user') != null ? true : false;
+    }*/
+
+    isLogin(){
+        return JSON.parse(localStorage.getItem('userLoggedIn')) != null;
     }
 
 

@@ -76,4 +76,12 @@ export class LoginService {
 
     }
 
+    resetPassword(email){
+        const headers = new Headers();
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.resetPasswordDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.email + email;
+        return this.http.get(urlDir, {
+            headers: headers
+        }).map((data: Response)=> data.json() || {}) 
+    }
+
 }

@@ -11,61 +11,98 @@
     <img class="logo" src="assets/img/logo-icon.png">
     <!--inputs-->
     <!--email-->
-    <form [formGroup]="user" (ngSubmit)="onLogin()">
+    <div *ngIf="!passwordReset">
+        <form [formGroup]="user" (ngSubmit)="onLogin()">
+            <ion-row>
+                <ion-col col-12>
+                    <ion-item>
+                        <ion-label>{{"Email:" | translate}}</ion-label>
+                        <ion-input type="email" formControlName="email"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <!--password-->
+            <ion-row>
+                <ion-col col-12>
+                    <ion-item>
+                        <ion-label>{{"Password:" | translate}}</ion-label>
+                        <ion-input type="password" formControlName="password"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+
+            <!--button-->
+            <ion-row>
+                <ion-col col-12>
+                    <button color="primary" class="login-btn" ion-button [disabled]="!user.valid">{{"Login" | translate}}</button>
+                </ion-col>
+            </ion-row>
+        </form>
+
         <ion-row>
             <ion-col col-12>
-                <ion-item>
-                    <ion-label>{{"Email:" | translate}}</ion-label>
-                    <ion-input type="email" formControlName="email"></ion-input>
-                </ion-item>
+                <a (click)="resetPassword()">
+                    <p text-center>{{"Forgot password?" | translate}}</p>
+                </a>
+            </ion-col>
+        </ion-row>
+        <!--login with-->
+        <ion-row>
+            <ion-col col-12>
+                <p text-center>{{"LOGIN WITH" | translate}}</p>
             </ion-col>
         </ion-row>
 
-        <!--password-->
+        <!--Social login-->
         <ion-row>
-            <ion-col col-12>
-                <ion-item>
-                    <ion-label>{{"Password:" | translate}}</ion-label>
-                    <ion-input type="password" formControlName="password"></ion-input>
-                </ion-item>
+            <ion-col col-12 text-center>
+              <span (click)="doFbLogin()">
+           <img class="social-icon" src="assets/img/fb.png">
+         </span>
+                <span (click)="googleLogin()">
+           <img class="social-icon" src="assets/img/g+.png">
+         </span>
+                <span (click)="twitterLogin()">
+           <img class="social-icon" src="assets/img/twitter.png">
+         </span>
             </ion-col>
         </ion-row>
 
-        <!--button-->
+        <!--go to registration-->
         <ion-row>
             <ion-col col-12>
-                <button color="primary" class="login-btn" ion-button [disabled]="!user.valid">{{"Login" | translate}}</button>
+                <a (click)="Register()">
+                    <p text-center>{{"REGISTER NOW !" | translate}}</p>
+                </a>
             </ion-col>
         </ion-row>
-    </form>
-    <!--login with-->
-    <ion-row>
-        <ion-col col-12>
-            <p text-center>{{"LOGIN WITH" | translate}}</p>
-        </ion-col>
-    </ion-row>
+    </div>
 
-    <!--Social login-->
-    <ion-row>
-        <ion-col col-12 text-center>
-          <span (click)="doFbLogin()">
-       <img class="social-icon" src="assets/img/fb.png">
-     </span>
-            <span (click)="googleLogin()">
-       <img class="social-icon" src="assets/img/g+.png">
-     </span>
-            <span (click)="twitterLogin()">
-       <img class="social-icon" src="assets/img/twitter.png">
-     </span>
-        </ion-col>
-    </ion-row>
-
-    <!--go to registration-->
-    <ion-row>
-        <ion-col col-12>
-            <a (click)="Register()">
-                <p text-center>{{"REGISTER NOW !" | translate}}</p>
-            </a>
-        </ion-col>
-    </ion-row>
+    <div *ngIf="passwordReset">
+        <form [formGroup]="emailForPassword" (ngSubmit)="sendMail()">
+            <ion-row>
+                <ion-col col-12>
+                    <ion-item>
+                        <ion-label>Email:</ion-label>
+                            <ion-input formControlName="email" type="text"></ion-input>
+                    </ion-item>
+                </ion-col>
+            </ion-row>
+            <!--<div *ngIf="passwordIsReset == 1">{{"Un email a été envoyé à l'adresse indiqué" | translate}}</div>
+            <div *ngIf="passwordIsReset == 0">{{"Votre mot de passe n'a pas pu être réinitialiser" | translate}}</div>
+            <div *ngIf="passwordIsReset == -1">{{"Vous devez attendre 360 minutes entre chaque réinitialisation de mot de passe" | translate}}</div>-->
+            <ion-row>
+                <ion-col col-12>
+                    <button ion-button color="primary" class="login-btn" [disabled]="!emailForPassword.valid">Récupérer</button>
+                </ion-col>
+            </ion-row>
+        </form>
+        <br>
+        <ion-row>
+            <ion-col col-12>
+                <button ion-button color="primary" class="login-btn" (click)="goBackToLoginPage()">Go back to login page</button>
+            </ion-col>
+        </ion-row>
+    </div>
 </ion-content>
