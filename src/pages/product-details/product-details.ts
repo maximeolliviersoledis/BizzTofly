@@ -27,17 +27,10 @@ export class ProductDetailsPage {
     itemInCart: any[] = [];
     Cart: any[] = [];
     prices: any[] = [{value: ''}];
-    /*product: any = {
-        name:'',
-        sizeOption: {},
-        extraOption: []
-    };*/
     product: any = {
         name: ' ',
         quantity: 0,
-        declinaison: [],
-        sizeOption: {},
-        extraOption: []
+        declinaison: []
     }
     productDetails: any = {};
     like: boolean = false;
@@ -54,11 +47,6 @@ export class ProductDetailsPage {
         ) {
 
         this.productId = navParams.get('productId');
-        console.log("product id = "+this.productId);
-        console.log(navParams.get('product'));
-        this.storage.get('user').then((val) => {
-            console.log(val);
-        });
 
         this.storage.get('cart').then((data)=>{
             this.cartItems = data;
@@ -71,13 +59,6 @@ export class ProductDetailsPage {
         this.storage.get('user').then((data)=>{
             this.user = data;
         })
-
-       /* this.storage.get('favourite').then((favourite) => {
-            this.favourites = favourite;
-        })
-        this.storage.get('favourite').then((favourites) => {
-            this.favouriteItems = favourites;
-        })*/
     }
 
     ngOnInit() {
@@ -229,7 +210,7 @@ export class ProductDetailsPage {
                     });
                 }
                 this.createToaster("Successfully added to cart!",2000);
-                this.vibration.vibrate(1000);
+                this.vibration.vibrate(200);
             }else{
                 /**Sinon on récupère l'item seulement l'item qui nous intéresse àcl'intérieur du panier**/
                 let itemInCart;
@@ -319,7 +300,7 @@ export class ProductDetailsPage {
                         });
                     }
                     this.createToaster("Successfully added to cart!",2000);
-                    this.vibration.vibrate(1000);
+                    this.vibration.vibrate(200);
                 }else{
                     let alert = this.alertCtrl.create({
                         title: 'Quantity error',
@@ -463,7 +444,7 @@ export class ProductDetailsPage {
     }
 
 
-    checkOptions(option) {
+    /*checkOptions(option) {
         if (this.product.extraOption.length !== 0) {
             for (let i = 0; i <= this.product.extraOption.length - 1; i++) {
                 if (this.product.extraOption[i].name == option.name) {
@@ -479,7 +460,7 @@ export class ProductDetailsPage {
         else {
             this.product.extraOption.push(option);
         }
-    }
+    }*/
 
     /*sizeOptions(price) {
         this.product.sizeOption = price;
@@ -536,25 +517,39 @@ export class ProductDetailsPage {
         });
     }
 
-    //Add favourite
-
-    visible = true;
     favourites: any[] = [];
     favourite: any[] = [];
     favouriteItems: any[] = [];
 
-
-    toggleFavourite() {
-        this.visible = !this.visible;
+    addToFavourite(productId){
+        console.log("addFavourite appelé : "+this.productId);
+            if(this.user && this.user.token){
+                this.productDetailsService.addToFavourite(productId, 1, this.user.id_customer, 1).subscribe(data => {
+                    console.log(data);
+                })
+                this.like = true;  
+            }else{
+                this.createToaster('Please login first!', 3000);
+            }
     }
 
-    addToFavourite(productId) {
+    removeFromFavourite(productId){
+        console.log("addFavourite appelé : "+this.productId);
+            if(this.user && this.user.token){
+                this.productDetailsService.removeFromFavourite(productId, 1, this.user.id_customer).subscribe(data => {
+                    console.log(data);
+                })
+                this.like = false;  
+            }else{
+                this.createToaster('Please login first!', 3000);
+            }
+    }
+    /*addToFavourite(productId) {
         console.log("addFavourite appelé : "+this.productId);
         this.storage.get('user').then((val) => {
             var user = val;
             if(user && user.token){
                 this.storage.get('favourite').then((val) => {
-                       // favouriteList.push(productId);
                     var favouriteList = val;
                     if(favouriteList){
                     }else{
@@ -597,7 +592,7 @@ export class ProductDetailsPage {
                 })
             }
         })
-    }
+    }*/
 
     /*addToFavourite(productId) {
         console.log("addFavourite appelé : "+this.productId);
@@ -668,7 +663,6 @@ export class ProductDetailsPage {
         this.storage.get('user').then((userData)=>{
             if(userData && userData.token){
                 this.productDetailsService.getFavouriteList(userData.id_customer).subscribe(data=>{
-                    console.log(data);
                     if(data && data.length > 0){
                         var idProduct = this.productId;
                         this.like = data.find(function(elem){

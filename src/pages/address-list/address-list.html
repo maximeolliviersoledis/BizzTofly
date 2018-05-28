@@ -1,5 +1,19 @@
 <ion-header>
-    <custom-header [header]="header_data"></custom-header>
+    <!--<custom-header [header]="header_data"></custom-header>-->
+    <ion-navbar>
+        <button ion-button menuToggle start>
+            <ion-icon name="menu"></ion-icon>
+        </button>
+        <ion-title *ngIf="!manageAddress">{{'Delivery Options' | translate}}</ion-title>
+        <ion-title *ngIf="manageAddress">{{'Manage your addresses' | translate}}</ion-title>
+
+        <ion-buttons *ngIf="manageAddress" end>
+          <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
+            <ion-icon name="cart"></ion-icon>
+            <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+          </button>
+        </ion-buttons>
+    </ion-navbar>
 </ion-header>
 
 <ion-content padding class="address-list">

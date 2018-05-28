@@ -3,12 +3,13 @@ import {NavController, IonicPage, LoadingController, Slides, Searchbar} from 'io
 import {Service} from '../../app/service';
 import {HomeService} from './home.service';
 import {Storage} from '@ionic/storage';
+import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
 
 @IonicPage()
 @Component({
     selector: 'page-home',
     templateUrl: 'home.html',
-    providers: [Service, HomeService]
+    providers: [Service, HomeService, NativePageTransitions]
 })
 export class HomePage {
     categories: any[];
@@ -31,7 +32,8 @@ export class HomePage {
                 public service: Service,
                 public homeService: HomeService,
                 public loadingCtrl: LoadingController,
-                private storage:Storage) {
+                private storage:Storage,
+                private pageTransition:NativePageTransitions) {
 
         //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
         this.storage.get('cart').then((cartData)=>{
@@ -78,6 +80,17 @@ export class HomePage {
     }
 
     navcart() {
+        let options: NativeTransitionOptions = {
+            direction: 'up',
+            duration: 500,
+            slowdownfactor: 3,
+            slidePixels: 20,
+            iosdelay: 100,
+            androiddelay: 1500,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 60
+        };
+        this.pageTransition.slide(options); //Erreur cordova missing
         this.navCtrl.push("CartPage");
     }
 

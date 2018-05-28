@@ -5,7 +5,7 @@
   "Restaurant App": "BizzToFly",
   "MyCart" : "Mon panier",
   "Your Orders" : "Vos commandes",
-  "Favourite":"favori",
+  "Favourite":"Favori",
   "Settings" : "Paramètres",
   "News":"Nouvelles",
   "Invite Friends": "Inviter des amis",
@@ -156,5 +156,8 @@
   "Carrier":"Transporteur",
   "Forgot password?": "Mot de passe oublié?",
   "Modify": "Modifier",
-  "Delete": "Supprimer"
+  "Delete": "Supprimer",
+  "Manage your addresses": "Gérer vos adresses",
+  "Categories List": "Liste des Catégories",
+  "Shops": "Boutiques"
 }

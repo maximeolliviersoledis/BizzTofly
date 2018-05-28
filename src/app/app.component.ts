@@ -305,4 +305,8 @@ export class MyApp {
       return true;  
   }
 
+  shopsLocalisation(){
+      this.nav.push("ShopsPage");
+  }
+
 }

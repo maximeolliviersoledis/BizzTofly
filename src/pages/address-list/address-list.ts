@@ -15,6 +15,7 @@ export class AddressListPage {
   orderData:any={ };
   showAddress: boolean = false;
   selectedAddress:any={};
+  noOfItems: number;
   header_data:any;    
   /*reductions: any[] = [];
   reductionInput: String;*/
@@ -55,7 +56,8 @@ export class AddressListPage {
     if(!this.manageAddress){
       this.manageAddress = false;
     }
-    let pageTitle = this.manageAddress ? "Manage address" : "Delivery Options";
+    this.noOfItems = this.navParams.get('noOfItems');
+    let pageTitle = this.manageAddress ? "Manage your addresses" : "Delivery Options";
     this.header_data = {ismenu: false , isHome:false, isCart: true,isSearch:false, title: pageTitle};
   }
 
@@ -262,5 +264,9 @@ export class AddressListPage {
             this.createToaster("Veuillez saisir un code de réduction",3000);
         }
     }*/
+
+    navcart(){
+      this.navCtrl.push('CartPage');
+    }
 
   }

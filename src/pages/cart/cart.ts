@@ -162,7 +162,7 @@ export class CartPage {
                     this.cartService.putCart(idCartData, panier).subscribe(data => {
                         this.navCtrl.push("AddressListPage",{
                             amountDetails: amountDetails,
-                            cartData: data  
+                            cartData: data,
                         }); 
                     })
                 }else{
@@ -170,7 +170,7 @@ export class CartPage {
                         localStorage.setItem('id_cart',data.cart.id);          
                         this.navCtrl.push("AddressListPage",{
                             amountDetails: amountDetails,
-                            cartData: data  
+                            cartData: data,
                         }); 
                     })
                 }

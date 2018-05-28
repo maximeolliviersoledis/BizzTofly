@@ -274,7 +274,8 @@ export class Settings {
       this.navCtrl.push("AddressListPage",{
           amountDetails: 0,
           cartData: null,
-          manageAddress: true  
+          manageAddress: true,
+          noOfItems: this.noOfItems  
       })
     }
 

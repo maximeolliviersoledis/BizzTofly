@@ -11,6 +11,7 @@ import {BrowserModule} from "@angular/platform-browser";
 import {ConstService } from '../providers/const-service';
 import {UserService } from '../providers/user-service';
 import {SocketService } from '../providers/socket-service';
+import {GoogleMaps} from '@ionic-native/google-maps';
 
 
 export function createTranslateLoader(http: Http) {
@@ -48,7 +49,8 @@ export function createTranslateLoader(http: Http) {
         SplashScreen,
         ConstService,
         SocketService,
-        UserService
+        UserService,
+        GoogleMaps
     ]
 })
 export class AppModule {
