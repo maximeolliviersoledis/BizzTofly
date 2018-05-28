@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Platform } from 'ionic-angular';
 import {ShopsService} from './shops.service';
 import {Storage} from '@ionic/storage';
 import {GoogleMap, GoogleMaps, GoogleMapOptions, GoogleMapsEvent, Marker} from '@ionic-native/google-maps';
@@ -16,21 +16,34 @@ export class ShopsPage {
   constructor(public navCtrl: NavController,
   			  public navParams: NavParams, 
   			  public shopsService:ShopsService,
-  			  private storage:Storage) {
+  			  private storage:Storage, public platform:Platform) {
   	this.storage.get('cart').then((data)=>{
-  		console.log(data);
   		if(data)
   			for(var item of data)
   				this.noOfItems += item.quantity;
   	})
 
+  	platform.ready().then(()=>{
+  		console.log("Platform ready");
+  		this.loadMap();
+  	})
   }
 
   ionViewDidLoad() {
     console.log('ionViewDidLoad ShopsPage');
-    this.map = GoogleMaps.create('map_canvas');
+  }
+
+  navcart(){
+  	this.navCtrl.push("CartPage");
+  }
+
+  loadMap(){
+    this.map = GoogleMaps.create('map');
     this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
     	console.log("map is ready");
+    })
+    this.map.on(GoogleMapsEvent.MAP_READY).subscribe(()=>{
+    	console.log("map ready");
     })
     /*let mapOptions: GoogleMapOptions = {
       camera: {
@@ -58,9 +71,4 @@ export class ShopsPage {
       alert('clicked');
     });*/
   }
-
-  navcart(){
-  	this.navCtrl.push("CartPage");
-  }
-
 }
