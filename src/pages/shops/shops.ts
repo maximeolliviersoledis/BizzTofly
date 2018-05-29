@@ -39,9 +39,9 @@ export class ShopsPage {
 
   loadMap(){
     this.map = GoogleMaps.create('map');
-    this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
+   /*this.map.one(GoogleMapsEvent.MAP_READY).then(() => {
     	console.log("map is ready");
-    })
+    })*/
     this.map.on(GoogleMapsEvent.MAP_READY).subscribe(()=>{
     	console.log("map ready");
     })

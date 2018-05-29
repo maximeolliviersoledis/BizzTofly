@@ -54,23 +54,23 @@
     </ion-row>
     <ion-row>
         <p>{{productDetails.name}}</p>
-        <p>{{productDetails.description_short}}</p>
+        <div [innerHTML]="productDetails.description_short"></div>
         <ion-item>
-         <ion-label>Déclinaison :</ion-label>            
-            <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="Choisir une déclinaison">
+         <ion-label>{{'Combination' | translate}} :</ion-label>            
+            <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="{{'Select a combination' | translate}}">
                 <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec.id}}>{{dec.name}}</ion-option>
             </ion-select>
         </ion-item>
             <div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
 
             <!--<ng-template #thenBlock><ion-label>Quantité : {{declinaison.combination.quantity}}</ion-label></ng-template>-->
-            <ng-template #thenBlock>En stock : {{quantity}}</ng-template>
-            <ng-template #elseBlock>Stock total : {{productDetails.quantity}}</ng-template>
+            <ng-template #thenBlock>{{'In stock' | translate}} : {{quantity}}</ng-template>
+            <ng-template #elseBlock>{{'Total in stock' | translate}} : {{productDetails.quantity}}</ng-template>
 
 
         
        <!-- <span *ngIf="productDetails.available_now == 'En stock'">Produit disponible</span>-->
-        <p>Prix : {{productDetails.price | number:'.2-2'}}</p>
+        <p>{{'Price' | translate}} : {{productDetails.price | number:'.2-2'}}</p>
     </ion-row>
     <ion-row>
         <ion-col col-6>

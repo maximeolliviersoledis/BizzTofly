@@ -169,8 +169,11 @@ export class CategoryPage {
 
     /**Searchbar**/
     displayLastSearch: boolean = false;
+    noResultFound: boolean = false;
     onSearch($event){
         this.searchPlaceholder = "Que recherchez-vous?";
+        this.noResultFound = false;
+
         if(this.searchInput.length > 2){
             this.searching = true;
             this.service.search('query='+this.searchInput+'&language=1')
@@ -179,19 +182,21 @@ export class CategoryPage {
                 if(response.products){                    
                     this.searchResults = response.products;
                 }else{
-                    this.searchInput = "";
+                    //this.searchInput = "";
+                    this.searchResults = [];
+                    this.noResultFound = true;
                     this.searchPlaceholder = "Aucun résultat";
+                    this.displayLastSearch = false;
                 }
             })
         }else{
             this.searchResults = [];
         }
-       
     }
 
     offSearch($event){
-        console.log("offSearch");
         this.displayLastSearch = false;
+        this.noResultFound = false;
     }
 
     onFocus($event){

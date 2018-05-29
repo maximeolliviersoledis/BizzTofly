@@ -79,7 +79,7 @@
         <p class="show-address">{{address.address.city}}</p>
         <p class="show-address">{{address.address.postcode}}</p>   
       </ion-label> 
-          <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>   
+          <ion-radio  (ionSelect)="selectAddress(address)"></ion-radio>
     </ion-item>
     <ion-item-options>
       <button ion-button class="continue-btn" (click)="modifyAddress(address.address)"><ion-icon name="create"></ion-icon>{{'Modify' | translate}}</button>

@@ -33,7 +33,10 @@
 			<ion-radio (ionSelect)="selectCarrier(carrier)"></ion-radio>
 		</ion-item>
 	</ion-list>
-
+	<ion-item>
+		<ion-label>Accepter les cgv <ion-item class="cgv" (click)="showCGV($event)">(Lire les conditions générales de ventes)</ion-item></ion-label>
+		<ion-checkbox [(ngModel)]="acceptCGV"></ion-checkbox>
+	</ion-item>
 	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
       <ion-icon name="arrow-forward"></ion-icon>
     </button> 

@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController, NavParams, IonicPage, LoadingController,AlertController} from 'ionic-angular';
+import {NavController, NavParams, IonicPage, LoadingController,AlertController, ToastController} from 'ionic-angular';
 import {NgForm} from "@angular/forms";
 import {CheckoutService} from './checkout.service';
 import {PayPal, PayPalPayment, PayPalConfiguration} from '@ionic-native/paypal';
@@ -49,7 +49,8 @@ export class CheckoutPage {
                 public alertCtrl:AlertController,
                 public payPal: PayPal,
                 public stripe: Stripe,
-                private storage:Storage) {
+                private storage:Storage,
+                public toastCtrl:ToastController) {
 
              this.orderData = this.navParams.get('orderData');
              console.log(this.navParams.get('cartData'));
@@ -62,6 +63,8 @@ export class CheckoutPage {
         this.userId=user._id;
         })
         this.carrier = this.navParams.get('carrierData');
+        console.log(this.carrier);
+        console.log(this.navParams.get('totalPrice') + this.carrier.total_price_with_tax);
         console.log(this.objectToArray(this.carrier.carrier_list)[0].instance.id);
         //Permet de récupérer tous les moyens de paiements dispo
         this.checkoutService.getAvailablePayments(0).subscribe(data => {
@@ -113,7 +116,7 @@ export class CheckoutPage {
                     current_state: 1, // "En attente de paiement par chèque"
                     //total_paid: this.orderData.grandTotal, 
                     //total_paid: this.calculateTotalPrice(), 
-                    total_paid: this.navParams.get('totalPrice'),
+                    total_paid: this.navParams.get('totalPrice') + this.carrier.total_price_with_tax,
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -127,10 +130,14 @@ export class CheckoutPage {
                     localStorage.removeItem('id_cart');*/
                     this.storage.remove('cart');
                     localStorage.removeItem('id_cart');
-                    this.navCtrl.push('RecapPaymentPage', {
+                    this.createToaster("Votre commande a bien été prise en compte",3000);
+
+                    this.navCtrl.push("HomePage");
+                    
+                    /*this.navCtrl.push('RecapPaymentPage', {
                         payment: this.orderData.paymentOption,
                         order: order
-                    });
+                    });*/
                     //this.navCtrl.setRoot("ThankyouPage");
                 })
 
@@ -245,7 +252,7 @@ export class CheckoutPage {
                     //current_state: 1, // "En attente de paiement par chèque"
                     //total_paid: this.orderData.grandTotal, 
                    // total_paid: this.calculateTotalPrice(), // Donner le prix exact
-                    total_paid: this.navParams.get('totalPrice'),
+                    total_paid: this.navParams.get('totalPrice') + this.carrier.total_price_with_tax,
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -257,10 +264,12 @@ export class CheckoutPage {
                     console.log(order);
                     localStorage.removeItem('cartItem');
                     localStorage.removeItem('id_cart');
-                    this.navCtrl.push('RecapPaymentPage', {
+                    /*this.navCtrl.push('RecapPaymentPage', {
                         payment: this.orderData.paymentOption,
                         order: order
-                    });
+                    });*/
+                    this.createToaster("Votre commande a bien été prise en compte",3000);
+                    this.navCtrl.push("HomePage");
                     //this.navCtrl.setRoot("ThankyouPage");
                 })
 
@@ -297,7 +306,7 @@ export class CheckoutPage {
                     conversion_rate: 1,
                     current_state: 10, // "En attente de virement bancaire"
                     //total_paid: this.calculateTotalPrice(), 
-                    total_paid: this.navParams.get('totalPrice'),
+                    total_paid: this.navParams.get('totalPrice') + this.carrier.total_price_with_tax,
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
                     total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
@@ -308,9 +317,11 @@ export class CheckoutPage {
                     console.log(order);
                     localStorage.removeItem('cartItem');
                     localStorage.removeItem('id_cart');
-                    this.navCtrl.push('RecapPaymentPage', {
+                    this.createToaster("Votre commande a bien été prise en compte",3000);
+                    this.navCtrl.push("HomePage");
+                    /*this.navCtrl.push('RecapPaymentPage', {
                         payment: this.orderData.paymentOption
-                    })
+                    })*/
                     //this.navCtrl.setRoot("ThankyouPage");
                 })
             });
@@ -497,4 +508,11 @@ export class CheckoutPage {
        return array;
    }
 
+    createToaster(message, duration) {
+        let toast = this.toastCtrl.create({
+            message: message,
+            duration: duration
+        });
+        toast.present();
+    }
 }

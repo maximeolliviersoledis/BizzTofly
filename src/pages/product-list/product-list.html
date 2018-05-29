@@ -36,6 +36,9 @@
       {{searchResult.name}}
     </ion-item>
   </ion-list>
+  <ion-item *ngIf="noResultFound" class="search-results">
+    {{'No result found' | translate}}
+  </ion-item>
 </div>
 </ion-header>
 <ion-content>

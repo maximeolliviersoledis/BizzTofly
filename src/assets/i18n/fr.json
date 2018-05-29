@@ -159,5 +159,21 @@
   "Delete": "Supprimer",
   "Manage your addresses": "Gérer vos adresses",
   "Categories List": "Liste des Catégories",
-  "Shops": "Boutiques"
+  "Shops": "Boutiques",
+  "No result found": "Aucun résultat",
+  "Products total incl_tax": "Total produits TTC",
+  "Total shipping cost (incl_tax)": "Total frais de port (TTC)",
+  "Total incl_tax": "Total TTC",
+  "Selected carrier": "Transporteur sélectionné",
+  "Shipping address": "Adresse de livraison",
+  "Quantity": "Quantité",
+  "Price": "Prix",
+  "Total": "Total",
+  "Combination": "Déclinaison",
+  "Select a combination": "Sélectionner une combinaison",
+  "In stock": "En stock",
+  "Total in stock": "Total en stock",
+  "Reduction code": "Code de réduction",
+  "Empty cart": "Vider le panier",
+  "Enter your reduction code": "Saisisser ici le code de réduction"
 }

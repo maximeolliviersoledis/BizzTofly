@@ -15,19 +15,30 @@
                 <img src="{{item.imageUrl}}" alt="{{product.name}}">
 			</ion-col>
 			<ion-col col-9>
-				<p>{{item.name}} : {{product.name}}</p>
-				<p>Quantity : {{product.selectedQuantity}}</p>
-				<p>Price : {{product.endPrice | number:'.2-2'}}</p>
-				<p>Total : {{totalProductPrice(product.endPrice, product.selectedQuantity) | number:'.2-2'}}<p>
+				<p class="product">{{item.name}} : {{product.name}}</p>
+				<p>{{'Quantity' | translate}} : {{product.selectedQuantity}}</p>
+				<p>{{'Price' | translate}} : {{product.endPrice | number:'.2-2'}} €</p>
+				<p>{{'Total' | translate}} : {{totalProductPrice(product.endPrice, product.selectedQuantity) | number:'.2-2'}} €<p>
 			</ion-col>
 		</ion-row>
 	</ion-item>
 </ion-list>
 <ion-item>
-	<p>Total TTC : {{totalPrice | number:'.2-2'}}</p>
-	<p>Total frais de port (TTC) : {{carrierData.total_price_with_tax | number:'.2-2'}}
+	<p>{{'Products total incl_tax' | translate}} : {{totalPrice | number:'.2-2'}} €</p>
+	<p>{{'Total shipping cost (incl_tax)' | translate}} : {{carrierData.total_price_with_tax | number:'.2-2'}} €</p>
+	<p>{{'Total incl_tax ' | translate}}: {{totalPriceWithCarrier | number:'.2-2'}} €</p>
+	<br>
+	<ion-row>
+		<ion-col col-9>
+			<p class="product">{{'Selected carrier' | translate}} : {{objectToArray(carrierData.carrier_list)[0].instance.name}}</p>
+		</ion-col>
+		<ion-col col-3>
+			<img src="{{carrierData.image}}" alt="Transporteur">
+		</ion-col>
+	</ion-row>
+	<p>{{'Shipping address' | translate}} : {{orderData.shippingAddress.address.city}} {{orderData.shippingAddress.address.address1}}</p>
 </ion-item>
-	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
+	<button ion-button block class="continue-btn"  (click)="goToPayment()"> {{'Continue' | translate}} &nbsp;
       <ion-icon name="arrow-forward"></ion-icon>
     </button> 
 </ion-content>

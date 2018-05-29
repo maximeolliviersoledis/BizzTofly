@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController } from 'ionic-angular';
 import { CarrierService } from './carrier.service';
 import {Storage} from '@ionic/storage';
+import {CgvPage} from '../cgv/cgv';
 
 @IonicPage()
 @Component({
@@ -12,12 +13,14 @@ import {Storage} from '@ionic/storage';
 export class CarrierPage {
 	carriers: any[] =  [];
 	carrier: any = {};
+  acceptCGV: boolean = false;
 
   constructor(public navCtrl: NavController, 
   			  public navParams: NavParams,
   			  public carrierService: CarrierService,
     		  public alertCtrl:AlertController,
-          private storage:Storage
+          private storage:Storage,
+          public popoverCtrl:PopoverController
   			  ) {
   }
 
@@ -67,20 +70,18 @@ export class CarrierPage {
   }
 
   goToPayment(){
-  	if(this.carrier && this.carrier.carrier_list){
-  	    /*this.navCtrl.push("CheckoutPage", {
-          orderData: this.navParams.get('orderData'),
-          cartData: this.navParams.get('cartData'),
-          carrierData: this.carrier
-        });*/
+  	if(this.carrier && this.carrier.carrier_list && this.acceptCGV){
+
         this.navCtrl.push("RecapPage", {
           orderData: this.navParams.get('orderData'),
           cartData: this.navParams.get('cartData'),
           carrierData: this.carrier
         })
+  	}else if(!this.acceptCGV){
+  		this.showAlert('Veuillez accepter les cgv !');
   	}else{
-  		this.showAlert('Veuillez sélectionner un transporteur !');
-  	}
+      this.showAlert('Veuillez sélectionner un transporteur !');
+    }
   }
 
   private showAlert(message) {
@@ -89,6 +90,13 @@ export class CarrierPage {
       buttons: ['OK']
     });
     alert.present();
+  }
+
+  showCGV($event){
+    let popover = this.popoverCtrl.create(CgvPage);
+    popover.present({
+      ev: $event
+    });
   }
 
   objectToArray(object){

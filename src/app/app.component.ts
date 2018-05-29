@@ -39,14 +39,20 @@ export class MyApp {
          
 
         platform.ready().then((res) => {
+            console.log(res);
+            alert(res);
            // alert('ici11');
             if (res == 'cordova') {
-                this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
+                alert('res == cordova');
+                //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
+                this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
                 this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
                 this.oneSignal.handleNotificationReceived().subscribe(() => {
+                    alert('Notification received');
                 });
                 this.oneSignal.handleNotificationOpened().subscribe(() => {
                     console.log("notification opened!");
+                    alert('Notification opened');
                 });
                 this.oneSignal.endInit();
             }
@@ -55,7 +61,7 @@ export class MyApp {
         });
 
 
-        this.service.getData()
+        /*this.service.getData()
             .subscribe((response) => {
                 this.newsCounter = response.newsList.length;
                 for (let i = 0; i <= response.menuItems.length - 1; i++) {
@@ -64,7 +70,7 @@ export class MyApp {
 
                     }
                 }
-            })
+            })*/
     }
 
      ngOnInit(): any {

@@ -12,6 +12,7 @@ import {ConstService } from '../providers/const-service';
 import {UserService } from '../providers/user-service';
 import {SocketService } from '../providers/socket-service';
 import {GoogleMaps} from '@ionic-native/google-maps';
+import {CgvPageModule} from '../pages/cgv/cgv.module';
 
 
 export function createTranslateLoader(http: Http) {
@@ -33,7 +34,8 @@ export function createTranslateLoader(http: Http) {
             provide: TranslateLoader,
             useFactory: createTranslateLoader,
             deps: [Http]
-        })
+        }),
+        CgvPageModule
 
 
     ],

@@ -20,6 +20,7 @@ export class RecapPage {
   carrierData: any = {};
   products: any[] = [];
   totalPrice: number = 0;
+  totalPriceWithCarrier: number = 0;
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage:Storage) {
   }
 
@@ -27,7 +28,7 @@ export class RecapPage {
   	this.cartData = this.navParams.get('cartData');
   	this.orderData = this.navParams.get('orderData');
   	this.carrierData = this.navParams.get('carrierData');
-
+    console.log(this.carrierData);
   	console.log(this.cartData);
   	console.log(this.orderData);
     console.log(this.orderData.cart[0].imageUrl);
@@ -61,8 +62,9 @@ export class RecapPage {
              totalPrice += declinaison.endPrice * declinaison.selectedQuantity;
            }
          }
-         totalPrice + this.carrierData.total_price_with_tax;
+         //totalPrice + this.carrierData.total_price_with_tax;
          this.totalPrice = totalPrice;
+         this.totalPriceWithCarrier = this.totalPrice + this.carrierData.total_price_with_tax;
        })
 
       //return totalPrice;
@@ -75,6 +77,19 @@ export class RecapPage {
       carrierData: this.carrierData,
       totalPrice: this.totalPrice
     })
+  }
+
+  objectToArray(object){
+    if(object){
+      let item = Object.keys(object);
+      let array = [];
+      for(var i of item){
+        array.push(object[i]);
+      }
+      return array;
+    }else{
+      return [];
+    }
   }
 
 }

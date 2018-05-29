@@ -27,7 +27,7 @@
                         <img src={{favouriteItem.image}}>
                     </ion-thumbnail>
                     <p class="heading">{{favouriteItem.name}}</p>
-                    <p>{{favouriteItem.description_short}}</p>
+                    <p [innerHTML]="favouriteItem.description_short"></p>
                     <ion-row>
                         <ion-col col-8 class="add-col">
                             <button class="add" ion-button (click)="buyNow(favouriteItem.id)">
