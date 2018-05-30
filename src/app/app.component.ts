@@ -9,11 +9,14 @@ import {SocketService } from '../providers/socket-service';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
 import {CategoryService} from '../pages/category/category.service';
+import {LocalNotifications} from '@ionic-native/local-notifications';
+import {Push, PushObject, PushOptions} from '@ionic-native/push';
+import {FCM} from '@ionic-native/fcm';
 
 @Component({
     templateUrl: 'app.html',
     selector: 'MyApp',
-    providers: [Service, OneSignal,SocialSharing,CategoryService]
+    providers: [Service, OneSignal,SocialSharing,CategoryService, LocalNotifications, FCM]
 
 })
 export class MyApp {
@@ -35,19 +38,60 @@ export class MyApp {
                 public events:Events,
                 public translateService:TranslateService,
                 private storage:Storage,
-                public category:CategoryService) {
+                public category:CategoryService,
+                public localNotification:LocalNotifications,
+                private fcm:FCM) {
          
 
         platform.ready().then((res) => {
             console.log(res);
             alert(res);
-           // alert('ici11');
+
+            console.log(platform);
+            if(platform.is('android')){
+                alert('Android system detected');
+                /*this.push.hasPermission().then(data => {
+                    if(data.isEnabled)
+                        alert('Permission ok');
+                    else
+                        alert('Permission denied');
+                });
+
+                this.push.createChannel({
+                    id: "testchannel",
+                    description: "First test channel",
+                    importance: 3
+                }).then(() => alert('Channel create'));
+
+                const options: PushOptions = {
+                    android: {},
+                    browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'}
+                };
+                this.push.listChannels().then((data) => alert(data));
+
+                const pushObject: PushObject = this.push.init(options);
+                pushObject.on('notification').subscribe((notification: any) =>alert('Received a notification'));*/
+            }
             if (res == 'cordova') {
                 alert('res == cordova');
+                /*this.fcm.getToken().then(token => {
+                    alert(token);
+                });
+
+                this.fcm.onNotification().subscribe(data => {
+                    if(data.wasTapped){
+                        alert("Data was tapped!");
+                    }else{
+                        alert("Data wasn't tapped!");
+                    }
+                })*/
                 //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
-                this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert);
-                this.oneSignal.handleNotificationReceived().subscribe(() => {
+                //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert); //Affiche une alerte classique avec le titre et le texte de la notif
+                this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification); //Affiche une notif dans la barre de notif
+                this.oneSignal.handleNotificationReceived().subscribe((data) => {
+                    console.log(data);
+                    alert(JSON.stringify(data));
                     alert('Notification received');
                 });
                 this.oneSignal.handleNotificationOpened().subscribe(() => {
@@ -56,25 +100,18 @@ export class MyApp {
                 });
                 this.oneSignal.endInit();
             }
+
+            /*//Plugin non installé pour les notifications locales
+            localNotification.schedule({
+                id: 1,
+                text: 'Notification'
+            })*/
             statusBar.styleDefault();
             splashScreen.hide();
         });
-
-
-        /*this.service.getData()
-            .subscribe((response) => {
-                this.newsCounter = response.newsList.length;
-                for (let i = 0; i <= response.menuItems.length - 1; i++) {
-                    if (response.menuItems[i].offer != null) {
-                        this.offerCounter = this.offerCounter + 1;
-
-                    }
-                }
-            })*/
     }
 
      ngOnInit(): any {
-       // alert('ici22');
         if (!this.isLogin()) {
             this.rootPage = "LoginPage";
         }

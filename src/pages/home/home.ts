@@ -36,6 +36,7 @@ export class HomePage {
                 private pageTransition:NativePageTransitions) {
 
         //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
+        
         this.storage.get('cart').then((cartData)=>{
             this.cartItems = cartData;
             if(this.cartItems != null) {
