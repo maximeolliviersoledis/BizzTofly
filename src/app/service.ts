@@ -18,6 +18,11 @@ export class Service {
         .map((data: Response) => data.json() || {})
     }
 
+    getNotification(uuId, Token){
+        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.fcm + Token;
+        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    }
+
 }
 
 

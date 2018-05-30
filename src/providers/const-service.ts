@@ -39,6 +39,8 @@ export class ConstService {
     specificPriceRulesDir = "/specific_price_rules";
     specificPriceDir = "/specific_prices";
     sortIdDesc = "&sort=[id_DESC]";
+    uuid = "&uuid=";
+    fcm = "&fcm=";
     notificationDir = "http://www.bizztofly.com/modules/sld_notification/mobile-notification.php";
 
 

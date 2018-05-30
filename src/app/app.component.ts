@@ -12,11 +12,12 @@ import {CategoryService} from '../pages/category/category.service';
 import {LocalNotifications} from '@ionic-native/local-notifications';
 import {Push, PushObject, PushOptions} from '@ionic-native/push';
 import {FCM} from '@ionic-native/fcm';
+import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 
 @Component({
     templateUrl: 'app.html',
     selector: 'MyApp',
-    providers: [Service, OneSignal,SocialSharing,CategoryService, LocalNotifications, FCM]
+    providers: [Service, OneSignal,SocialSharing,CategoryService, LocalNotifications, FCM, UniqueDeviceID]
 
 })
 export class MyApp {
@@ -40,7 +41,8 @@ export class MyApp {
                 private storage:Storage,
                 public category:CategoryService,
                 public localNotification:LocalNotifications,
-                private fcm:FCM) {
+                private fcm:FCM,
+                private uniqueDeviceId:UniqueDeviceID) {
          
 
         platform.ready().then((res) => {
@@ -50,43 +52,53 @@ export class MyApp {
             console.log(platform);
             if(platform.is('android')){
                 alert('Android system detected');
-                /*this.push.hasPermission().then(data => {
-                    if(data.isEnabled)
-                        alert('Permission ok');
-                    else
-                        alert('Permission denied');
-                });
-
-                this.push.createChannel({
-                    id: "testchannel",
-                    description: "First test channel",
-                    importance: 3
-                }).then(() => alert('Channel create'));
-
-                const options: PushOptions = {
-                    android: {},
-                    browser: {pushServiceURL: 'http://push.api.phonegap.com/v1/push'}
-                };
-                this.push.listChannels().then((data) => alert(data));
-
-                const pushObject: PushObject = this.push.init(options);
-                pushObject.on('notification').subscribe((notification: any) =>alert('Received a notification'));*/
             }
+
+               /* this.fcm.getToken().then(token => {
+                    alert(token);
+                }).catch((error) => {
+                    alert(error);
+                });*/
+
+
             if (res == 'cordova') {
                 alert('res == cordova');
-                /*this.fcm.getToken().then(token => {
+                this.fcm.getToken().then(token => {
                     alert(token);
+                    this.uniqueDeviceId.get().then(uuid => {
+                        alert(uuid);
+                        this.service.getNotification(uuid,token).subscribe((data)=> {
+                            alert(data);
+                        })
+                    })
+                    
+                }).catch((error) => {
+                    alert(error);
                 });
 
                 this.fcm.onNotification().subscribe(data => {
+                    alert(JSON.stringify(data));
                     if(data.wasTapped){
                         alert("Data was tapped!");
+                        if(data.landing != 0){
+                            //Marche pour la page produit details mais pas pour les autres
+                            //il faudrait remplacer tous les noms de paramètres par le même nomà chaque fois (exemple: productId => id)
+                            let params = data.landing.split('/');
+                            this.nav.setRoot(params[0],{
+                                productId: params[1]
+                                });
+                            //this.nav.push(data.landing);
+
+
+                        }
                     }else{
+                        //Possibilité d'afficher la notif dans la barre de notification gràce a local notification
+                        //==> reste juste à savoir si c'est utile ou pas
                         alert("Data wasn't tapped!");
                     }
-                })*/
+                })
                 //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
-                this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
+                /*this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
                 //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert); //Affiche une alerte classique avec le titre et le texte de la notif
                 this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.Notification); //Affiche une notif dans la barre de notif
                 this.oneSignal.handleNotificationReceived().subscribe((data) => {
@@ -98,10 +110,10 @@ export class MyApp {
                     console.log("notification opened!");
                     alert('Notification opened');
                 });
-                this.oneSignal.endInit();
+                this.oneSignal.endInit();*/
             }
 
-            /*//Plugin non installé pour les notifications locales
+            /*
             localNotification.schedule({
                 id: 1,
                 text: 'Notification'
