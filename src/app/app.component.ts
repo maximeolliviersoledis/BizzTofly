@@ -64,11 +64,11 @@ export class MyApp {
             if (res == 'cordova') {
                // alert('res == cordova');
                 this.fcm.getToken().then(token => {
-                   // alert(token);
+                    alert(token);
                     this.uniqueDeviceId.get().then(uuid => {
-                        //alert(uuid);
+                        alert(uuid);
                         this.service.getNotification(uuid,token).subscribe((data)=> {
-                           // alert(data);
+                            alert(data);
                         })
                     })
                     
