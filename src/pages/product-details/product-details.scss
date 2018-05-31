@@ -15,10 +15,21 @@ page-product-details {
     width: 100%;
     margin: -55px 0px 0px 0px;
   }
-
+  .small-image {
+    height: 100%;
+    width: 100%;
+  }
   .productImage {
     max-height:300px;
     position: relative;
+  }
+  .main-image {
+    width: 75% !important;
+    height: 200px !important;
+    max-height: 200px;
+   // max-height: 50px;
+    //height: 200px !important;
+    margin: auto;
   }
   .prod-price {
     font-weight: 700;
@@ -134,8 +145,8 @@ page-product-details {
   .heart-clicked{
     color:$primary;
   }
-  img {
+  /*img {
    width: 100% !important;
    height: 200px !important;
-  }
+  }*/
 }

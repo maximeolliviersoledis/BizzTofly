@@ -47,12 +47,12 @@ export class MyApp {
 
         platform.ready().then((res) => {
             console.log(res);
-            alert(res);
+            //alert(res);
 
             console.log(platform);
-            if(platform.is('android')){
+            /*if(platform.is('android')){
                 alert('Android system detected');
-            }
+            }*/
 
                /* this.fcm.getToken().then(token => {
                     alert(token);
@@ -62,13 +62,13 @@ export class MyApp {
 
 
             if (res == 'cordova') {
-                alert('res == cordova');
+               // alert('res == cordova');
                 this.fcm.getToken().then(token => {
-                    alert(token);
+                   // alert(token);
                     this.uniqueDeviceId.get().then(uuid => {
-                        alert(uuid);
+                        //alert(uuid);
                         this.service.getNotification(uuid,token).subscribe((data)=> {
-                            alert(data);
+                           // alert(data);
                         })
                     })
                     
@@ -79,10 +79,11 @@ export class MyApp {
                 this.fcm.onNotification().subscribe(data => {
                     alert(JSON.stringify(data));
                     if(data.wasTapped){
-                        alert("Data was tapped!");
+                       // alert("Data was tapped!");
                         if(data.landing != 0){
                             //Marche pour la page produit details mais pas pour les autres
                             //il faudrait remplacer tous les noms de paramètres par le même nomà chaque fois (exemple: productId => id)
+                            //Si les paramètres nécessaires ne sont pas spécifier, reste sur la page actuelle
                             let params = data.landing.split('/');
                             this.nav.setRoot(params[0],{
                                 productId: params[1]

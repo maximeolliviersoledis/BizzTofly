@@ -16,7 +16,7 @@
 
 <ion-content >
     <ion-row class="productImage">
-        <img src={{productDetails.image}} alt="">
+        <img class="main-image" src={{productDetails.image}} alt="">
          <!--<span clear text-center (click)="toggleFavourite()"> -->
         <ion-icon class="fav" name="heart" *ngIf="like"
                   (click)="removeFromFavourite(productDetails.id)"></ion-icon>
@@ -26,7 +26,7 @@
     </ion-row>
     <ion-row>
         <ion-col *ngFor="let img of productDetails.images">
-            <img src={{img}} (click)="changerImagePrincipale(img)">
+            <img src={{img}} class="small-image" (click)="changerImagePrincipale(img)">
         </ion-col>
     </ion-row>
 
