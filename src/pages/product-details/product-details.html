@@ -16,12 +16,12 @@
 
 <ion-content >
     <ion-row class="productImage">
-        <img class="main-image" src={{productDetails.image}} alt="">
-         <!--<span clear text-center (click)="toggleFavourite()"> -->
-        <ion-icon class="fav" name="heart" *ngIf="like"
-                  (click)="removeFromFavourite(productDetails.id)"></ion-icon>
-        <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
-                  (click)="addToFavourite(productDetails.id)"></ion-icon>
+            <img class="main-image" src={{productDetails.image}} alt="">
+             <!--<span clear text-center (click)="toggleFavourite()"> -->
+            <ion-icon class="fav" name="heart" *ngIf="like"
+                      (click)="removeFromFavourite(productDetails.id)"></ion-icon>
+            <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
+                      (click)="addToFavourite(productDetails.id)"></ion-icon>
      <!--</span>--> 
     </ion-row>
     <ion-row>
@@ -30,49 +30,31 @@
         </ion-col>
     </ion-row>
 
-    <ion-row class="count-full">
-        <ion-col col-6>
-            <div class="count">
-            <span class="item-count" (click)="remove()">
-              -
-            </span>
-                <span class="item-count show-count">
-              {{count}}
-            </span>
-                <span class="item-count" (click)="add()">
-              +
-            </span>
-            </div>
-        </ion-col>
-
-        <ion-col col-6>
-            <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
-                <ion-icon name="cart"></ion-icon>
-                {{'ADD TO CART' | translate}}
-            </a>
-        </ion-col>
-    </ion-row>
+    
     <ion-row>
-        <p>{{productDetails.name}}</p>
-        <div [innerHTML]="productDetails.description_short"></div>
+        <h1>{{productDetails.name}}</h1>
+        <div class="desc" [innerHTML]="productDetails.description_short"></div>
+        <div class="price-container">
+            <!-- <span>{{'Price' | translate}} : </span> -->
+            <span class="price">{{productDetails.price | number:'.2-2'}} €</span>
+        </div>
         <ion-item>
-         <ion-label>{{'Combination' | translate}} :</ion-label>            
+            <ion-label>{{'Combination' | translate}} :</ion-label>            
             <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="{{'Select a combination' | translate}}">
                 <ion-option *ngFor="let dec of productDetails.declinaisons" value={{dec.id}}>{{dec.name}}</ion-option>
             </ion-select>
         </ion-item>
+            
             <div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
 
             <!--<ng-template #thenBlock><ion-label>Quantité : {{declinaison.combination.quantity}}</ion-label></ng-template>-->
             <ng-template #thenBlock>{{'In stock' | translate}} : {{quantity}}</ng-template>
             <ng-template #elseBlock>{{'Total in stock' | translate}} : {{productDetails.quantity}}</ng-template>
-
-
         
        <!-- <span *ngIf="productDetails.available_now == 'En stock'">Produit disponible</span>-->
-        <p>{{'Price' | translate}} : {{productDetails.price | number:'.2-2'}}</p>
+        
     </ion-row>
-    <ion-row>
+    <!-- <ion-row>
         <ion-col col-6>
             <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
                 <ion-icon name="cart"></ion-icon>
@@ -85,7 +67,7 @@
                 {{'KEEP SHOPPING' |translate}}
             </a>
         </ion-col>
-    </ion-row>
+    </ion-row> -->
 
 
    <!-- <ion-row>
@@ -98,3 +80,30 @@
         </ion-slides>
     </ion-row>-->
 </ion-content>
+
+<ion-footer>
+    <ion-toolbar>
+        <ion-row class="count-full">
+            <ion-col col-4>
+                <div class="count">
+                <span class="item-count" (click)="remove()">
+                  -
+                </span>
+                    <span class="item-count show-count">
+                  {{count}}
+                </span>
+                    <span class="item-count" (click)="add()">
+                  +
+                </span>
+                </div>
+            </ion-col>
+
+            <ion-col col-8>
+                <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
+                    <ion-icon name="cart"></ion-icon>
+                    {{'ADD TO CART' | translate}}
+                </a>
+            </ion-col>
+        </ion-row>
+    </ion-toolbar>
+</ion-footer>

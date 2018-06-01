@@ -93,10 +93,11 @@ export class CarrierPage {
   }
 
   showCGV($event){
-    let popover = this.popoverCtrl.create(CgvPage);
+    /*let popover = this.popoverCtrl.create(CgvPage);
     popover.present({
       ev: $event
-    });
+    });*/
+    this.navCtrl.push("CgvPage");
   }
 
   objectToArray(object){

@@ -1,26 +1,22 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Http, Response, Headers} from "@angular/http";
+import { CgvService } from './cgv.service';
 
+@IonicPage()
 @Component({
   selector: 'page-cgv',
   templateUrl: 'cgv.html',
+  providers: [CgvService]
 })
 export class CgvPage {
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private http:Http) {
-  }
+  constructor(public navCtrl: NavController, public navParams: NavParams, public cgvService: CgvService) {}
   content: any;
+
   ionViewDidLoad() {
-    console.log('ionViewDidLoad CgvPage');
-    this.content = "Condition Générale de Ventes";
-    /*this.http.get("http://www.bizztofly.com/fr/content/3-conditions-utilisation?content_only=1").map((data: Response)=>{
-    	console.log(data);
-    	//this.content = data.text();
-    }).subscribe((content)=>{
-    }
-    	);
-    console.log(this.content);*/
+    this.cgvService.getCgv().subscribe(data => {
+      this.content= data.substr(data.search("<body"),data.length);  //Permet d'enlever tout le contenu dans la balise <header>
+    })
   }
 
 }

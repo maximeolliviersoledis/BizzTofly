@@ -39,7 +39,7 @@
                                 <p class="item-declinaison" text-wrap  >{{item.name}}</p>
                                 <p class="item-detail" text-wrap>{{"Quantity:" | translate}} {{item.selectedQuantity}}</p>
                                 <p class="item-detail">{{"Price:" | translate}}
-                                    <span class="item-price">${{item.endPrice | number:'.2-2'}}</span>
+                                    <span class="item-price">{{item.endPrice | number:'.2-2'}} €</span>
                                 </p>
                                 <ion-row>
                                     <div class="count">
@@ -59,11 +59,11 @@
         <ion-row class="price-details">
             <ion-col col-12 class="calculate">
                 <!--<p *ngFor="let promo of promotion">{{promo.specific_price_rule.name}}   -{{promo.specific_price_rule.reduction}}€</p>-->
-                <p class="bill-detail">{{'Price Subtotal' | translate}} <span> ${{subTotalPrice | number:'.2-2'}}</span></p>
+                <p class="bill-detail">{{'Price Subtotal' | translate}} <span> {{subTotalPrice | number:'.2-2'}} €</span></p>
                 <div *ngIf="deductedPrice">
-                    <p class="bill-detail">{{'Deducted Price' | translate}} <span> - ${{deductedPrice | number:'.2-2'}}</span></p>
+                    <p class="bill-detail">{{'Deducted Price' | translate}} <span> - {{deductedPrice | number:'.2-2'}} €</span></p>
                 </div>
-                <p class="bill-detail">{{"Total VAT" | translate}}(20%) <span> ${{taxAmount | number:'.2-2'}}</span></p>
+                <p class="bill-detail">{{"Total VAT" | translate}}(20%) <span> {{taxAmount | number:'.2-2'}} €</span></p>
                 <hr>
                <!-- <ion-row>
                     <ion-col col-4>
@@ -95,7 +95,7 @@
                     </ion-col>
                 </ion-row>
                 <p class="cart-total"><strong>{{'Order Total' | translate}} </strong><span
-                        class="price">${{grandTotal | number:'.2-2'}}</span>
+                        class="price">{{grandTotal | number:'.2-2'}} €</span>
                 </p>
             </ion-col>
         </ion-row>

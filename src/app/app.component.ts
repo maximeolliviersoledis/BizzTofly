@@ -10,7 +10,6 @@ import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
 import {CategoryService} from '../pages/category/category.service';
 import {LocalNotifications} from '@ionic-native/local-notifications';
-import {Push, PushObject, PushOptions} from '@ionic-native/push';
 import {FCM} from '@ionic-native/fcm';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 
@@ -50,25 +49,14 @@ export class MyApp {
             //alert(res);
 
             console.log(platform);
-            /*if(platform.is('android')){
-                alert('Android system detected');
-            }*/
-
-               /* this.fcm.getToken().then(token => {
-                    alert(token);
-                }).catch((error) => {
-                    alert(error);
-                });*/
-
 
             if (res == 'cordova') {
-               // alert('res == cordova');
                 this.fcm.getToken().then(token => {
-                    alert(token);
+                    //alert(token);
                     this.uniqueDeviceId.get().then(uuid => {
-                        alert(uuid);
+                       // alert(uuid);
                         this.service.getNotification(uuid,token).subscribe((data)=> {
-                            alert(data);
+                           // alert(data);
                         })
                     })
                     
@@ -79,7 +67,6 @@ export class MyApp {
                 this.fcm.onNotification().subscribe(data => {
                     alert(JSON.stringify(data));
                     if(data.wasTapped){
-                       // alert("Data was tapped!");
                         if(data.landing != 0){
                             //Marche pour la page produit details mais pas pour les autres
                             //il faudrait remplacer tous les noms de paramètres par le même nomà chaque fois (exemple: productId => id)
@@ -88,13 +75,8 @@ export class MyApp {
                             this.nav.setRoot(params[0],{
                                 productId: params[1]
                                 });
-                            //this.nav.push(data.landing);
-
-
                         }
                     }else{
-                        //Possibilité d'afficher la notif dans la barre de notification gràce a local notification
-                        //==> reste juste à savoir si c'est utile ou pas
                         alert("Data wasn't tapped!");
                     }
                 })
