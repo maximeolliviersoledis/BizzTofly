@@ -56,7 +56,7 @@ export class MyApp {
                     this.uniqueDeviceId.get().then(uuid => {
                        // alert(uuid);
                         this.service.getNotification(uuid,token).subscribe((data)=> {
-                           // alert(data);
+                            alert(data);
                         })
                     })
                     
