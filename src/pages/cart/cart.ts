@@ -24,6 +24,7 @@ export class CartPage {
     reductionInput: String;
     cartData: any = {};
     user: any = {};
+    header_data: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -31,7 +32,10 @@ export class CartPage {
                 public popoverCtrl: PopoverController,
                 public toastCtrl: ToastController,
                 private cartService:CartService,
-                private storage:Storage) {}
+                private storage:Storage) {
+
+        this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart'};        
+    }
 
     ngOnInit(){
         this.storage.get('cart').then((data)=>{
@@ -379,8 +383,7 @@ export class CartPage {
                         if(data == true)
                             this.createToaster("Bon de réduction appliqué avec succès !",3000);
                         else
-                            this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);
-              
+                            this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);              
                     })
                     reductionMatch = true;
                     break;

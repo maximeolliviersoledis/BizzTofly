@@ -54,13 +54,17 @@ export class LoginPage {
                 this.storage.set('user',user);
                 localStorage.setItem('userLoggedIn',JSON.stringify(true));
                 this.checkIfCartExist(user);
-                if (this.navParams.get("flag") == 0) {
+                /*if (this.navParams.get("flag") == 0) {
                     this.navCtrl.setRoot("CartPage");
                 } else {
                     this.navCtrl.setRoot("HomePage");
                        // this.socketService.establishConnection();
                         //this.renderImage();
-                    }
+                    }*/
+                    if(this.navCtrl.canGoBack())
+                       this.navCtrl.pop();
+                   else
+                       this.navCtrl.setRoot("HomePage");
                 }else if(user.error){
                     let alert = this.alertCtrl.create({
                         title: "Erreur login",

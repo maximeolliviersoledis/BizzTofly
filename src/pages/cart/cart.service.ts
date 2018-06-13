@@ -12,17 +12,6 @@ export class CartService {
                 public constService:ConstService) {
     }
 
-    //équivalent dans prestashopo ?????
-    getCoupons() {
-         const headers = new Headers();
-        return this.http.get(this.constService.base_url+'api/coupons', {
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-           //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
-
-
     getSpecificPrices(specificPriceId){
         const headers = new Headers();
         var urlDir = this.constService.baseDir+this.constService.specificPriceDir+"/"+specificPriceId+this.constService.keyDir+this.constService.formatDir;

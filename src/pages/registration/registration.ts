@@ -7,6 +7,7 @@ import {GooglePlus} from '@ionic-native/google-plus';
 import {TwitterConnect} from '@ionic-native/twitter-connect';
 import {RegistrationService} from './registration.service';
 import {SocketService } from '../../providers/socket-service';
+import {Storage} from '@ionic/storage';
 
 @IonicPage()
 @Component({
@@ -26,7 +27,8 @@ export class RegistrationPage {
                 public twitter: TwitterConnect,
                 public platform: Platform,
                 public registrationService: RegistrationService,
-                public socketService:SocketService) {
+                public socketService:SocketService,
+                private storage:Storage) {
     }
 
     onRegister() {
@@ -54,10 +56,11 @@ export class RegistrationPage {
                 active: '1',
                 id_lang: '1',
                 id_default_group: '3',
-                id_gender: this.user.value.gender
+                id_gender:  (this.user.value.gender ? 2 : 1)
             }
         }
-         this.registrationService.postCustomer(newUser).subscribe(res => {
+        console.log(newUser);
+        this.registrationService.postCustomer(newUser).subscribe(res => {
              console.log(res);
              var connect = {
                      token: res.customer.secure_key,
@@ -66,7 +69,8 @@ export class RegistrationPage {
                      firstname: res.customer.firstname,
                      lastname: res.customer.lastname      
              }
-             localStorage.setItem('user',JSON.stringify(connect));
+             //localStorage.setItem('user',JSON.stringify(connect));
+             this.storage.set('user', connect);
          })
 
         loader.dismiss();      
@@ -101,7 +105,7 @@ export class RegistrationPage {
             passwordConfirmation: ['', Validators.compose(
                 [Validators.required, Validators.minLength(8)]
                 )],
-            gender: [1, Validators.required]
+            gender: [false, Validators.required]
             //newsletter: [false]
         },{validator: this.passwordMatch});
     }

@@ -1,13 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 
-/**
- * Generated class for the RecapPaymentPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-recap-payment',
@@ -15,24 +8,25 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 })
 export class RecapPaymentPage {
   paymentOption: any = {};
-  orderDetails: any = {};
+  paymentDetails: any = {};
+  totalPaid: number = 0;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 
   ngOnInit(){
-    //Voir si cette page est vraiment utile ??
   	this.paymentOption = this.navParams.get('payment');
-    this.orderDetails = this.navParams.get('order');
-    console.log(this.orderDetails);
+    this.paymentDetails = this.navParams.get('paymentDetails');
+    this.totalPaid = this.navParams.get('totalPaid');
   	console.log(this.paymentOption);
+    console.log(this.paymentDetails);
   }
 
   isCheque(){
-  	return this.paymentOption === "Cheque" ? true : false;
+  	return this.paymentOption == "cheque" ? true : false;
   }
 
   isBankWire(){
-  	return this.paymentOption === "Virement" ? true : false;
+  	return this.paymentOption == "bankwire" ? true : false;
   }
 }

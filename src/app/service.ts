@@ -23,6 +23,11 @@ export class Service {
         return this.http.get(urlDir).map((data:Response) => data.json() || {})
     }
 
+    getAppliSettings(){
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.appliSettingsDir + "/0" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    }
+
 }
 
 

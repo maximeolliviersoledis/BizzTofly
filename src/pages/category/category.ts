@@ -17,11 +17,13 @@ export class CategoryPage {
     lastCategoryId: number = 0;
     noOfItems: number = 0;
         /**Searchbar**/
-    searchInput: string;
+        //Inutile depuis que le custom header est utilisé
+    /*searchInput: string;
     searchResults: any[];
     searching: boolean;
     searchPlaceholder: string;
-    lastSearch: any[] = [];
+    lastSearch: any[] = [];*/
+    header_data:any;    
     constructor(public navCtrl: NavController,
                 private loadingCtrl:LoadingController,
                 public categoryService:CategoryService,
@@ -29,13 +31,15 @@ export class CategoryPage {
                 private storage:Storage,
                 public service:Service) {
 
-        this.storage.get('cart').then((data)=>{
+        /*this.storage.get('cart').then((data)=>{
             if(data){
                 for(var items of data){
                     this.noOfItems += items.quantity;
                 }
             }
-        })
+        })*/
+
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Category'};
      }
 
     ionViewDidLoad(){
@@ -68,8 +72,8 @@ export class CategoryPage {
                  }
              }
 
-            this.searching = false;
-            this.searchPlaceholder = "Que recherchez-vous?";
+            /*this.searching = false;
+            this.searchPlaceholder = "Que recherchez-vous?";*/
              loader.dismiss();
         })
 
@@ -168,7 +172,7 @@ export class CategoryPage {
     }
 
     /**Searchbar**/
-    displayLastSearch: boolean = false;
+    /*displayLastSearch: boolean = false;
     noResultFound: boolean = false;
     onSearch($event){
         this.searchPlaceholder = "Que recherchez-vous?";
@@ -247,5 +251,5 @@ export class CategoryPage {
     showSearchBar(){
         this.displaySearchBar = !this.displaySearchBar;
         this.displayLastSearch = false;
-    }
+    }*/
 }

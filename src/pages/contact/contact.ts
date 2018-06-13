@@ -3,6 +3,7 @@ import {NavController, NavParams, IonicPage, ToastController} from 'ionic-angula
 import {NgForm, FormBuilder, Validators, FormGroup} from "@angular/forms";
 import {EmailComposer} from '@ionic-native/email-composer';
 import {ContactService} from './contact.service';
+import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
 
 
 
@@ -10,18 +11,21 @@ import {ContactService} from './contact.service';
 @Component({
     selector: 'page-contact',
     templateUrl: 'contact.html',
-    providers: [EmailComposer, ContactService]
+    providers: [EmailComposer, ContactService, NativePageTransitions]
 })
 export class ContactPage {
     user: FormGroup;
     contacts: any[];
+    header_data:any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 public toastCtrl: ToastController,
                 public emailComposer: EmailComposer,
                 public contactService: ContactService,
-                public formBuilder: FormBuilder) {
+                public formBuilder: FormBuilder,
+                public pageTransition:NativePageTransitions) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Contacts'};        
     }
 
     ngOnInit(){
@@ -37,12 +41,23 @@ export class ContactPage {
         this.contactService.getAllContacts().subscribe(data => {
             this.contacts = data;
         })
-
-        /*this.contactService.getFormContact().subscribe(data => {
-            console.log(data);
-        })*/
     }
 
+    ionViewWillLeave(){
+            let options: NativeTransitionOptions = {
+                action: "close",
+                origin: "left",
+                duration: 500,
+                slowdownfactor: 3,
+                slidePixels: 0,
+                iosdelay: 100,
+                androiddelay: 150,
+                fixedPixelsTop: 0,
+                fixedPixelsBottom: 0
+               };
+
+            this.pageTransition.drawer(options);
+    }
     /*onSend(user: NgForm) {
         this.emailComposer.open({
                 // You just need to change this Email address to your own email where you want to receive email.

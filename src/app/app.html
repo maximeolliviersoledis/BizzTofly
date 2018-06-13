@@ -22,7 +22,7 @@
     </button>
     <ion-list *ngIf="displayAllCategories">
       <ion-item class="menu-category" *ngFor="let categ of categories" (click)="goToProductList(categ)">
-        <div *ngIf="categ.category.level_depth <=2;then thenBlock else elseBlock"></div>
+        <div *ngIf="categ.category.level_depth <=2 && categ.category.associations.categories;then thenBlock else elseBlock"></div>
         <ng-template #thenBlock>{{categ.category.name[0].value}}</ng-template>
         <ng-template #elseBlock><ion-item menuClose class="menu-subcategory">{{categ.category.name[0].value}}</ion-item></ng-template>
       </ion-item>        
@@ -34,7 +34,7 @@
       <ion-icon name="apps" item-left></ion-icon>
       {{'Categories List' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item (click)="offer()">
+    <button *ngIf="appliSettings.show_offers_page" menuClose class="menu-item" ion-item (click)="offer()">
       <ion-icon  name="pricetag" item-left></ion-icon>
       {{'Offers' | translate}}
       <!-- <ion-badge class="menu-badge">{{offerCounter}}</ion-badge> -->
@@ -73,7 +73,7 @@
       {{'News' | translate}}-->
       <!-- <ion-badge class="menu-badge">{{newsCounter}}</ion-badge> 
     </button>-->
-    <button menuClose class="menu-item" ion-item *ngIf="isLogin()"
+    <button menuClose class="menu-item" ion-item *ngIf="isLogin() && appliSettings.show_favourite_page"
             (click)="favourite()">
       <ion-icon name="heart" item-left></ion-icon>
       {{'Favourite' | translate}}
@@ -82,12 +82,12 @@
       <ion-icon name="pin" item-left></ion-icon>
       {{'Shop location' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item
+    <button *ngIf="appliSettings.show_contact_page" menuClose class="menu-item" ion-item
                      (click)="contact()">
       <ion-icon name="call" item-left></ion-icon>
       {{'Contact' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item
+    <button *ngIf="appliSettings.show_about_us_page" menuClose class="menu-item" ion-item
                      (click)="aboutUs()">
       <ion-icon name="contacts" item-left></ion-icon>
       {{'About Us' | translate}}

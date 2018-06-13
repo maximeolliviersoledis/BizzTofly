@@ -1,4 +1,4 @@
-<ion-header>
+<!--<ion-header>
   <ion-navbar>
     <button ion-button menuToggle start>
       <ion-icon name="menu"></ion-icon>
@@ -40,6 +40,10 @@
     {{'No result found' | translate}}
   </ion-item>
 </div>
+</ion-header>-->
+
+<ion-header>
+    <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
 <ion-content>
@@ -53,7 +57,7 @@
                     <img src="{{category.image}}">
                 </ion-thumbnail>
                 <p class="heading">{{category.name}}</p>
-                <p>{{category.description}}</p>
+                <p [innerHTML]="category.description"></p>
             </ion-item>
         </ion-list>
     </ion-card>

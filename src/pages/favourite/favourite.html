@@ -1,4 +1,4 @@
-<ion-header>
+<!--<ion-header>
     <ion-navbar>
         <button ion-button menuToggle start>
           <ion-icon name="menu"></ion-icon>
@@ -11,7 +11,12 @@
             </button>
         </ion-buttons>
     </ion-navbar>
+</ion-header>-->
+
+<ion-header>
+    <custom-header [header]="header_data"></custom-header>
 </ion-header>
+
 <ion-content [ngClass]="{bg:!isFavourite()}">
     <div *ngIf="!isFavourite()">
         <ion-row>

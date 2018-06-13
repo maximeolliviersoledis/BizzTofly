@@ -1,0 +1,18 @@
+page-custom-order-header {
+	.currentStep{
+	  color: $white;
+	  font-weight: bold;
+	  text-align:center;
+	  border: 1px solid $black;
+	  border-top-right-radius: 25px;
+	  border-bottom-right-radius: 25px;
+	}
+	.step{
+	  color: $white;
+	  font-weight: normal;
+	  text-align:center;
+	  border: 1px solid $black;
+	  border-top-right-radius: 25px;
+	  border-bottom-right-radius: 25px;
+	}
+}

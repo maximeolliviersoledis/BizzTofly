@@ -1,6 +1,7 @@
 <ion-header>
-    <!--<custom-header [header]="header_data"></custom-header>-->
-    <ion-navbar>
+    <custom-header [header]="header_data"></custom-header>
+    <custom-order-header [headerDATA]="order_header_data"></custom-order-header>
+    <!--<ion-navbar>
         <button ion-button menuToggle start>
             <ion-icon name="menu"></ion-icon>
         </button>
@@ -13,7 +14,7 @@
             <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
           </button>
         </ion-buttons>
-    </ion-navbar>
+    </ion-navbar>-->
 </ion-header>
 
 <ion-content padding class="address-list">

@@ -12,8 +12,8 @@ export class ContactService {
 
     postMessage(body){
         const headers = new Headers();
-        var urlDir = this.constService.baseDir + this.constService.contactDir + this.constService.keyDir + this.constService.formatDir;
-        return this.http.post(urlDir, body, {
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.contactDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.action + "message";
+        return this.http.get(urlDir, {
             headers: headers
         }).map((data: Response)=> data.json() || {})
     }

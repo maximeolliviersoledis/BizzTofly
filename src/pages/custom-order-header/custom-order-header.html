@@ -1,0 +1,12 @@
+<ion-toolbar>
+	<ion-row>
+		<ion-col *ngFor="let step of nbOfStep">
+			<div *ngIf="order_header_data.currentStep == step" class="currentStep">
+				{{step}}
+			</div>
+			<div *ngIf="order_header_data.currentStep != step" class="step" (click)="goToSelectedPage(step)">
+				{{step}}
+			</div>
+		</ion-col>
+	</ion-row>
+</ion-toolbar>

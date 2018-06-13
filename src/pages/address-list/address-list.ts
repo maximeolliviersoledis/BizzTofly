@@ -17,6 +17,7 @@ export class AddressListPage {
   selectedAddress:any={};
   noOfItems: number;
   header_data:any;    
+  order_header_data:any;
   /*reductions: any[] = [];
   reductionInput: String;*/
   user: any = {};
@@ -58,7 +59,8 @@ export class AddressListPage {
     }
     this.noOfItems = this.navParams.get('noOfItems');
     let pageTitle = this.manageAddress ? "Manage your addresses" : "Delivery Options";
-    this.header_data = {ismenu: false , isHome:false, isCart: true,isSearch:false, title: pageTitle};
+    this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: pageTitle};
+    this.order_header_data = {currentStep: 1, pageName: "AddressList"};
   }
 
   ngOnInit() {
@@ -122,7 +124,8 @@ export class AddressListPage {
 
     addAddress(){
       this.navCtrl.push("AddressPage",
-        { amountDetails:this.amountDetails,
+        { 
+          amountDetails:this.amountDetails,
           addressList: this.addressList,
           cartData: this.navParams.get('cartData')
          });
@@ -173,6 +176,7 @@ export class AddressListPage {
           cartData: this.navParams.get('cartData')
         });*/
         this.navCtrl.push("CarrierPage", {
+          amountDetails: this.amountDetails,
           orderData: this.orderData,
           cartData: this.navParams.get('cartData')
         })

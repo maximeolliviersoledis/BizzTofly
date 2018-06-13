@@ -3,6 +3,7 @@
     <ion-title class="title">{{"Payment Options" | translate}}
     </ion-title>
   </ion-navbar>
+  <custom-order-header [headerDATA]="order_header_data"></custom-order-header>
 </ion-header>
 
 <ion-content >
@@ -12,17 +13,25 @@
       <ion-row class="card-type">
          <ion-col col-12 *ngFor=" let payment of paymentTypes">
            <ion-item class="radio-item">
-               <ion-label>{{payment.name}}</ion-label>
+               <ion-label *ngIf="payment.name == 'bankwire'"><img src="../assets/img/bank-transfer.png"alt="bankwire"> {{'Bankwire payment' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'cheque'"><img src="../assets/img/check.png"alt="cheque"> {{'Cheque payment' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'paypal'"><img src="../assets/img/paypal.png"alt="paypal"> {{'Pay with PayPal' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'stripe'"><img src="../assets/img/payment-stripe.png" alt="stripe">{{'Pay with Stripe' | translate}}</ion-label>
                <ion-radio item-left value="{{payment.id_module}}" 
-                     (ionSelect)="choosePaymentType(payment.id_module)"></ion-radio>
+                     (ionSelect)="choosePaymentType(payment)"></ion-radio>
+                     <!--<img *ngIf="payment.name == 'bankwire'" src="../assets/img/credit-card.png" alt="bankwire">
+                     <img *ngIf="payment.name == 'cheque'" src="../assets/img/check.png" alt="cheque">
+                     <img *ngIf="payment.name == 'paypal'" src="../assets/img/paypal.png" alt="paypal">-->
 
-                      <img *ngIf="payment.logo" src="{{payment.logo}}" item-right>
+                      <!--<img *ngIf="payment.logo" src="{{payment.logo}}" item-right>-->
            </ion-item>
          </ion-col>
       </ion-row>
     </ion-list>
+
+
     <h6 class="form-title"></h6>
-        <section class="payment" *ngIf="orderData.paymentOption =='Stripe'">
+        <section class="payment" *ngIf="orderData.paymentOption.name =='stripe'">
         <form #f="ngForm">
     <ion-list class="form-data">
     <ion-item>
@@ -62,7 +71,7 @@
  </section>
  <div class="btn-wrapper">
       <button ion-button full  type="button" 
-         [disabled]="orderData.paymentOption =='Stripe' && (!cardInfo.cardNumber || !cardInfo.expiryMonth || !cardInfo.expiryYear || !cardInfo.cvc)" 
+         [disabled]="orderData.paymentOption =='stripe' && (!cardInfo.cardNumber || !cardInfo.expiryMonth || !cardInfo.expiryYear || !cardInfo.cvc)" 
           (click)="checkoutTest()">
             {{"Pay Now" | translate}}
       </button>

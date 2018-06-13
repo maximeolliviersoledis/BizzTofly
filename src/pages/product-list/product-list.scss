@@ -4,7 +4,7 @@ page-product-list {
     display: inline-block;
     overflow: hidden;
     text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: pre-wrap;
     line-height: 15px;
     position: relative;
   }
@@ -23,7 +23,7 @@ page-product-list {
     .item-name {
       font-weight: 700;
       font-size: 15px;
-      white-space: nowrap;
+      white-space: pre-wrap;
     }
     .item-detail {
       overflow: hidden;
@@ -63,5 +63,9 @@ page-product-list {
   }
 }
 }
+  .badge-rating{
+    background-color: $white;
+    color: $primary;
+  }
 
 }

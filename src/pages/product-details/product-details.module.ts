@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ProductDetailsPage } from './product-details';
 import { TranslaterModule } from '../../app/translate.module';
+import { Ionic2RatingModule } from 'ionic2-rating';
 
 
 @NgModule({
@@ -10,7 +11,8 @@ import { TranslaterModule } from '../../app/translate.module';
   ],
   imports: [
     IonicPageModule.forChild(ProductDetailsPage),
-    TranslaterModule
+    TranslaterModule,
+    Ionic2RatingModule
     
   ],
   exports: [

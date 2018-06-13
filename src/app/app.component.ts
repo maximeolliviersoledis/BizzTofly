@@ -9,14 +9,15 @@ import {SocketService } from '../providers/socket-service';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
 import {CategoryService} from '../pages/category/category.service';
-import {LocalNotifications} from '@ionic-native/local-notifications';
 import {FCM} from '@ionic-native/fcm';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
+import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
+import {Network} from '@ionic-native/network';
 
 @Component({
     templateUrl: 'app.html',
     selector: 'MyApp',
-    providers: [Service, OneSignal,SocialSharing,CategoryService, LocalNotifications, FCM, UniqueDeviceID]
+    providers: [Service,SocialSharing,CategoryService, FCM, UniqueDeviceID, NativePageTransitions, Network]
 
 })
 export class MyApp {
@@ -26,60 +27,55 @@ export class MyApp {
     @ViewChild(Nav) nav: Nav;
     rootPage: any;
     imageUrl:string='assets/img/profile.jpg';
+    appliSettings: any = {};
 
     constructor(public platform: Platform,
                 public service: Service,
                 public socketService:SocketService,
-                //private userService:UserService,
                 statusBar: StatusBar,
                 splashScreen: SplashScreen,
-                public oneSignal: OneSignal,
                 public socialSharing:SocialSharing,
                 public events:Events,
                 public translateService:TranslateService,
                 private storage:Storage,
                 public category:CategoryService,
-                public localNotification:LocalNotifications,
                 private fcm:FCM,
-                private uniqueDeviceId:UniqueDeviceID) {
-         
+                private uniqueDeviceId:UniqueDeviceID,
+                public nativeTransition:NativePageTransitions,
+                private network:Network) {
+
+        this.service.getAppliSettings().subscribe(data => {
+            this.appliSettings = data;
+            localStorage.setItem('appli_settings', JSON.stringify(this.appliSettings));
+            console.log(this.appliSettings);
+        })
 
         platform.ready().then((res) => {
-            console.log(res);
-            //alert(res);
-
-            console.log(platform);
-
             if (res == 'cordova') {
+                //Peut permettre d'agir en conséquence lors de la perte de connexion pendant l'utilisation de l'appli
+                this.network.onDisconnect().subscribe(data => {
+                    alert('Vous avez été déconnecté');
+                })
+
+                this.network.onConnect().subscribe(data =>{
+                    alert('Vous êtes connecté');
+                })
+
+                
+
+                alert(this.network.type);
+               // alert(this.network.downlinkMax);
                 this.fcm.getToken().then(token => {
-                    //alert(token);
                     this.uniqueDeviceId.get().then(uuid => {
-                       // alert(uuid);
                         this.service.getNotification(uuid,token).subscribe((data)=> {
                             alert(data);
                         })
-                    })
-                    
+                    })                    
                 }).catch((error) => {
                     alert(error);
                 });
 
-                this.fcm.onNotification().subscribe(data => {
-                    alert(JSON.stringify(data));
-                    if(data.wasTapped){
-                        if(data.landing != 0){
-                            //Marche pour la page produit details mais pas pour les autres
-                            //il faudrait remplacer tous les noms de paramètres par le même nomà chaque fois (exemple: productId => id)
-                            //Si les paramètres nécessaires ne sont pas spécifier, reste sur la page actuelle
-                            let params = data.landing.split('/');
-                            this.nav.setRoot(params[0],{
-                                productId: params[1]
-                                });
-                        }
-                    }else{
-                        alert("Data wasn't tapped!");
-                    }
-                })
+                this.enableNotification();
                 //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 /*this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
                 //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert); //Affiche une alerte classique avec le titre et le texte de la notif
@@ -96,11 +92,6 @@ export class MyApp {
                 this.oneSignal.endInit();*/
             }
 
-            /*
-            localNotification.schedule({
-                id: 1,
-                text: 'Notification'
-            })*/
             statusBar.styleDefault();
             splashScreen.hide();
         });
@@ -119,11 +110,36 @@ export class MyApp {
         this.useTranslateService();
     }
 
+    private enableNotification(){
+        //Prise en compte de l'activation ou non des notifs (à tester)
+        //Marche pas
+        console.log(localStorage.getItem('notification'));
+        var activ = JSON.parse(localStorage.getItem('notification'));
+        if(activ){ 
+            console.log("Notif activ");
+            this.fcm.onNotification().subscribe(data => {
+                alert(JSON.stringify(data));
+                if(data.wasTapped){
+                    if(data.landing != 0){
+                        let params = data.landing.split('/');
+                                this.nav.setRoot(params[0],{
+                                   productId: params[1]
+                                });
+                    }
+                }else{
+                     alert("Data wasn't tapped!");
+                }
+            })
+        }else{
+            alert("Notif not activated");
+            //Envoyer vers presta la désactivation des notifs
+            this.events.unsubscribe('notification:changed', () => {
+                alert('EventListener unsubscribe');
+            });
+        }
+    }
 
     private useTranslateService(){
-      // let value= localStorage.getItem('language');
-      // let language = value!=null ? value:'en';
-      // this.translateService.use(language);
       let value= localStorage.getItem('language');
       let language = value!=null ? value:'en';
       language=='ar'?this.platform.setDir('rtl', true):this.platform.setDir('ltr', true);;
@@ -131,48 +147,30 @@ export class MyApp {
     }
     
    private renderImage(){
-       /*if(this.isLogin()){
-        this.userService.getUser()
-        .subscribe(user=>{
-         this.imageUrl=user.imageUrl!=null?this.imageUrl=user.imageUrl:this.imageUrl='assets/img/profile.jpg';
-        }, error =>{
-         this.nav.setRoot("LoginPage");
-        })
-       }*/
-
        if(!this.isLogin()){
            this.nav.setRoot("LoginPage");
        }else{
-           /*this.storage.get('user').then((data)=>{
-               console.log(data);
-               if(data.image)
-                   this.imageUrl = data.image;
-           })*/
            this.storage.get('image').then((data)=>{
                if(data)
                    this.imageUrl = data;
            })
        }
-        
     }
 
    public listenEvents(){
-        /*this.events.subscribe('imageUrl',(imageUrl)=>{
-            this.imageUrl=imageUrl;
-            //console.log("listen----->>>>>>"+imageUrl);
-            this.renderImage();
-        })*/
         console.log(this.events);
         this.events.subscribe('image:changed',(imageUrl)=>{
             this.imageUrl = imageUrl;
-            //this.renderImage();
         })
+        this.events.subscribe('notification:changed', () => {
+            if(this.platform.is('cordova'))
+                this.enableNotification()
+        });
     }
 
     isLogin() {
         return JSON.parse(localStorage.getItem('userLoggedIn')) != null;
     }
-
 
     home() {
         this.nav.setRoot("HomePage");
@@ -182,19 +180,6 @@ export class MyApp {
     displayAllCategories: boolean = false;
     displayChildCategories: boolean = false;
     catagory() {
-        //this.nav.push("CategoryPage");
-        /*this.category.categoryService.getAllCategories().subscribe(data => {
-            console.log(data);
-        })*/
-       /* if(!this.categories || this.categories.length == 0){
-            this.category.getCategories().subscribe(data=>{
-                console.log(data);
-                //this.categories = data;
-                for(var category of data){
-                    if(category)
-                }
-            })*/
-
             if(!this.categories || this.categories.length == 0){
                 this.category.getCategory(2).subscribe(data => {
                     if(data.category.level_depth <= 2){
@@ -206,22 +191,14 @@ export class MyApp {
                     }
                 })
             }
-        //this.displayChildCategories = !this.displayChildCategories;
         this.displayAllCategories = !this.displayAllCategories;
-        console.log(this.displayAllCategories);
     }
 
     categoryList(){
         this.nav.push("CategoryPage");
     }
 
-    //subCategories: any[] = [];
     goToProductList(category){
-        /*console.log("goToProductList appelé");
-        this.displayAllCategories = !this.displayAllCategories;
-        this.nav.push("ProductListPage", {
-            MenuId: categoryId
-        });*/
         if(category.category.level_depth <= 2 && category.category.associations.categories){
             for(var child of category.category.associations.categories){
                 var childAlreadyPresent = this.categories.findIndex(function(elem){
@@ -230,34 +207,9 @@ export class MyApp {
                 if(childAlreadyPresent == -1){
                     this.category.getCategory(child.id).subscribe(data => {
                         this.categories.splice(this.categories.indexOf(category)+1,0,data);
-                        //this.categories.push(data);
                     })
                 }
             }
-            /*console.log(category.category.associations.categories);
-            this.displayChildCategories = !this.displayChildCategories;
-            if(!this.displayChildCategories){
-                for(var i=0; i<this.categories.length;i++){
-                            console.log(this.categories[i]);
-
-                    for(var j=0; j<category.category.associations.categories.length;j++){
-                        if(this.categories[i].category.id == category.category.associations.categories[j].id){
-                            this.categories.splice(i,1);
-                        }
-                    }
-                }
-            }*/
-            /*for(var i=0;i<category.category.associations.categories.length;i++){
-                var childAlreadyPresent = this.categories.find(function(elem){
-                    return elem.category.id == category.category.associations.categories[i];
-                })
-                if(!childAlreadyPresent){
-                    this.category.getCategory(category.category.associations.categories[i].id).subscribe(data => {
-                        this.categories.splice(i,0,data);
-                        //this.categories.push(data);
-                    })
-                }
-            }*/
         }else{
             this.displayAllCategories = !this.displayAllCategories;
             this.nav.push("ProductListPage", {
@@ -271,14 +223,47 @@ export class MyApp {
     }
 
     gotoCart() {
+        let options: NativeTransitionOptions = {
+            direction: 'left', //up, left, right, down
+            duration: 500,
+            slowdownfactor: 3,
+            slidePixels: 20,
+            iosdelay: 100,
+            androiddelay: 150,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 60
+        };
+        this.nativeTransition.slide(options); //Pas trop mal
         this.nav.push("CartPage");
     }
 
     yourOrders() {
+        let options: NativeTransitionOptions = {
+            direction: 'up',
+            duration: 500,
+            slowdownfactor: 3,
+            slidePixels: 20,
+            iosdelay: 100,
+            androiddelay: 150,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 60
+        };
+        this.nativeTransition.flip(options); //Bof
         this.nav.push("OrdersPage");
     }
 
-    favourite() {
+    favourite() {        
+        let options: NativeTransitionOptions = {
+            direction: 'up',
+            duration: 1000,
+            slowdownfactor: 3,
+            slidePixels: 20,
+            iosdelay: 100,
+            androiddelay: 500,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 60
+        };
+        this.nativeTransition.fade(options); //Pas trop mal
         this.nav.push("FavouritePage");
     }
 
@@ -299,6 +284,23 @@ export class MyApp {
     }*/
 
     contact() {
+        //Bug reste sur le côté droite de l'écran
+        //Le bug est surement causé par le menu (pas tout à fait fermer quand la transition s'exeute) => il faudrait s'assurer que le menu soit totalement 
+        //fermer avant de push la vue
+        //Bug tout le temps en fait => l'animation ne va ps jusqu'au bout
+        let options: NativeTransitionOptions = {
+            direction: 'up',
+            action: "close", //action: "open" => provoque le bug
+            origin: "right",
+            duration: 500,
+            slowdownfactor: 3,
+            slidePixels: 0,
+            iosdelay: 100,
+            androiddelay: 150,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 0
+        };
+        this.nativeTransition.drawer(options); 
         this.nav.push("ContactPage");
     }
 
@@ -324,8 +326,6 @@ export class MyApp {
     }
 
     logout() {
-        /*localStorage.removeItem('token');
-        localStorage.removeItem('user');*/
         this.storage.remove('user');
         localStorage.removeItem('userLoggedIn');
         localStorage.removeItem('id_cart');
@@ -334,17 +334,12 @@ export class MyApp {
     }
 
     isCart() {
-      //let cart = JSON.parse(localStorage.getItem('cartItem'));
-      /*this.storage.get('cart').then((data)=>{
-          data != null && data.length != null ?this.noOfItems = data.length:this.noOfItems=null;
-      })*/
       var cart = JSON.parse(localStorage.getItem('cartLength'));
       cart != null ? this.noOfItems = cart:this.noOfItems=null;
       return true;  
   }
 
   shopsLocalisation(){
-      this.nav.push("ShopsPage");
+      this.nav.push("LocationPage");
   }
-
 }

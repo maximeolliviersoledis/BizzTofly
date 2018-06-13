@@ -2,13 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 
-/**
- * Generated class for the RecapPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
-
 @IonicPage()
 @Component({
   selector: 'page-recap',
@@ -21,7 +14,11 @@ export class RecapPage {
   products: any[] = [];
   totalPrice: number = 0;
   totalPriceWithCarrier: number = 0;
+  header_data: any;
+  order_header_data: any;
   constructor(public navCtrl: NavController, public navParams: NavParams, private storage:Storage) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Summary'};        
+        this.order_header_data = {currentStep: 3, pageName: "Recap"};
   }
 
   ngOnInit(){
@@ -72,6 +69,7 @@ export class RecapPage {
 
   goToPayment(){
     this.navCtrl.push('CheckoutPage', {
+      amountDetails: this.navParams.get('amountDetails'), //Obliger de passer ce param pour le retour arrière
       cartData: this.cartData,
       orderData: this.orderData,
       carrierData: this.carrierData,

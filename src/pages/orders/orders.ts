@@ -12,11 +12,14 @@ import {Storage} from '@ionic/storage';
 export class OrdersPage {
     orders: any[] = [];
     featured: any[] = [];
+    header_data:any;
 
     constructor(public navCtrl: NavController,
                 private loadingCtrl:LoadingController,
                 private orderService: OrdersService,
                 private storage:Storage) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Orders'};        
+
     }
 
     ngOnInit() {

@@ -13,7 +13,7 @@
 
     <!--inputs-->
     <!--name-->
-    <ion-row radio-group [formControl]="user.controls['gender']">
+    <!--<ion-row radio-group [formControl]="user.controls['gender']">
         <ion-item>
             <ion-label>Civilité:</ion-label>
         </ion-item>
@@ -25,6 +25,18 @@
             <ion-label>Mme:</ion-label>
             <ion-radio value="2">Mme</ion-radio>
         </ion-item>
+    </ion-row>-->
+    <ion-row class="gender">
+        <ion-col col-5>
+            <ion-label class="text-gender">{{'Gender' | translate}}:</ion-label>
+        </ion-col>
+        <ion-col col-2>
+            <ion-label>{{'Mr' | translate}}</ion-label>
+        </ion-col>
+            <ion-toggle class="toggle" [formControl]="user.controls['gender']"></ion-toggle>
+        <ion-col col-2>
+            <ion-label>{{'Ms' | translate}}</ion-label>
+        </ion-col>
     </ion-row>
 
 
@@ -32,7 +44,7 @@
         <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{"First name:" | translate}}</ion-label>
+                    <ion-label>{{"First name" | translate}}:</ion-label>
                     <ion-input type="text" formControlName="firstName"></ion-input>
                 </ion-item>
             </ion-col>
@@ -40,7 +52,7 @@
         <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{"Last name:" | translate}}</ion-label>
+                    <ion-label>{{"Last name" | translate}}:</ion-label>
                     <ion-input type="text" formControlName="lastName"></ion-input>
                 </ion-item>
             </ion-col>
@@ -67,13 +79,13 @@
         <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{"Password confirmation:" | translate}}</ion-label>
+                    <ion-label>{{"Password confirmation" | translate}}:</ion-label>
                     <ion-input type="password" formControlName="passwordConfirmation"></ion-input>
                 </ion-item>
             </ion-col>
         </ion-row>
         <div class="invalid-feedback" *ngIf="user.errors?.mismatch && (user.controls['passwordConfirmation'].dirty || user.controls['passwordConfirmation'].touched)">
-            Passwords don't match.
+            {{"Passwords don't match." | translate}}
         </div>
       <!--  <ion-row>
             <ion-col col-12>

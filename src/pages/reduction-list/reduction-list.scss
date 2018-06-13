@@ -1,3 +1,14 @@
 page-reduction-list {
-
+	.tab-header{
+		color:$primary;
+		font-weight: bold;
+		text-align: center;
+	}
+	
+	.reduction-item{
+		white-space: pre-wrap;
+		display: inline;
+		text-align: center;
+		
+	}
 }

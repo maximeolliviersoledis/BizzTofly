@@ -13,7 +13,7 @@ export class OfferService {
     }
 
 
-    getMenuItems() {
+   /* getMenuItems() {
         const headers = new Headers();
         let authtoken = localStorage.getItem('token');
         headers.append('Authorization', authtoken);
@@ -22,6 +22,11 @@ export class OfferService {
         })
             .map((data: Response) => data.json() || {})
            // .catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    }*/
+
+    getAllProducts(customerId = null){
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productsInPromoDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId;
+        return this.http.get(urlDir).map((data:Response) => data.json() || {})
     }
 
     

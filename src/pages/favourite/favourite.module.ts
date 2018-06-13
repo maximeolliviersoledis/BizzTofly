@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { FavouritePage } from './favourite';
 import { TranslaterModule } from '../../app/translate.module';
+import { CustomHeaderPageModule } from '../../pages/custom-header/custom-header.module';
 
 
 @NgModule({
@@ -10,8 +11,8 @@ import { TranslaterModule } from '../../app/translate.module';
   ],
   imports: [
     IonicPageModule.forChild(FavouritePage),
-    TranslaterModule
-    
+    TranslaterModule,
+    CustomHeaderPageModule    
   ],
   exports: [
     FavouritePage

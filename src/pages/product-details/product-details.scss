@@ -7,12 +7,12 @@ page-product-details {
     color: #ffab23;
   }
 
-  .slider {
+  /*.slider {
     img {
       width: 100% !important;
       height: 192px !important;
     }
-  }
+  }*/
   .text-over-image {
     color: $white;
     font-size: 18px;
@@ -26,18 +26,16 @@ page-product-details {
     height: 100%;
     width: 100%;
   }
-  .productImage {
+  /*.productImage {
     max-height:300px;
     position: relative;
-  }
-  .main-image {
+  }*/
+ /* .main-image {
     width: 75% !important;
-    /*height: 200px !important;
-    max-height: 200px;*/
    // max-height: 50px;
     //height: 200px !important;
     margin: auto;
-  }
+  }*/
   .prod-price {
     font-weight: 700;
     color: $primary;
@@ -150,16 +148,7 @@ page-product-details {
     background-color: $secondary !important;
     color: red
   }
-  .fav{
-    color: $danger;
-    font-size: 40px;
-    position: absolute;
-    top: 0.5em;
-    right: 0.5em;
-  }
-  .heart-clicked{
-    color:$primary;
-  }
+
   /*img {
    width: 100% !important;
    height: 200px !important;
@@ -180,4 +169,126 @@ page-product-details {
     }
   }
 
+  .info-container {
+    margin:auto;
+    color: $grey;
+  }
+
+
+  .slides-similar-product{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+    .overlay {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+      display: inline-flex;
+    }
+    .slider-img {
+      /*height: 220px;*/
+      width: 100%;
+      height: 200px;
+      position: relative;
+      z-index: -111;
+    }
+    .slider-text {
+      color: #fff;
+      font-size: 22px;
+      padding: 5px;
+      position: absolute;
+      bottom: 0;
+      margin: 5px 0px;
+    }
+    .swiper-pagination-bullet {
+      background: $primary !important;
+    }
+  }
+
+    .card-title {
+      position: absolute;
+      top: 36%;
+      font-size: 0.9em;
+      white-space:pre-wrap;
+      width: 100%;
+      font-weight: bold;
+      color: #fff;
+      }
+
+    /*.card-description {  
+        position: absolute;
+        top: 40%;
+        left: 2%;
+        right: 2%;
+        font-size: 0.8em;
+        white-space: pre-wrap;
+        color: #fff;
+        flex-wrap: wrap;
+    }*/
+
+    .card-rating {
+      position: absolute;
+      top: 50%;
+      left: 40%;
+      ul {
+        padding: 5px 0px;
+        text-align: center;
+     
+        &.rating li {
+          padding: 0px !important;
+          background: none;
+          color: #ffb400;
+       
+          ion-icon {
+            height: 20px;
+            width: 15px;
+          }
+        }
+      }
+    }
+
+    .card-info-comment {
+      position: absolute;
+      top: 75%;
+      left: 10%;
+      text-align: center;
+      font-style: italic;
+      color: #fff;
+      font-size: 0.8em;
+    }
+
+    .card-price {
+      position: absolute;
+      top: 50%;
+      font-size: 0.9em;
+      white-space:pre-wrap;
+      width: 100%;
+      font-weight: bold;
+      color: #fff;
+    }
+
+    .comment-button{
+      background-color: $primary;
+    }
+
+  .productImage{
+    /*.slides-main-image{
+       .overlay{
+          margin:auto;
+          .main-image{
+            width: 75% !important;
+            height: 300px;
+            z-index: -111;
+          }
+        }
+    }*/
+    .fav{
+      color: $danger;
+      font-size: 40px;
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      z-index: 1;
+    }
+    .heart-clicked{
+      color:$primary;
+      z-index: 1;
+    }
+  }
 }

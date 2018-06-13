@@ -22,11 +22,12 @@ export class ProductListPage {
     allProductsId: any[] = [];
     noOfItemToLoad: number = 0;
     /**Searchbar**/
-    searchInput: string;
+    /*searchInput: string;
     searchResults: any[];
     searching: boolean;
     searchPlaceholder: string;
-    lastSearch: any[] = [];
+    lastSearch: any[] = [];*/
+    header_data:any;
     //@ViewChild(Searchbar) searchbar: Searchbar;
 
 
@@ -39,14 +40,16 @@ export class ProductListPage {
                 public storage: Storage) {
 
         this.menuId = navParams.get('MenuId');
-        this.storage.get('cart').then((data)=>{
+        /*this.storage.get('cart').then((data)=>{
             this.cartItems = data;
             if(this.cartItems){
                 for(var items of this.cartItems){
                     this.noOfItems += items.quantity;
                 }
             }
-        })
+        })*/
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Product list'};
+
     }
 
     ngOnInit() {
@@ -79,8 +82,8 @@ export class ProductListPage {
             })
         loader.dismiss();
 
-        this.searching = false;
-        this.searchPlaceholder = "Que recherchez-vous?";
+       /* this.searching = false;
+        this.searchPlaceholder = "Que recherchez-vous?";*/
 
     }
 
@@ -150,12 +153,13 @@ export class ProductListPage {
             event.complete();
         }*/
     }
+
     priceIsReduced(product){
         return product.prices.specific_price < product.prices.normal_price ? true : false; 
     }
 
     /**Searchbar**/
-    displayLastSearch: boolean = false;
+    /*displayLastSearch: boolean = false;
     noResultFound: boolean = false;
     onSearch($event){
         this.searchPlaceholder = "Que recherchez-vous?";
@@ -232,5 +236,5 @@ export class ProductListPage {
     showSearchBar(){
         this.displaySearchBar = !this.displaySearchBar;
         this.displayLastSearch = false;
-    }
+    }*/
 }

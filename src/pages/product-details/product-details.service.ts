@@ -7,30 +7,14 @@ import {ConstService} from "../../providers/const-service";
 @Injectable()
 
 export class ProductDetailsService {
-    constructor(public http: Http, public constService: ConstService) {
+    constructor(public http: Http, public constService: ConstService) {}
 
-    }
-
-    /*getMenuItemDetails(menuItemId) {
+    getProductDetails(productId, customerId = null) {
         const headers = new Headers();
-        return this.http.get(this.constService.base_url + 'api/menuItems/' + menuItemId, {
-            headers: headers
-        })
-
-            .map((data: Response) => data.json() || {})
-        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
-
-    getMenuItemDetails(menuItemId) {
-        const headers = new Headers();
-       // var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + user_id;;
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir, {
             headers: headers
-        })
-
-            .map((data: Response) => data.json() || {})
-        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        }).map((data: Response) => data.json() || {})
     }
 
     getDeclinaisons(declinaisonId){
@@ -41,14 +25,6 @@ export class ProductDetailsService {
             headers: headers
         }).map((data: Response) => data.json() || {})
     }
-
-   /* addToFavourite(productId, productAttributeId, quantity, token){
-        const headers = new Headers();
-        var urlDir = "http://www.bizztofly.com/modules/blockwishlist/cart.php?action=add&id_product="+productId+"&quantity="+quantity+"&token="+token+"&id_product_attribute="+productAttributeId+"&id_wishlist=undefined&_=1526561392412"
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
-    }*/
 
     addToFavourite(productId, attributeProductId, customerId, quantity){
         const headers = new Headers();
@@ -93,6 +69,17 @@ export class ProductDetailsService {
          return this.http.put(urlDir, body, {
              headers: headers
          }).map((data: Response) => data.json() || {})
+     }
+
+     getImageUrl(productId, imageId){
+         var urlDir = this.constService.baseDir + this.constService.imageDir + this.constService.productDir + "/" + productId + "/" + imageId + this.constService.keyDir;
+         return urlDir;
+     }
+
+
+     getFamilyProducts(productId){
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.familyProductDir + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+         return this.http.get(urlDir).map((data:Response) => data.json() || {})
      }
 
 }

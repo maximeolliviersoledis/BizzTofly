@@ -32,8 +32,15 @@ page-checkout {
      }
     }
     img{
-        height: 34px;
-        width: 80px;
+        height: 15%;
+        width: 15%;
+        text-align: center;
+        //position:relative;
+        //left:-5%;
+    }
+    .label{
+      white-space: pre-wrap;
+      text-align: center;
     }
     .item-inner{
        border-bottom:0 !important;

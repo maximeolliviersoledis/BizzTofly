@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { AddressListPage } from './address-list';
 import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
+import { CustomOrderHeaderPageModule } from '../custom-order-header/custom-order-header.module';
 import {TranslaterModule} from '../../app/translate.module';
 
 @NgModule({
@@ -11,6 +12,7 @@ import {TranslaterModule} from '../../app/translate.module';
   imports: [
     IonicPageModule.forChild(AddressListPage),
     CustomHeaderPageModule,
+    CustomOrderHeaderPageModule,
     TranslaterModule
   ],
   exports: [

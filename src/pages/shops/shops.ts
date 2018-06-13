@@ -11,26 +11,21 @@ import {GoogleMap, GoogleMaps, GoogleMapOptions, GoogleMapsEvent, Marker} from '
   providers: [ShopsService]
 })
 export class ShopsPage {
-	noOfItems: number = 0;
 	map: GoogleMap;
+  header_data:any;
+  shops: any[] = [];
+
   constructor(public navCtrl: NavController,
   			  public navParams: NavParams, 
   			  public shopsService:ShopsService,
   			  private storage:Storage, public platform:Platform) {
-  	this.storage.get('cart').then((data)=>{
-  		if(data)
-  			for(var item of data)
-  				this.noOfItems += item.quantity;
-  	})
-
-  	platform.ready().then(()=>{
-  		console.log("Platform ready");
-  		this.loadMap();
-  	})
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Shops'};        
   }
 
   ionViewDidLoad() {
-    console.log('ionViewDidLoad ShopsPage');
+    /*this.shopsService.getShops().subscribe(data => {
+      console.log(data);
+    })*/
   }
 
   navcart(){

@@ -18,24 +18,26 @@
 		<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par chèque</p>
 		<!-- Compléter les différents champs en fonction des données récupérées -->
 		<ul>
-			<li>- Montant du règlement : {{orderDetails.order.total_paid_real}}</li>
-			<li>- Payable à l'ordre de ________</li>
-			<li>- Envoyer à _________</li>
-			<li>- N'oubliez pas d'indiquer la référence de la commande {{orderDetails.order.reference}}</li>
-			<li>- <strong>Votre commande vous sera envoyée dès réception du paiement</strong></li>
-			<li>- Pour toute question ou information complémentaire merci de contacter notre support client</li>
+			<li> Montant du règlement : {{totalPaid | number:'.2-2'}}</li>
+			<li> Payable à l'ordre de {{paymentDetails.details.owner_name}}</li>
+			<li> Envoyer à {{paymentDetails.details.address}}</li>
+			<li> N'oubliez pas d'indiquer la référence de la commande {{paymentDetails.details.order_reference}}</li>
+			<li> <strong>Votre commande vous sera envoyée dès réception du paiement</strong></li>
+			<li> Pour toute question ou information complémentaire merci de contacter notre support client</li>
 		</ul>
-		<!--<p>
-			- Montant du règlement : _________
-			- Payable à l'ordre de ________
-			- Envoyer à _________
-			- N'oubliez pas d'indiquer la référence de la commande _______
-			- <strong>Votre commande vous sera envoyée dès réception du paiement</strong>
-			- Pour toute question ou information complémentaire merci de contacter notre support client
-		</p>-->
 	</div>
 
 	<div *ngIf="isBankWire()">
-		<p>Virement bancaire</p>
+		<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par virement bancaire</p>
+		<!-- Compléter les différents champs en fonction des données récupérées -->
+		<ul>
+			<li> Montant du règlement : {{totalPaid | number:'.2-2'}}</li>
+			<li> Payable à l'ordre de {{paymentDetails.details.owner_name}}</li>
+			<li> Suivant ces détails {{paymentDetails.details.details}}</li>
+			<li> Envoyer à {{paymentDetails.details.address}}</li>
+			<li> N'oubliez pas d'indiquer la référence de la commande {{paymentDetails.details.order_reference}}</li>
+			<li> <strong>Votre commande vous sera envoyée dès réception du paiement</strong></li>
+			<li> Pour toute question ou information complémentaire merci de contacter notre support client</li>
+		</ul>
 	</div>
 </ion-content>

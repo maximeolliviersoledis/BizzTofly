@@ -6,27 +6,49 @@ page-rating {
   text-align: center;
  
   &.rating li {
-    padding: 1px !important;
+    padding: 0px !important;
     background: none;
     color: #ffb400;
  
     ion-icon {
-      font-size: 30px;
+      font-size: 15px;
     }
   }
 }
 }
 
+  .comment-rating{
+    ul {
+    padding: 5px 0px;
+    text-align: left;
+ 
+  &.rating li {
+    padding: 0px !important;
+    background: none;
+    color: #ffb400;
+ 
+    ion-icon {
+      height: 20px;
+      width: 10px;
+    }
+  }
+}
+}
+.title-input{
+  border: 1px solid $primary;
+    border-radius: 10px;
+}
 ion-textarea{
-	border: 1px solid #32db64;
+	//border: 1px solid #32db64;
+  border: 1px solid $primary;
     border-radius: 10px;
 }
 ion-label{
-	    margin-left: 12px;
+	  margin-left: 12px;
     font-size: 14px;
     font-weight: 600;
     letter-spacing: 1px;
-    color: #2ec95c;
+    color: $primary;
 }
 .button{
     background-color: $primary !important;
@@ -36,4 +58,76 @@ ion-label{
     margin-top: 1em;
   
 }
+
+.comment-button{
+  font-size: 10px;
+  height: 35px;
+  width: 50px;
+}
+
+.comment-info{
+  font-size: 0.8em;
+  white-space: pre-wrap;
+}
+
+.comment-content{
+  white-space: pre-wrap;
+  font-weight: normal;
+  font-size: 0.8em;
+  text-align: left;
+}
+
+.comment-title{
+  white-space: pre-wrap;
+  font-size: 0.8em;
+  text-align: left;
+}
+
+.comment-advice{
+  font-weight: italic;
+  font-size: 0.7em;
+  color: $grey;
+  white-space: pre-line;
+}
+a{
+  font-weight: normal;
+  font-size: 0.7em;
+  text-decoration: underline;
+}
+.feedback{
+  font-size: 1em;
+  text-align: center;
+  height: 35px;
+  margin: auto;
+  margin-top: 25px;
+  display: block;
+}
+/*.comment{
+  display: inline;
+
+  .comment-info{
+    .comment-name{
+      color: $black;
+    }
+
+    .comment-date{
+      font-weight: normal;
+      color: $black;
+    }
+  }
+  .comment-content{
+    position: absolute;
+    left: 50%;
+    top: 58%;
+    //border-left: thin solid $grey;
+    .comment-title{
+    }
+
+    .comment-message{
+      white-space: pre-wrap;
+      font-weight: normal;
+      color: $black;
+    }
+  }
+}*/
 }

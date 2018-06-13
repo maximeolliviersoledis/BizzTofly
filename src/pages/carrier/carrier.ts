@@ -14,6 +14,8 @@ export class CarrierPage {
 	carriers: any[] =  [];
 	carrier: any = {};
   acceptCGV: boolean = false;
+  header_data: any;
+  order_header_data: any;
 
   constructor(public navCtrl: NavController, 
   			  public navParams: NavParams,
@@ -22,6 +24,8 @@ export class CarrierPage {
           private storage:Storage,
           public popoverCtrl:PopoverController
   			  ) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Carrier'};        
+        this.order_header_data = {currentStep: 2, pageName: "Carrier"};
   }
 
   ngOnInit(){
@@ -73,6 +77,7 @@ export class CarrierPage {
   	if(this.carrier && this.carrier.carrier_list && this.acceptCGV){
 
         this.navCtrl.push("RecapPage", {
+          amountDetails: this.navParams.get('amountDetails'), //Obliger de passer ce param pour le retour arrière
           orderData: this.navParams.get('orderData'),
           cartData: this.navParams.get('cartData'),
           carrierData: this.carrier

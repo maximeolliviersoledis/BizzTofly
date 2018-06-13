@@ -13,12 +13,12 @@
 	<ion-list *ngIf="reductions && !showInfo">
 		<ion-label>Mes bons valides</ion-label>
 		<ion-row>
-			<ion-col col-4><ion-label>Code</ion-label></ion-col>
-			<ion-col col-4><ion-label>Name</ion-label></ion-col>
+			<ion-col col-4><ion-label class="tab-header">Code</ion-label></ion-col>
+			<ion-col col-4><ion-label class="tab-header">Name</ion-label></ion-col>
 			<ion-col col-4><ion-label></ion-label></ion-col>
 		</ion-row>
 		<ion-row>
-			<ion-item *ngFor="let reduc of reductions">
+			<!--<ion-item *ngFor="let reduc of reductions">
 				<ion-col col-4>
 					{{reduc.code}}
 				</ion-col>
@@ -28,7 +28,18 @@
 				<ion-col col-4>
 				 	<button ion-button (click)="showInfos(reduc)">Visualiser</button>
 				</ion-col>
-			</ion-item>
+			</ion-item>-->
+			<div *ngFor="let reduc of reductions">
+				<ion-col col-4>
+					{{reduc.code}}
+				</ion-col>
+				<ion-col col-4>
+					{{reduc.name}}
+				</ion-col>
+				<ion-col col-4>
+				 	<button ion-button (click)="showInfos(reduc)">Visualiser</button>
+				</ion-col>
+			</div>
 		</ion-row>
 	</ion-list>
 

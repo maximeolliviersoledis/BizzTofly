@@ -4,7 +4,7 @@ import { Settings } from './settings';
 import { TranslaterModule } from '../../app/translate.module';
 import { FileUploadModule } from 'ng2-file-upload';
 import { Ng2CloudinaryModule } from 'ng2-cloudinary';
-
+import { CustomHeaderPageModule } from '../../pages/custom-header/custom-header.module';
 
 @NgModule({
   declarations: [
@@ -14,8 +14,8 @@ import { Ng2CloudinaryModule } from 'ng2-cloudinary';
     IonicPageModule.forChild(Settings),
     TranslaterModule,
     Ng2CloudinaryModule,
-    FileUploadModule
-    
+    FileUploadModule,
+    CustomHeaderPageModule    
   ],
   exports: [
     Settings

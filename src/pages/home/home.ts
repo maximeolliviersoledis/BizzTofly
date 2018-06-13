@@ -49,6 +49,20 @@ export class HomePage {
         this.searching = false;
         this.searchPlaceholder = "Que recherchez-vous?";
     }
+    /*ionViewWillLeave(){
+     let options: NativeTransitionOptions = {
+        direction: 'up',
+        duration: 500,
+        slowdownfactor: 3,
+        slidePixels: 20,
+        iosdelay: 100,
+        androiddelay: 150,
+        fixedPixelsTop: 0,
+        fixedPixelsBottom: 60
+       };
+
+     this.pageTransition.slide(options);
+    }*/
 
     ionViewDidLoad() {
         let loader = this.loadingCtrl.create({
@@ -66,10 +80,13 @@ export class HomePage {
                 loader.dismiss();
             })
 
-       this.getSlideProducts();
-       this.homeService.getAccueilProduct().subscribe(data => {
-           console.log(data);
-           this.welcomeProducts = data;
+       this.storage.get('user').then((userData) => {
+           var customerId = userData && userData.id_customer ? userData.id_customer : null;
+           this.getSlideProducts(customerId);
+           this.homeService.getAccueilProduct(customerId).subscribe(data => {
+               console.log(data);
+               this.welcomeProducts = data;
+           })
        })
     }
 
@@ -159,42 +176,29 @@ export class HomePage {
         }
     }
 
-    goToProductPage(productId, productName = null) {
-        console.log(productId);
-        this.saveSearchInput(productName);           
-        this.navCtrl.push("ProductDetailsPage", {
+    goToProductPage(productId, product = null, productName = null) {
+        this.saveSearchInput(productName);
+        product != null ? this.navCtrl.push("ProductDetailsPage", {
+            product: product
+        }) : this.navCtrl.push("ProductDetailsPage", {
             productId: productId
-        });
+        });           
     }
 
-    getSlideProducts(){
-        this.homeService.getSlideCategorie().subscribe(data => {
+    getSlideProducts(customerId){
+        this.homeService.getSlideCategorie(customerId).subscribe(data => {
             this.slideProducts = data;
             this.currentProduct = this.slideProducts[0];
         })
     }
 
-    goToProduct(){
+  /*  goToProduct(){
         this.goToProductPage(this.currentProduct.id_product);
-    }
+    }*/
 
     onChange(next){
         console.log(this.slides.realIndex);
+        this.slides.autoplayDisableOnInteraction = false;
         this.currentProduct = this.slideProducts[this.slides.realIndex];
-        /*var id = this.currentProduct.id_product;
-        var index = this.slideProducts.findIndex(function(elem){
-            return elem.id_product === id;
-        })
-        if(next){
-            /*if(++index > this.slideProducts.length-1){
-                index--;
-            }
-            this.currentProduct = this.slideProducts[index];
-        }
-        else{
-            /*if(--index < 0 )
-                index++;
-            this.currentProduct = this.slideProducts[index];
-        }*/
     }
 }

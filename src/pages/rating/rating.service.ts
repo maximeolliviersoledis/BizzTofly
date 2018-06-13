@@ -12,15 +12,27 @@ export class RatingService {
                 public constService:ConstService) {
     }
 
-    submitReview(body){
-         const headers = new Headers();
-         headers.append('Content-Type', 'application/json');
-         let authtoken = localStorage.getItem('token');
-         headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url+'api/ratings',body,{
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-          //  .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }
+
+     getComments(productId, customerId = null){
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.commentsDir + "/" + productId + this.constService.keyDir + this.constService.formatDir + this.constService.idCustomer + customerId;
+         return this.http.get(urlDir).map((data:Response) => data.json() || {})
+     }
+     
+     postComments(productId, customerId, grade, title, content){
+     	 var urlDir = this.constService.baseDirApiSoledis + "/add_comment" + "/" + productId + this.constService.keyDir + this.constService.formatDir + 
+     	 this.constService.idCustomer + customerId + "&grade=" + grade + "&title=" + title + "&content="+ content;
+         return this.http.get(urlDir).map((data:Response) => data.json() || {})
+     }
+
+     postCommentUsefulness(commentId, customerId, usefulness){
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.commentUsefulnessDir + "/" + commentId + this.constService.keyDir + this.constService.formatDir + 
+         this.constService.idCustomer + customerId + this.constService.uselfuness + usefulness;
+         return this.http.get(urlDir).map((data:Response) => data.json() || {})
+     }
+
+     postReportComment(commentId, customerId){
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.reportCommentDir + "/" +commentId + this.constService.keyDir + this.constService.formatDir + 
+         this.constService.idCustomer + customerId;
+         return this.http.get(urlDir).map((data:Response) => data.json() || {})
+     }
 }

@@ -1,4 +1,4 @@
-<ion-header>
+<!--<ion-header>
     <ion-navbar>
       <button ion-button menuToggle start>
         <ion-icon name="menu"></ion-icon>
@@ -11,6 +11,10 @@
             </button>
         </ion-buttons>
     </ion-navbar>
+</ion-header>-->
+
+<ion-header>
+  <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
 <ion-content>
@@ -56,16 +60,15 @@
                   <ion-option  *ngFor="let option of options" value="{{option.value}}"> {{option.language | translate}}</ion-option>
                 </ion-select>
             </ion-item>
+            <ion-item>
+              <ion-label primary> {{'Notifications' | translate}}</ion-label>
+              <ion-toggle primary [(ngModel)]="notification" name="notification" id="notification" (ionChange)="changeSetting()">
+            </ion-toggle>
+          </ion-item>
         </ion-list>
 
     <form [formGroup]="newUserInfo" (ngSubmit)="onSubmit()">
        <ion-list>
-         <ion-item>
-              <ion-label primary> {{'Notifications' | translate}}</ion-label>
-              <ion-toggle primary name="notification" id="notification" (ionChange)="changeSetting()">
-            </ion-toggle>
-          </ion-item>
-
           <ion-item>
            <ion-label>{{"User FirstName:" | translate}}</ion-label>
            <ion-input type="text" name="firstname" id="firstname" placeholder="{{'Your FirstName' | translate}}" formControlName="firstName"></ion-input>

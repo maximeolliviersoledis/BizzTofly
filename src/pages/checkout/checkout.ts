@@ -25,7 +25,6 @@ export class CheckoutPage {
         cardDetails: {},
         status: 'pending'
     };
-   // showCradBlock: boolean = false;
     paymentDetails: any = {
         paymentStatus: true
     };
@@ -40,6 +39,7 @@ export class CheckoutPage {
                     {'default': false, 'type': 'Virement', 'value': 'virement', 'logo': ''},
                     {'default': false, 'type': 'COD', 'value': 'cod', 'logo': ''}];*/
       public paymentTypes: any = [];
+      order_header_data: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -53,23 +53,26 @@ export class CheckoutPage {
                 public toastCtrl:ToastController) {
 
              this.orderData = this.navParams.get('orderData');
+             this.order_header_data = {currentStep: 4, pageName: "Checkout"};
              console.log(this.navParams.get('cartData'));
              console.log(this.orderData);
     }
 
     ngOnInit() {
         this.orderData.paymentOption = 'PayPal';
-        this.userService.getUser().subscribe(user=>{
+        /*this.userService.getUser().subscribe(user=>{
         this.userId=user._id;
-        })
+        })*/
         this.carrier = this.navParams.get('carrierData');
         console.log(this.carrier);
         console.log(this.navParams.get('totalPrice') + this.carrier.total_price_with_tax);
         console.log(this.objectToArray(this.carrier.carrier_list)[0].instance.id);
         //Permet de récupérer tous les moyens de paiements dispo
+        //Voir si c'est vraiment utile
         this.checkoutService.getAvailablePayments(0).subscribe(data => {
             console.log(data);
             this.paymentTypes = data;
+            this.paymentTypes.push({name: "stripe", id_module: 0});
             console.log(this.paymentTypes);
             console.log(this.paymentTypes[0]);
         })
@@ -77,28 +80,151 @@ export class CheckoutPage {
 
     choosePaymentType(paymentType){
         console.log(paymentType);
-     this.orderData.paymentOption=paymentType;
-     this.paymentDetails.paymentType=paymentType;
+        this.orderData.paymentOption=paymentType;
+        this.paymentDetails.paymentType=paymentType;
     }
 
+
     checkoutTest(orderDetails: NgForm){
-        //Problème avec le prix du transporteur
+        if(this.orderData.paymentOption && this.orderData.paymentOption.name){
+            var order = this.prepareOrderToBeSend();
+            if(this.orderData.paymentOption.name === "bankwire"){
+                console.log("Méthode de paiement = bankwire");
+                this.checkoutService.payOrder(this.navParams.get('cartData').cart.id, this.orderData.paymentOption.name).subscribe(data => {
+                    console.log(data);
+                    //if(typeof data === "boolean" && data == true){
+                     if(data && typeof JSON.parse(data.state) ==="boolean" && JSON.parse(data.state) == true){
+                        this.createToaster("Votre commande a bien été prise en compte",3000);
+                        this.storage.remove('cart');
+                        localStorage.removeItem('id_cart');
+                        //this.navCtrl.push('HomePage');
+                        this.navCtrl.push('RecapPaymentPage', {
+                            payment: this.orderData.paymentOption.name,
+                            totalPaid: this.navParams.get('totalPrice'),
+                            paymentDetails: data
+                        });
+                    }else{
+                        this.createToaster("Une erreur est survenue lors du passage de votre commande",3000);
+                    }
+                })
+            }else if(this.orderData.paymentOption.name === "cheque"){
+                console.log("Méthode de paiement = cheque");
+                this.checkoutService.payOrder(this.navParams.get('cartData').cart.id, this.orderData.paymentOption.name).subscribe(data => {
+                    console.log(data);
+                    if(data && typeof JSON.parse(data.state) ==="boolean" && JSON.parse(data.state) == true){
+                        this.createToaster("Votre commande a bien été prise en compte",3000);
+                        this.storage.remove('cart');
+                        localStorage.removeItem('id_cart');
+                       // this.navCtrl.push('HomePage');
+                        this.navCtrl.push('RecapPaymentPage', {
+                            payment: this.orderData.paymentOption.name,
+                            totalPaid: this.navParams.get('totalPrice'),
+                            paymentDetails: data
+                        });
+                    }else{
+                        this.createToaster("Une erreur est survenue lors du passage de votre commande",3000);
+                    }
+                })
+            }else if(this.orderData.paymentOption.name === "paypal"){
+                console.log("Méthode de paiement = paypal");
+                this.payPal.init({
+                        PayPalEnvironmentProduction: '',
+                        PayPalEnvironmentSandbox: payPalEnvironmentSandbox
+                    }).then(() => {
+                        this.payPal.prepareToRender('PayPalEnvironmentSandbox', new PayPalConfiguration({})).then(() => {
+                            let payment = new PayPalPayment(this.navParams.get('totalPrice'), 'EUR', 'Description', 'Sale');
+                            this.payPal.renderSinglePaymentUI(payment).then((success) => {
+                                this.showAlert(JSON.stringify(success));
+                                this.paymentDetails.transactionId = success.response.id;
+                                //Si le paiement est un succès alors on post la commande avec le status succès
+                            }, (error) => {
+                                console.error(error);
+                                this.showAlert("Error: Type = 3 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paiement = pas un succès
+                            });
+                        }, (error) => {
+                            console.error(error);
+                            this.showAlert("Error: Type = 2 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> pb config
+                        })
+                    }, (error) => {
+                        console.error(error);
+                        this.showAlert("Error: Type = 1 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paypal non supporté
+                    })
+            }else if(this.orderData.paymentOption.name === "stripe"){ //Pas encore implémenté
+                console.log("Erreur méthode de paiement = stripe");
+                this.stripe.setPublishableKey(publishableKey); //Récupérer sa clé après la création du compte stripe
+                //Remplacer par les infos utilisateurs saisit
+                let card = {
+                    number: '4242424242424242',
+                    expMonth: 12,
+                    expYear: 2020,
+                    cvc: '220'
+                    //Possibilité d'ajouter plus d'info concernant le client, utile??
+                }
+
+                this.stripe.createCardToken(card)
+                .then((data) => {
+                    this.showAlert(JSON.stringify(data));
+                    this.checkoutService.chargeStripe(JSON.parse(data).id, "EUR", this.navParams.get('totalPrice'), stripe_secret_key)
+                        .then((result) => {
+                            this.showAlert(JSON.stringify(result));
+                           /* let res: any = result;
+                            this.paymentDetails.transactionId = res.balance_transaction;
+                            this.cardInfo = '';*/
+                        }, error => {
+                            this.showAlert(JSON.stringify(error));
+                        });
+                }).catch(
+                    error => this.showAlert(JSON.stringify(error))
+                );
+            }else{ //En théorie ce cas la ne devrait pas arriver
+                console.log("Erreur méthode de paiement inconnu");
+                this.createToaster("Unknown payment method",3000);
+            }
+        }else{
+            this.createToaster("Veuillez sélectionner un moyen de paiement",3000);
+        }
+    }
+
+    prepareOrderToBeSend(){
+        //var cart = this.checkoutService.putCart(); // Obliger d'envoyer le panier?????????? => oui pour mettre à jour les addresseset option de livraison
+        //==> peut etre fait dans la page des transporteurs
+        this.checkoutService.putCart(this.navParams.get('cartData').cart.id,this.putCartInfo(this.navParams.get('cartData').cart.id)).subscribe(); //A sup
+        var commandeAEnvoyer =  {
+                    order: {
+                        id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
+                        id_currency: 1,
+                        id_cart: this.navParams.get('cartData').cart.id,
+                        id_customer: this.navParams.get('cartData').cart.id_customer,
+                        module: this.orderData.paymentOption.name,
+                        payment: this.orderData.paymentOption.name,
+                        id_address_invoice: this.orderData.shippingAddress.address.id,
+                        id_address_delivery: this.orderData.shippingAddress.address.id,
+                        id_lang: 1,
+                        conversion_rate: 1,
+                        //current_state: 1, //Paramètre inutile, puisque c'est le module appelé qui défini le statut de la commande
+                        total_paid: this.navParams.get('totalPrice') + this.carrier.total_price_with_tax,
+                        total_paid_real: 0, 
+                        total_products: this.orderData.subTotal, 
+                        total_products_wt: this.orderData.grandTotal - this.orderData.taxAmount,
+                        total_shipping: this.carrier.total_price_with_tax
+                    }
+        };
+
+        return commandeAEnvoyer;
+    }
+
+
+    /*checkoutTest(orderDetails: NgForm){
         for(var payment of this.paymentTypes){
             console.log(payment);
             if(payment.id_module === this.orderData.paymentOption){
                 console.log(payment.id_module);
-                //this.calculateTotalPrice();
                 var cart = this.navParams.get('cartData');
                 console.log(cart);
-                /*var customer = JSON.parse(localStorage.getItem('user'));
-                console.log(customer);*/
-
-           //var modif = this.updateCartInfo(cart.cart.id);
            var modif = this.putCartInfo(cart.cart.id);
            console.log(modif);
             this.checkoutService.putCart(cart.cart.id, modif).subscribe(data => {
                 console.log(data);
-                //console.log(this.carrier.carrier.id);
                 console.log(this.objectToArray(this.carrier.carrier_list)[0].instance);
                 var commandeAEnvoyer =  {
                     order: {
@@ -108,14 +234,11 @@ export class CheckoutPage {
                         id_customer: this.navParams.get('cartData').cart.id_customer,
                         module: payment.name,
                         payment: payment.name,
-                    //id_shop: 1,
                     id_address_invoice: this.orderData.shippingAddress.address.id,
                     id_address_delivery: this.orderData.shippingAddress.address.id,
                     id_lang: 1,
                     conversion_rate: 1,
                     current_state: 1, // "En attente de paiement par chèque"
-                    //total_paid: this.orderData.grandTotal, 
-                    //total_paid: this.calculateTotalPrice(), 
                     total_paid: this.navParams.get('totalPrice') + this.carrier.total_price_with_tax,
                     total_paid_real: 0, 
                     total_products: this.orderData.subTotal, 
@@ -123,30 +246,21 @@ export class CheckoutPage {
                     total_shipping: this.carrier.total_price_with_tax
                 }
             };
-                //Fonctionne mais renvoi "paiement accepté" au lieu de "paiement en attente"
                 this.checkoutService.postOrder(commandeAEnvoyer).subscribe(order =>{
                     console.log(order);
-                    /*localStorage.removeItem('cartItem');
-                    localStorage.removeItem('id_cart');*/
                     this.storage.remove('cart');
                     localStorage.removeItem('id_cart');
                     this.createToaster("Votre commande a bien été prise en compte",3000);
 
                     this.navCtrl.push("HomePage");
-                    
-                    /*this.navCtrl.push('RecapPaymentPage', {
-                        payment: this.orderData.paymentOption,
-                        order: order
-                    });*/
-                    //this.navCtrl.setRoot("ThankyouPage");
                 })
 
             });
         }
     }
-}
+}*/
 
-    checkout(orderDetails: NgForm) {
+    checkoutInit(orderDetails: NgForm) {
         console.log(orderDetails);
         if (this.orderData.paymentOption == 'PayPal') {
             const config = {
@@ -335,8 +449,25 @@ export class CheckoutPage {
 
     }
 
+    //Fonctionne mais fonction dégeux
+    //Ne fonctionne que pour une seule addresse
+    //Il faudrait faire une fonction faisant l'équivalent de la serialize() en php
+    formatDeliveryOption(carrierId){
+        var delivery_option: string = 'a:1:{i:'+this.orderData.shippingAddress.address.id+';s:'+(carrierId.toString().length+1)+':"'+carrierId+',";}'
+        return delivery_option;
+    }
+
     putCartInfo(cartId){
         //var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
+        //format à envoyer a:1:{i:93;s:2:"2,";} ou 'a:1:{i:93;s:3:"17,";}' pour delivery option
+
+        //a:[index_array]{i:id_address;s::}
+           //$var['93'] = '2,'; équivalent php sérialiser
+           //'a:1:{i:93;s:3:"17,";}'
+           //a = array, ':1' = length '{}': contenu du tableau, i = index ':93' = address, 's' = string ':2' = string.length '"2,"' = a la chaine
+        
+
+
         var cart = this.navParams.get('cartData');
         console.log(cart);
         console.log("panier existant");
@@ -350,6 +481,8 @@ export class CheckoutPage {
                 id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
                 id_currency: 1,
                 id_customer: cart.cart.id_customer,
+                delivery_option: this.formatDeliveryOption(this.objectToArray(this.carrier.carrier_list)[0].instance.id),
+                //delivery_option: '2,',
                // id_guest: null,
                 id_lang: 1,
                // recyclable: null,
@@ -368,6 +501,7 @@ export class CheckoutPage {
                 }
             }
         };
+
 
         for(var items of cart.cart.associations.cart_rows){
             console.log(items);
@@ -397,6 +531,7 @@ export class CheckoutPage {
                 id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
                 id_currency: 1,
                 id_customer: cart.cart.id_customer,
+                delivery_option: this.formatDeliveryOption(this.objectToArray(this.carrier.carrier_list)[0].instance.id),
                // id_guest: null,
                 id_lang: 1,
                // recyclable: null,

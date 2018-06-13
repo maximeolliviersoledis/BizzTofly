@@ -25,17 +25,17 @@ export class HomeService {
         return this.constService.baseDir + this.constService.imageDir + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
     }
 
-    getSlideCategorie(){
+    getSlideCategorie(customerId){
         const headers = new Headers();
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/14" + this.constService.keyDir + this.constService.formatDir;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/14" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir, {
             headers: headers
         }).map((data: Response) => data.json() || {})
     }
 
-    getAccueilProduct(){
+    getAccueilProduct(customerId){
         const headers = new Headers();
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir, {
             headers: headers
         }).map((data: Response) => data.json() || {})

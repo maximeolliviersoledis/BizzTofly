@@ -23,6 +23,7 @@ export class Settings {
     firstname: string;
     lastname: string;
     noOfItems: number = 0;
+    header_data:any;
 
     options = [
         {
@@ -54,31 +55,23 @@ export class Settings {
   public notification:any;
 
 
-    constructor(public navCtrl: NavController,
-                public events:Events,
-                public fb: FormBuilder,
-                public platform:Platform,
-                private loadingCtrl:LoadingController,
-                private toastCtrl:ToastController,
-                public translate: TranslateService,
-                private userService: UserService,
-                private settingService:SettingsService,
-                private storage:Storage) {
+  constructor(public navCtrl: NavController,
+    public events:Events,
+    public fb: FormBuilder,
+    public platform:Platform,
+    private loadingCtrl:LoadingController,
+    private toastCtrl:ToastController,
+    public translate: TranslateService,
+    private userService: UserService,
+    private settingService:SettingsService,
+    private storage:Storage) {
 
-                let value= localStorage.getItem('language');
-                this.value = value!=null ? value:'en';
-                let notification = localStorage.getItem('notification');
-                this.notification = notification!=null ? notification:true;
-
-                this.storage.get('cart').then((data)=>{
-                  if(data){
-                    for(var product of data){
-                      this.noOfItems += product.quantity;
-                    }
-                  }
-                })
-                
-    }
+    let value= localStorage.getItem('language');
+    this.value = value!=null ? value : 'en';
+    let notification = localStorage.getItem('notification');
+    this.notification = notification!=null ? notification : true;
+    this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Settings'};                
+  }
 
 
     ngOnInit() {
@@ -260,6 +253,7 @@ export class Settings {
 
     changeSetting(){
       localStorage.setItem('notification',this.notification);
+      this.events.publish('notification:changed', this.notification); //Le paramètre est pris en compte maintenant pas besoin de redémarrage
     }
 
     createToaster(message, duration) {

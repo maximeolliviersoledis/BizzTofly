@@ -41,7 +41,12 @@ export class CheckoutService {
         }).map((data: Response) => data.json() || {})     
     }
 
-    /*chargeStripe(token, currency, amount, stripe_secret_key) {
+    payOrder(cartId, paymentModuleName){
+        var urlDir = this.constService.baseDirApiSoledis + "/paid/" + cartId + this.constService.keyDir + this.constService.formatDir + "&payment=" + paymentModuleName;
+        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    }
+
+    chargeStripe(token, currency, amount, stripe_secret_key) {
         let secret_key = stripe_secret_key;
         var headers = new Headers();
         var params = new URLSearchParams();
@@ -61,7 +66,7 @@ export class CheckoutService {
                     resolve(data);
                 });
         });
-    }*/
+    }
 
     /*savePaymentDetails(orderId, paymentDetails) {
         const headers = new Headers();

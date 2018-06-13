@@ -16,6 +16,7 @@ export class FavouritePage {
     cartItems: any[] = [];
     noOfItems: number = 0;
     bg: any;
+    header_data: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -26,14 +27,16 @@ export class FavouritePage {
                 public favouriteService: FavouriteService) {
 
         this.bg = 'assets/img/bg.jpg';
-        this.storage.get('cart').then((data)=>{
+        /*this.storage.get('cart').then((data)=>{
             this.cartItems = data;
             if(this.cartItems){
                 for(var items of this.cartItems){
                     this.noOfItems += items.quantity;
                 }
             }
-        })
+        })*/
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Favourite'};        
+
     }
     favouriteList: any[] = [];
     ngOnInit() {

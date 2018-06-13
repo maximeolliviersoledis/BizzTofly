@@ -1,6 +1,7 @@
 import {Component, ViewChild} from '@angular/core';
 import {NavController, NavParams, Slides,IonicPage,LoadingController} from 'ionic-angular';
 import { OfferService } from './offer.service'; 
+import { Storage } from '@ionic/storage';
 
 
 @IonicPage()
@@ -11,30 +12,29 @@ import { OfferService } from './offer.service';
 })
 export class OfferPage {
     @ViewChild(Slides) slides: Slides;
-    offerProducts: any[] = [];
-    offerPrice: number;
+    productsInPromo: any[] = [];
+    header_data: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 private loadingCtrl:LoadingController,
-                private offerItemsService:OfferService) {
+                private offerService:OfferService,
+                private storage:Storage) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Offers'};        
     }
 
     ngOnInit() {
-       let loader= this.loadingCtrl.create({
-           content:'please wait..'
-       })
-       loader.present();
-        this.offerItemsService.getMenuItems()
-        .subscribe(menuItems=>{
-            console.log("items-"+JSON.stringify(menuItems));
-            this.offerProducts=menuItems;
-            loader.dismiss();
-        },
-        error=>{
-            loader.dismiss();
+      let loader= this.loadingCtrl.create({
+        content:'please wait..'
+      })
+      loader.present();
+      this.storage.get('user').then(userData => {
+        var customerId = userData && userData.id_customer ? userData.id_customer : null;
+        this.offerService.getAllProducts(customerId).subscribe(data => {
+          this.productsInPromo = data;
         })
-
+      })
+      loader.dismiss();
     }
 
     gotoNextSlide() {
@@ -47,7 +47,8 @@ export class OfferPage {
 
     buyNow(productId) {
         this.navCtrl.push("ProductDetailsPage", {
-            productId: productId
+            //productId: productId
+            product: productId
         });
     }
 

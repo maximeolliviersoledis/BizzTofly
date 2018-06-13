@@ -1,6 +1,7 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
 import {RatingService} from './rating.service';
+import {Storage} from '@ionic/storage';
 
 
 @IonicPage()
@@ -12,39 +13,76 @@ import {RatingService} from './rating.service';
 export class RatingPage {
 
   review: any = {
-    menuItem:'',
-    order:'',
-    rating: '',
-    comment: ''
+    productId: 0,
+    customerId: 0,
+    rating: 3,
+    comment: '',
+    title: ''
   }
-  itemId: '';
-  index: '';
-  orderId: '';
-  reviews: any[] = [];
+  comments: any[] = [];
+  header_data: any;
+  user: any;
+  displayForm:boolean = false;
   
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
-              private ratingService:RatingService) {
+              private ratingService:RatingService,
+              private storage:Storage,
+              public toastCtrl:ToastController) {
 
-             this.review.menuItem = this.navParams.get('itemId');
-             this.review.order = this.navParams.get('orderId');
-             let review = this.navParams.get('review');
-             this.review.rating=review.rating;
-             this.review.comment=review.comment;
+            this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Rate product'};
+
+            this.storage.get('user').then((data)=>{
+              this.user = data;
+              this.ratingService.getComments(this.navParams.get('productId'),this.user && this.user.id_customer ? this.user.id_customer:0).subscribe(data => {
+                this.comments = data;
+              })
+            })
            }
 
+           onSubmit(f){
+             this.storage.get('user').then((data)=>{
+               if(!data){
+                 this.toastCtrl.create({
+                      message: "Veuillez vous connecter avant de laisser un commentaire",
+                      duration: 2000
+                  }).present();
+                 this.navCtrl.push("LoginPage");
+               }
+               else{
+                 this.ratingService.postComments(this.navParams.get('productId'), data.id_customer, this.review.rating, this.review.title, this.review.comment).subscribe((data)=>{
+                   console.log(data);
+                 })
+               }
+             })
+           }
 
-    onSubmit() {
-        console.log('review obj' + JSON.stringify(this.review));
-        this.ratingService.submitReview(this.review)
-        .subscribe(review=>{
-          console.log("review-"+JSON.stringify(review));
-          this.review.comment='';
-          this.navCtrl.push("OrderDetailsPage",{
-            orderId:this.review.order
-          })
-        })
+           usefullComment(comment){
+             console.log(comment);
+             if(this.user)
+               this.ratingService.postCommentUsefulness(comment.id_product_comment,this.user.id_customer,true).subscribe(data =>{
+                 console.log(data);
+               });
+           }
 
-    }
+           uselessComment(comment){
+             console.log(comment);
+             if(this.user)
+               this.ratingService.postCommentUsefulness(comment.id_product_comment,this.user.id_customer,false).subscribe(data => {
+                 console.log(data);
+               });
+           }
+
+           reportComment(comment){
+             console.log(comment);
+             if(this.user)
+               this.ratingService.postReportComment(comment.id_product_comment, this.user.id_customer).subscribe(data => {
+                 console.log(data);
+               })
+           }  
+
+           show(){
+             this.displayForm = !this.displayForm;
+           }
 
 }

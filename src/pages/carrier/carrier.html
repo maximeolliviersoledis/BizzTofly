@@ -1,7 +1,12 @@
-<ion-header>
+<!--<ion-header>
   <ion-navbar>
     <ion-title>{{'Carrier' | translate}}</ion-title>
   </ion-navbar>
+</ion-header>-->
+
+<ion-header>
+	<custom-header [header]="header_data"></custom-header>
+	<custom-order-header [headerDATA]="order_header_data"></custom-order-header>
 </ion-header>
 
 

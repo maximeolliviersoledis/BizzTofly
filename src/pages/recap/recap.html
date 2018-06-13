@@ -1,9 +1,10 @@
 <ion-header>
 
-  <ion-navbar>
+<!--  <ion-navbar>
     <ion-title>recap</ion-title>
-  </ion-navbar>
-
+  </ion-navbar>-->
+  <custom-header [header]="header_data"></custom-header>
+  <custom-order-header [headerDATA]="order_header_data"></custom-order-header>
 </ion-header>
 
 
@@ -26,7 +27,7 @@
 <ion-item>
 	<p>{{'Products total incl_tax' | translate}} : {{totalPrice | number:'.2-2'}} €</p>
 	<p>{{'Total shipping cost (incl_tax)' | translate}} : {{carrierData.total_price_with_tax | number:'.2-2'}} €</p>
-	<p>{{'Total incl_tax ' | translate}}: {{totalPriceWithCarrier | number:'.2-2'}} €</p>
+	<p>{{'Total incl_tax' | translate}}: {{totalPriceWithCarrier | number:'.2-2'}} €</p>
 	<br>
 	<ion-row>
 		<ion-col col-9>

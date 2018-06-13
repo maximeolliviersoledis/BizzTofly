@@ -1,5 +1,5 @@
-import {Component} from '@angular/core';
-import {NavController, NavParams, AlertController, LoadingController, ToastController, IonicPage} from 'ionic-angular';
+import {Component, ViewChild} from '@angular/core';
+import {NavController, NavParams, AlertController, LoadingController, ToastController, IonicPage, Slides} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {Storage} from '@ionic/storage';
 import {ProductDetailsService} from './product-details.service';
@@ -23,7 +23,6 @@ export class ProductDetailsPage {
     noOfItems: number = 0;
     cartItems: any[];
     user: any = {};
-    ExtraOptions: any[] = [];
     itemInCart: any[] = [];
     Cart: any[] = [];
     prices: any[] = [{value: ''}];
@@ -34,6 +33,9 @@ export class ProductDetailsPage {
     }
     productDetails: any = {};
     like: boolean = false;
+    price: number = 0;
+    totalPrice: number = 0;
+    similarProducts: any[] = [];
 
     constructor(public navCtrl: NavController,
         public loadingCtrl: LoadingController,
@@ -55,147 +57,160 @@ export class ProductDetailsPage {
                     this.noOfItems += items.quantity;
             }
         })
-
-        this.storage.get('user').then((data)=>{
-            this.user = data;
-        })
     }
 
     ngOnInit() {
-        console.log("ngOnInit() appelé");
         let loader = this.loadingCtrl.create({
             content: 'please wait'
         })
         loader.present();
-        //Plus d'appel api, on passe le produit dans la navParam
-        var product = this.navParams.get('product');
-        if(product){
-            this.productDetails = product;
-            let details:any=this.productDetails;
-            this.initPrice = this.productDetails.price;
-            let dec = Object.keys(this.productDetails.declinaisons);
-            let goodDec = [];
-            for(var d of dec){
-                goodDec.push(this.productDetails.declinaisons[d]);
-            }
-            this.productDetails.declinaisons = goodDec;
-            this.product.productId = details.id;
-            this.product.name = details.name;
-            this.product.price = details.prices.specific_price;
-            this.product.imageUrl = details.image;
-            console.log(this.productDetails);
-            loader.dismiss();
-        }else{
-            if(this.productId){
-                this.productDetailsService.getMenuItemDetails(this.productId).subscribe(data => {
-                    console.log(data);
-                    this.productDetails = data ;
-                    let details:any=this.productDetails;
-                    this.initPrice = this.productDetails.price;
-                    let dec = Object.keys(this.productDetails.declinaisons);
-                    let goodDec = [];
-                    for(var d of dec){
-                        goodDec.push(this.productDetails.declinaisons[d]);
-                    }
-                    this.productDetails.declinaisons = goodDec;
-                    this.product.productId = details.id;
-                    this.product.name = details.name;
-                    this.product.price = details.price;
-                    this.product.imageUrl = details.image;
-                    console.log(this.productDetails);
-                })
-            }
-            loader.dismiss();
-        }
-        this.checkFavourite();
 
+        /*this.storage.get('user').then((data)=>{
+            this.user = data;
+            var product = this.navParams.get('product');
+            if(product){
+                this.productDetails = product;
+                this.id_declinaisons = this.productDetails.cache_default_attribute;
+                this.getCorrespondingCombination(); //On force le programme à aller chercher les infos de la déclinaison par défaut
+                let details:any=this.productDetails;
+                this.initPrice = this.productDetails.price;
+                let dec = Object.keys(this.productDetails.declinaisons);
+                let goodDec = [];
+                for(var d of dec){
+                    goodDec.push(this.productDetails.declinaisons[d]);
+                }
+                this.productId = details.id_product;
+                this.productDetails.declinaisons = goodDec;
+                this.product.productId = details.id;
+                this.product.name = details.name;
+                this.product.price = details.prices.specific_price;
+                this.product.imageUrl = details.image;
+                console.log(this.productId);
+                this.productDetailsService.getFamilyProducts(this.productId).subscribe(data => {
+                    this.similarProducts = data;
+                    console.log(this.similarProducts);
+                })
+                console.log(this.productDetails);
+                loader.dismiss();
+            }else{
+                if(this.productId){
+                    var customerId = this.user && this.user.id_customer ? this.user.id_customer : null;
+                    this.productDetailsService.getProductDetails(this.productId, customerId).subscribe(data => {
+                        console.log(data);
+                        this.productDetails = data ;
+                        this.id_declinaisons = this.productDetails.cache_default_attribute;
+                        let details:any=this.productDetails;
+                        this.initPrice = this.productDetails.price;
+                        let dec = Object.keys(this.productDetails.declinaisons);
+                        let goodDec = [];
+                        for(var d of dec){
+                            goodDec.push(this.productDetails.declinaisons[d]);
+                        }
+                        this.productDetails.declinaisons = goodDec;
+                        this.product.productId = details.id;
+                        this.product.name = details.name;
+                        this.product.price = details.price;
+                        this.product.imageUrl = details.image;
+                        this.productDetailsService.getFamilyProducts(this.productId).subscribe(data => {
+                            this.similarProducts = data;
+                            console.log(this.similarProducts);
+                        })
+                    })
+                }
+                loader.dismiss();
+            }
+        })*/
+
+        this.storage.get('user').then(userData => {
+            this.user = userData;
+            var product = this.navParams.get('product');
+
+            //Evite de faire des requêtes inutiles si le produit a déjà été chargé par l'une des pages précédentes
+            if(product){
+                console.log("Product already loaded");
+                this.productDetails = product;
+                this.productId = this.productDetails.id_product;
+                this.initProduct();
+            }else if(this.productId){ //Si le produit n'a pas été chargé par une page précédente, alors récupère les infos
+                console.log("Product isn't loaded yet");
+                var customerId = this.user && this.user.id_customer ? this.user.id_customer : null;
+                this.productDetailsService.getProductDetails(this.productId, customerId).subscribe(data => {
+                    this.productDetails = data;
+                    this.initProduct();
+                })
+            }else{
+                //On ne devrait jamais arrivé dans ce cas là normalement (Voir comment se comporte l'appli lorsqu'elle sort de veille)
+                console.log("Unable to load product");
+            }
+            loader.dismiss();
+        })
+
+        this.checkFavourite();
    }
 
+   initProduct(){
+       this.id_declinaisons = this.productDetails.cache_default_attribute;
+       let details:any=this.productDetails;
+       console.log(details);
+       this.initPrice = this.productDetails.price;
+       let dec = Object.keys(this.productDetails.declinaisons);
+       let goodDec = [];
+       for(var d of dec){
+           goodDec.push(this.productDetails.declinaisons[d]);
+       }
+       this.productDetails.declinaisons = goodDec;
+       this.product.name = details.name;
+       this.product.price = details.price;
+       this.product.imageUrl = details.image; 
+       this.product.productId = this.productId;
+       this.productDetailsService.getFamilyProducts(this.productId).subscribe(data => {
+           this.similarProducts = data;
+           console.log(this.similarProducts);
+       })
+   }
 
    addToCart(productId) {
-        /***BUG si on delet eun item du panier qu'on revient sur la page avec la fleche retour arrière et qu'on ajoute à ouveau cet item, le contenu précédemment effacé et de 
-        nouveau dans le panier***/
-        //Contenu de variable non remis à zéro, variable itemInCart gade le contenu de l'ancien panier et variable product//
+       console.log(this.itemInCart);
+       console.log(this.product);
+       console.log(this.declinaison);
 
-        /******BUG si on ajoute un produit on ajoute un autre et qu'on veut à nouveau ajouter le produit précédent, il se retrouve effacé du panier*****/
-        ////RESOLU/////
-       /* console.log(productId);
-        if(this.productIsAlreadyInCart(this.product)){
-            console.log("produit déjà présent");
-            for(var i of this.product.declinaison){
-                if(productId == i.combination.id){
-                    console.log("BUG OK ");
-                }
-            }
-        }*/
-        console.log(this.itemInCart);
-        console.log(this.product);
-        console.log(this.declinaison);
+       if(!this.declinaison){
+           /**Affiche un message d'erreur indiquant qu'il faut sélectionner une déclinaison avant d'ajouter un produit au panier**/
+           let alert = this.alertCtrl.create({
+               title: "Please!",
+               subTitle: "Veuillez sélectionner une déclinaison avant de passer commande",
+               buttons: ['OK']
+           });
+           alert.present();
+       }else{
+           var id = this.declinaison.combination.id;
+           var index =  this.productDetails.declinaisons.findIndex(function(elem){
+               return elem.id === id;
+           })
 
-        if(!this.declinaison){
-            /**Affiche un message d'erreur indiquant qu'il faut sélectionner une déclinaison avant d'ajouter un produit au panier**/
-            let alert = this.alertCtrl.create({
-                title: "Please!",
-                subTitle: "Veuillez sélectionner une déclinaison avant de passer commande",
-                buttons: ['OK']
-            });
-            alert.present();
-        }else{
-            var id = this.declinaison.combination.id;
-            var index =  this.productDetails.declinaisons.findIndex(function(elem){
-                return elem.id === id;
-            })
+           this.declinaison.endPrice = parseFloat(this.productDetails.declinaisons[index].price);
+           console.log(this.declinaison.endPrice);
+           this.storage.get('cart').then((val) => {
+               console.log(val);
+               this.Cart = val;
 
-            this.declinaison.endPrice = parseFloat(this.productDetails.declinaisons[index].price);
-            console.log(this.declinaison.endPrice);
-            this.storage.get('cart').then((val) => {
-                console.log(val);
-                this.Cart = val;
+               /**Si le panier est vide**/
+               if(this.Cart ==  null){
 
-                /**Si le panier est vide**/
-                if(this.Cart ==  null){
+                   this.product.quantity = this.count;
+                   for(var i of this.productDetails.declinaisons){
+                       if(this.declinaison.combination.id===i.id){
+                           this.declinaison.name = i.name;
+                           break;
+                       }
+                   }
 
-                    this.product.quantity = this.count;
-                    for(var i of this.productDetails.declinaisons){
-                        if(this.declinaison.combination.id===i.id){
-                            this.declinaison.name = i.name;
-                            break;
-                        }
-                    }
-                    this.declinaison.selectedQuantity = this.count;
-                    this.noOfItems += this.count;
-                //***Correction du second bug***//
-                //On vérifie si le produit possède déjà la déclinaison que l'on souhaite ajouter
-                /*var dec = this.declinaison.combination.id;
-                var decAlreadyExist = this.product.declinaison.findIndex(function(elem){
-                    return elem.combination.id == dec;
-                });
-
-                if(decAlreadyExist>=0)
-                    this.product.declinaison.splice(0,this.product.declinaison.length);
-
-                this.product.declinaison.push(this.declinaison);
-
-                var prod = this.product;
-                var prodAlreadyExist = this.itemInCart.findIndex(function(elem){
-                    return prod.productId == elem.productId;
-                });
-
-                if(prodAlreadyExist>=0)
-                    this.itemInCart[prodAlreadyExist] = this.product;
-                else
-                    this.itemInCart.push(this.product);*/
-
-                //*** ***//
-
-                //Marche absolument pareil que le code au dessus
-                //On enlève le contenu des déclinaisons pour la variable produit et ajoute seulement celle qui nous intéresse
-                //Même principe pour itemInCart sauf que c'est avec les produits
-                this.product.declinaison.splice(0,this.product.declinaison.length);
-                this.product.declinaison.push(this.declinaison);
-                this.itemInCart.splice(0,this.itemInCart.length);
-                this.itemInCart.push(this.product);
-
+                   this.declinaison.selectedQuantity = this.count;
+                   this.noOfItems += this.count;
+                   this.product.declinaison.splice(0,this.product.declinaison.length);
+                   this.product.declinaison.push(this.declinaison);
+                   this.itemInCart.splice(0,this.itemInCart.length);
+                   this.itemInCart.push(this.product);
                 //localStorage.setItem('cartItem', JSON.stringify(this.itemInCart));
                 this.storage.set('cart',this.itemInCart);
                 var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();
@@ -473,6 +488,7 @@ export class ProductDetailsPage {
 
         if (this.quantity>0 && this.count < (this.quantity-this.quantityInCart)) {
             this.count = this.count + 1;
+            this.totalPrice = this.count * this.price;
         }else if(this.quantity<0){
             let alert = this.alertCtrl.create({
                 title: "Please!",
@@ -504,6 +520,7 @@ export class ProductDetailsPage {
     remove() {
         if (this.count > 1) {
             this.count = this.count - 1;
+            this.totalPrice = this.count * this.price;
         }
     }
 
@@ -692,8 +709,16 @@ export class ProductDetailsPage {
         toast.present();
     }
 
+    @ViewChild('productImage') productImage:Slides;
     changerImagePrincipale(image){
-        this.productDetails.image = image;
+        this.productImage.autoplayDisableOnInteraction = false;
+
+        //this.productDetails.image = image;
+        var index = this.productDetails.images.findIndex(function(elem){
+            return elem == image;
+        })
+
+        this.productImage.slideTo(index+1);
     }
 
     getCorrespondingCombination(){
@@ -704,22 +729,32 @@ export class ProductDetailsPage {
         this.productDetailsService.getDeclinaisons(this.id_declinaisons)
         .subscribe(res => {
             this.declinaison = res;
-            console.log(this.declinaison.combination.quantity);
-            this.updatePrice(res.combination.unit_price_impact);
+            console.log(this.declinaison);
+            if(this.declinaison.combination.associations && this.declinaison.combination.associations.images)
+                this.productDetails.image = this.productDetailsService.getImageUrl(this.productId, this.declinaison.combination.associations.images[0].id);
+            //this.updatePrice(res.combination.unit_price_impact);
+            this.updatePrice(this.id_declinaisons);
             this.updateQuantity(res.combination.quantity);
-            console.log("declinaisons ok");
-            console.log(res);
-            console.log(res.combination.unit_price_impact);
         })
     }
 
-    updatePrice(price){
+    /*updatePrice(price){
         if(price != 0){
             var productPrice = this.productDetails.price;
             this.productDetails.price = parseFloat(productPrice) + parseFloat(price);
         }else{
             this.productDetails.price = this.initPrice;
         }
+    }*/
+
+    updatePrice(id){
+        for(var i=0; i < this.productDetails.declinaisons.length;i++){
+            if(id == this.productDetails.declinaisons[i].id){
+                this.price = this.productDetails.declinaisons[i].price;
+                break;
+            }
+        }
+        this.totalPrice = this.count * this.price;
     }
 
     updateQuantity(quantity){
@@ -748,6 +783,27 @@ export class ProductDetailsPage {
             }
         }
         return false;
+    }
+
+    /**Envoi vers la page des commentaires**/
+    goToCommentsPage(){
+        this.navCtrl.push("RatingPage", {
+            productId: this.productId
+        });
+    }
+    
+    /**Gestion du slide des produits de la même famille**/
+    currentSlideProduct: any = this.similarProducts[0];
+    goToProductPage(){
+        this.navCtrl.push("ProductDetailsPage", {
+            productId: this.currentSlideProduct.id_product
+        })
+    }
+
+    @ViewChild('similarProduct') slides:Slides;
+    onChange(){
+        this.slides.autoplayDisableOnInteraction = false;
+        this.currentSlideProduct = this.similarProducts[this.slides.realIndex];
     }
 }
 

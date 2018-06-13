@@ -1,6 +1,5 @@
-
-  <ion-navbar>
-    <button *ngIf="header_data.ismenu" ion-button icon-only menuToggle>
+<!--<ion-navbar>
+    <button ion-button menuToggle start>
         <ion-icon name="menu"></ion-icon>
     </button>
     <ion-title  [ngClass]="{'ishome-title': header_data.ishome,'ismeun-centre': !header_data.ishome}">
@@ -14,5 +13,48 @@
       </button>
     </ion-buttons>
 
-  </ion-navbar>
+</ion-navbar>-->
 
+  <ion-navbar class="navbar-item">
+    <button ion-button menuToggle start>
+      <ion-icon name="menu"></ion-icon>
+    </button>    
+    <ion-title  [ngClass]="{'ishome-title': header_data.ishome,'ismeun-centre': !header_data.ishome}">
+        {{header_data.title | translate}} </ion-title>
+      <ion-buttons end>
+        <button *ngIf="header_data.enableSearchbar" ion-button icon-only color="royal" (click)="showSearchBar()"><ion-icon name="search"></ion-icon></button>
+        <button (click)="gotoCart()" ion-button icon-only 
+           class="header-btn">
+          <ion-icon name="cart"></ion-icon>
+          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
+        </button>
+      </ion-buttons>
+  </ion-navbar>
+  <div *ngIf="displaySearchBar && header_data.enableSearchbar">
+    <ion-searchbar 
+        [(ngModel)]="searchInput"
+        [showCancelButton]="true"
+        (ionInput)="onSearch($event)"
+        (ionCancel)="offSearch($event)"
+        (ionFocus)="onFocus($event)"
+        animated="true"
+        autocomplete="on"
+        placeholder="{{searchPlaceholder}}">
+  </ion-searchbar>
+  <div *ngIf="searching" class="spinner-container">
+    <ion-spinner></ion-spinner>
+  </div>
+  <ion-list *ngIf="displayLastSearch" class="search-results">
+    <ion-item *ngFor="let search of lastSearch" (click)="completeUserInput(search)">
+      {{search}}
+    </ion-item>
+  </ion-list>
+  <ion-list *ngIf="searchResults" class="search-results">
+    <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id, searchResult.name)">
+      {{searchResult.name}}
+    </ion-item>
+  </ion-list>
+  <ion-item *ngIf="noResultFound" class="search-results">
+    {{'No result found' | translate}}
+  </ion-item>
+</div>

@@ -18,13 +18,14 @@ export class AboutUsPage {
 
     @ViewChild(Nav) nav: Nav;
     contactNo: any = 7376421282;
-
+    header_data:any;
 
     constructor(public platform: Platform,
                 public navCtrl: NavController,
                 public navParams: NavParams,
                 public callNumber: CallNumber,
                 public emailComposer: EmailComposer) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'About Us'};        
     }
 
     ionViewDidLoad() {

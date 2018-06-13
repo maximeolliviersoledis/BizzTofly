@@ -6,6 +6,7 @@ page-home {
   .grid {
     padding: 0px;
     .slides {
+      background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
       .overlay {
         background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
         display: inline-flex;
@@ -48,6 +49,27 @@ page-home {
       font-weight: bold;
       color: #fff;
       }
+
+    .card-description {  
+        position: absolute;
+        top: 40%;
+        left: 2%;
+        right: 2%;
+        font-size: 0.8em;
+        white-space: pre-wrap;
+        color: #fff;
+        flex-wrap: wrap;
+    }
+
+    .card-price {
+      position: absolute;
+      top: 75%;
+      font-size: 0.9em;
+      white-space:pre-wrap;
+      width: 100%;
+      font-weight: bold;
+      color: #fff;
+    }
 
     /*Categories*/
 
