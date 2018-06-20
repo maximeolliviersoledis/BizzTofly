@@ -36,6 +36,7 @@ export class ProductDetailsPage {
     price: number = 0;
     totalPrice: number = 0;
     similarProducts: any[] = [];
+    displayNumberOfProductsInStock: boolean = false;
 
     constructor(public navCtrl: NavController,
         public loadingCtrl: LoadingController,
@@ -49,7 +50,6 @@ export class ProductDetailsPage {
         ) {
 
         this.productId = navParams.get('productId');
-
         this.storage.get('cart').then((data)=>{
             this.cartItems = data;
             if (this.cartItems) {
@@ -124,7 +124,6 @@ export class ProductDetailsPage {
         this.storage.get('user').then(userData => {
             this.user = userData;
             var product = this.navParams.get('product');
-
             //Evite de faire des requêtes inutiles si le produit a déjà été chargé par l'une des pages précédentes
             if(product){
                 console.log("Product already loaded");
@@ -144,6 +143,9 @@ export class ProductDetailsPage {
             }
             loader.dismiss();
         })
+
+        this.displayNumberOfProductsInStock = JSON.parse(localStorage.getItem('appli_settings')).display_nb_product_in_stock;
+        console.log(this.displayNumberOfProductsInStock);
 
         this.checkFavourite();
    }
@@ -170,6 +172,7 @@ export class ProductDetailsPage {
    }
 
    addToCart(productId) {
+       console.log(productId);
        console.log(this.itemInCart);
        console.log(this.product);
        console.log(this.declinaison);
@@ -301,6 +304,7 @@ export class ProductDetailsPage {
                     this.product.declinaison.push(this.declinaison);
 
                     this.Cart.push(this.product);
+                    console.log(this.Cart);
                     this.storage.set('cart',this.Cart);
                     console.log(this.user);
                     var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();

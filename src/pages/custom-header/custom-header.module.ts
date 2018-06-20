@@ -3,7 +3,6 @@ import { IonicPageModule } from 'ionic-angular';
 import { CustomHeaderPage } from './custom-header';
 import {TranslaterModule} from '../../app/translate.module';
 
-
 @NgModule({
   declarations: [
     CustomHeaderPage,

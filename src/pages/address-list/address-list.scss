@@ -48,11 +48,11 @@ page-address-list {
    padding-left: 16px;
    font-size: 1.8rem;
  }
- ion-icon {
+ /*ion-icon {
    font-size: 1em;
    float: right;
    font-weight: 700;
- }
+ }*/
 
 }
 .booking-block{
@@ -90,14 +90,14 @@ page-address-list {
   background-color:$primary !important;
 }
 }
-.button{
+/*.button{
   height: 46px;
   font-size: 1.8rem;
   border-radius: 0;
   background-color:$primary !important;
   margin-top: 1em;  
 
-}
+}*/
 .add{
   background-color: $light-grey;
   border: 0;
@@ -152,5 +152,27 @@ page-address-list {
     border: 1px solid $black;
     border-top-right-radius: 25px;
     border-bottom-right-radius: 25px;
+  }
+
+  /*.button-parameters-col{
+    text-align:center;
+    padding-top: 30px;
+    .button-parameters{
+      background-color: $white;
+      width: 25px;
+      height: 25px;
+      font-size: 15px;
+      color: $black;
+    }
+  }*/
+
+  .button-parameters-col{
+    text-align: center;
+    .button-parameters{
+      background-color: $primary !important;
+    }
+    .delete-button{
+      background-color: $danger !important;
+    }
   }
 }

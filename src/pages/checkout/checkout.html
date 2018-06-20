@@ -13,10 +13,10 @@
       <ion-row class="card-type">
          <ion-col col-12 *ngFor=" let payment of paymentTypes">
            <ion-item class="radio-item">
-               <ion-label *ngIf="payment.name == 'bankwire'"><img src="../assets/img/bank-transfer.png"alt="bankwire"> {{'Bankwire payment' | translate}}</ion-label>
-               <ion-label *ngIf="payment.name == 'cheque'"><img src="../assets/img/check.png"alt="cheque"> {{'Cheque payment' | translate}}</ion-label>
-               <ion-label *ngIf="payment.name == 'paypal'"><img src="../assets/img/paypal.png"alt="paypal"> {{'Pay with PayPal' | translate}}</ion-label>
-               <ion-label *ngIf="payment.name == 'stripe'"><img src="../assets/img/payment-stripe.png" alt="stripe">{{'Pay with Stripe' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'bankwire'"><img src="assets/img/bank-transfer.png" alt="bankwire"> {{'Bankwire payment' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'cheque'"><img src="assets/img/check.png" alt="cheque"> {{'Cheque payment' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'paypal'"><img src="assets/img/paypal.png" alt="paypal"> {{'Pay with PayPal' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'stripe'"><img src="assets/img/payment-stripe.png" alt="stripe">{{'Pay with Stripe' | translate}}</ion-label>
                <ion-radio item-left value="{{payment.id_module}}" 
                      (ionSelect)="choosePaymentType(payment)"></ion-radio>
                      <!--<img *ngIf="payment.name == 'bankwire'" src="../assets/img/credit-card.png" alt="bankwire">

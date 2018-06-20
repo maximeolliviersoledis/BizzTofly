@@ -201,6 +201,9 @@ export class AddressListPage {
       }*/
     }
 
+    /**
+    * Old method. Use delete() instead of deleteAddress
+    **/
     deleteAddress(addressId){
       this.addressListService.deleteAddress(addressId).subscribe(data => {
         console.log(data);
@@ -212,6 +215,9 @@ export class AddressListPage {
       })
     }
 
+    /**
+    * Old method. Use modify() instead of modifyAddress
+    **/
     modifyAddress(address){
       console.log("modify address "+address.id);
       this.navCtrl.push("AddressPage", {
@@ -220,6 +226,31 @@ export class AddressListPage {
         addressList: this.addressList,
         address: address
       })
+    }
+
+    modify(){
+      console.log(this.selectedAddress);
+      if(this.selectedAddress && this.selectedAddress.address){
+        this.navCtrl.push("AddressPage", {
+          amountDetails:this.amountDetails,
+          cartData: this.navParams.get('cartData'),
+          addressList: this.addressList,
+          address: this.selectedAddress.address
+        })
+      }
+    }
+
+    delete(){
+      if(this.selectedAddress && this.selectedAddress.address){
+        this.addressListService.deleteAddress(this.selectedAddress.address.id).subscribe(data => {
+          console.log(data);
+          for(var i=0; i<this.addressList.length;i++){
+            if(this.addressList[i].address.id === this.selectedAddress.address.id){
+              this.addressList.splice(i,1);
+            }
+          }
+        })
+      }
     }
 
     private showAlert(message) {

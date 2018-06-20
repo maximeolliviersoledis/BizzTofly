@@ -34,7 +34,7 @@ export class CartPage {
                 private cartService:CartService,
                 private storage:Storage) {
 
-        this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart'};        
+        this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart', hideBackButton: true};        
     }
 
     ngOnInit(){

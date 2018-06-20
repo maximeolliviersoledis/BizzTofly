@@ -64,12 +64,20 @@ export class HomePage {
      this.pageTransition.slide(options);
     }*/
 
+    /**
+    * Toutes les options pour les transitions
+    * Slide options : duration, direction, delay, slowdownfactor, slidePixels, fixedPixelsTop, fixedPixelsBottom
+    * Fade options : duration, delay
+    * Drawer options : duration, action ("open","close"), origin("right"), delay
+    * Flip options : duration, direction, delay, backgroundColor
+    * direction values : ['up', 'bottom', 'left', 'right']
+    **/
     ionViewDidLoad() {
         let loader = this.loadingCtrl.create({
             content: 'please wait..'
         })
         loader.present();
-        this.homeService.getCategories()
+       /* this.homeService.getCategories()
             .subscribe(response => {
                 this.categories = response;
                 for(var i of this.categories){
@@ -78,7 +86,7 @@ export class HomePage {
                 loader.dismiss();
             }, error => {
                 loader.dismiss();
-            })
+            })*/
 
        this.storage.get('user').then((userData) => {
            var customerId = userData && userData.id_customer ? userData.id_customer : null;
@@ -88,6 +96,8 @@ export class HomePage {
                this.welcomeProducts = data;
            })
        })
+
+       loader.dismiss();
     }
 
     navigate(MenuId) {
@@ -102,11 +112,11 @@ export class HomePage {
             direction: 'up',
             duration: 500,
             slowdownfactor: 3,
-            slidePixels: 20,
+            slidePixels: 200,
             iosdelay: 100,
             androiddelay: 1500,
-            fixedPixelsTop: 0,
-            fixedPixelsBottom: 60
+            fixedPixelsTop: 100,
+            fixedPixelsBottom: 100
         };
         this.pageTransition.slide(options); //Erreur cordova missing
         this.navCtrl.push("CartPage");

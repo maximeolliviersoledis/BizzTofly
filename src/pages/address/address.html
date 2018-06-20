@@ -39,8 +39,11 @@
 </ion-list>
 <ion-row class="buttons">
    <ion-col>
-      <button ion-button class="btn-lg" type="submit" 
+      <button *ngIf="!selectedAddress" ion-button class="btn-lg" type="submit" 
           [disabled]="!f.valid">&nbsp;&nbsp;{{"Add Address" | translate}}</button>
+
+      <button *ngIf="selectedAddress" ion-button class="btn-lg" type="submit" 
+          [disabled]="!f.valid">&nbsp;&nbsp;{{"Modify Address" | translate}}</button>
    </ion-col>
 </ion-row>
 </form>

@@ -27,6 +27,7 @@ export class HomeService {
 
     getSlideCategorie(customerId){
         const headers = new Headers();
+        //Récupérer l'id depuis presta
         var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/14" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir, {
             headers: headers
@@ -35,6 +36,7 @@ export class HomeService {
 
     getAccueilProduct(customerId){
         const headers = new Headers();
+        //Récupérer l'id depuis presta        
         var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir, {
             headers: headers

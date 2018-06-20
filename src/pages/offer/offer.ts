@@ -45,10 +45,10 @@ export class OfferPage {
         this.slides.slidePrev();
     }
 
-    buyNow(productId) {
+    buyNow() {
         this.navCtrl.push("ProductDetailsPage", {
             //productId: productId
-            product: productId
+            product: this.productsInPromo[this.slides.realIndex] //OK car les produits sont envyés dans l'ordre croissant de leur id
         });
     }
 

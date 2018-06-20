@@ -18,6 +18,7 @@ import android.graphics.BitmapFactory;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import android.graphics.Color;
 /**
  * Created by Felipe Echanique on 08/06/2016.
  */
@@ -79,6 +80,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
 
+
         Uri defaultSoundUri= RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(this)
                 .setSmallIcon(getApplicationInfo().icon)
@@ -86,7 +88,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 .setContentText(messageBody)
                 .setAutoCancel(true)
                 .setSound(defaultSoundUri)
-                .setContentIntent(pendingIntent);;
+                .setContentIntent(pendingIntent).setLights(Color.BLUE,1000,1000);
         //Moche mais devrait enlever le carré blanc lorsqu'il n'y a pas d'image
         if(bitmap != null){
             notificationBuilder.setStyle(new NotificationCompat.BigPictureStyle().bigPicture(image));

@@ -38,14 +38,6 @@
     "is_top_level": false,
     "variables": {}
   },
-  "call-number": {
-    "source": {
-      "type": "registry",
-      "id": "mx.ferreyra.callnumber@0.0.2"
-    },
-    "is_top_level": true,
-    "variables": {}
-  },
   "cordova-plugin-email": {
     "source": {
       "type": "registry",
@@ -130,6 +122,14 @@
     "source": {
       "type": "registry",
       "id": "cordova-plugin-network-information"
+    },
+    "is_top_level": true,
+    "variables": {}
+  },
+  "call-number": {
+    "source": {
+      "type": "registry",
+      "id": "mx.ferreyra.callnumber@0.0.2"
     },
     "is_top_level": true,
     "variables": {}

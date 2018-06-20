@@ -7,7 +7,7 @@
 
 <ion-content class="contact">
     <p class="contact-head">{{'Contact Us' | translate}}</p>
-    <form (ngSubmit)="onSubmit()" [formGroup]="user">
+    <form (ngSubmit)="onSubmit()" [formGroup]="user" *ngIf="user">
         <ion-row>
             <ion-col col-12>
                 <ion-item>
@@ -18,12 +18,28 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <ion-row>
+    </form>
+    <!--Permet d'utiliser ngModel car impossible de l'utiliser au sein d'une balise form-->
+    <ion-row *ngIf="orders && orders.length > 0">
+        <ion-col col-12>
+            <ion-item>
+                <ion-label>{{'Référence de commande:' | translate}}</ion-label>
+                <ion-select [(ngModel)]="order" (ionChange)="select()"> 
+                    <ion-option value="null">{{'No order' | translate}}</ion-option>                           
+                    <ion-option *ngFor="let order of orders" value="{{order.id_order}}">{{order.reference}}</ion-option>
+                </ion-select>
+            </ion-item>
+        </ion-col>
+    </ion-row>
+    <form (ngSubmit)="onSubmit()" [formGroup]="user" *ngIf="user">
+        <ion-row  *ngIf="products && products.length > 0 && order">
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{'Name:' | translate}}</ion-label>
-                    <ion-input type="text" name="name" id="name"
-                               formControlName="name" required></ion-input>
+                    <ion-label>{{'Products' | translate}}</ion-label>
+                    <ion-select formControlName="id_product" id="id_product" multiple="false">
+                        <ion-option value="null">{{'No product' | translate}}</ion-option> 
+                        <ion-option *ngFor="let product of products" value="{{product.id_product}}">{{product.product_name}}</ion-option>
+                    </ion-select>
                 </ion-item>
             </ion-col>
         </ion-row>
@@ -33,15 +49,6 @@
                     <ion-label>{{'Email:' | translate}}</ion-label>
                     <ion-input type="email" name="email" id="email"
                                formControlName="email" required ></ion-input>
-                </ion-item>
-            </ion-col>
-        </ion-row>
-        <ion-row>
-            <ion-col col-12>
-                <ion-item>
-                    <ion-label>{{'Référence de commande:' | translate}}</ion-label>
-                    <ion-input type="text" name="ref_commande" id="ref_commande"
-                               formControlName="id_order"></ion-input>
                 </ion-item>
             </ion-col>
         </ion-row>
@@ -59,5 +66,5 @@
                 <button class="submit-btn" ion-button type='submit' [disabled]="!user.valid"> {{'Send' | translate}}</button>
             </ion-col>
         </ion-row>
-    </form>
+    </form>        
 </ion-content>

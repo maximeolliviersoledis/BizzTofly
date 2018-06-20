@@ -35,17 +35,22 @@ export class ConstService {
 
     /***Parameters***/
     action = "&action=";
-    email = "&mail=";
+    email = "&email=";
+    enable = "&enable=";
     fcm = "&fcm=";
-    idCustomer = "&id_customer=";
     idCart = "&id_cart=";
     idCartRule = "&id_cart_rule=";
+    idContact = "&id_contact=";
+    idCustomer = "&id_customer=";
+    idOrder = "&id_order=";
     idProduct = "&id_product=";
     idProductAttribute = "&id_product_attribute=";
     keyDir = "?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL";
     formatDir = "&output_format=JSON";
     limitQuery = "&limit=";
+    message = "&message=";
     quantity = "&quantity="
+    reference = "&reference=";
     sortIdDesc = "&sort=[id_DESC]";
     uselfuness = "&usefulness=";
     uuid = "&uuid=";

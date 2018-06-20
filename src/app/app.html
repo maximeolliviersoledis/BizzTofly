@@ -78,7 +78,7 @@
       <ion-icon name="heart" item-left></ion-icon>
       {{'Favourite' | translate}}
     </button>
-    <button menuClose class="menu-item" ion-item (click)="shopsLocalisation()">
+    <button *ngIf="appliSettings.show_shop_location" menuClose class="menu-item" ion-item (click)="shopsLocalisation()">
       <ion-icon name="pin" item-left></ion-icon>
       {{'Shop location' | translate}}
     </button>

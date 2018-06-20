@@ -31,15 +31,8 @@ export class CheckoutPage {
     cardInfo: any = {};
     carrier: any = {};
     public userId:'';
-
-   /* public paymentTypes: any = [
-                    {'default': true,'type': 'PayPal','value': 'paypal','logo': 'assets/img/paypal_logo.jpg'},
-                    {'default': false, 'type': 'Stripe', 'value': 'stripe', 'logo': 'assets/img/stripe.png'},
-                    {'default': false, 'type': 'Cheque', 'value': 'cheque', 'logo': ''},
-                    {'default': false, 'type': 'Virement', 'value': 'virement', 'logo': ''},
-                    {'default': false, 'type': 'COD', 'value': 'cod', 'logo': ''}];*/
-      public paymentTypes: any = [];
-      order_header_data: any;
+    public paymentTypes: any = [];
+    order_header_data: any;
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -60,9 +53,6 @@ export class CheckoutPage {
 
     ngOnInit() {
         this.orderData.paymentOption = 'PayPal';
-        /*this.userService.getUser().subscribe(user=>{
-        this.userId=user._id;
-        })*/
         this.carrier = this.navParams.get('carrierData');
         console.log(this.carrier);
         console.log(this.navParams.get('totalPrice') + this.carrier.total_price_with_tax);
@@ -91,14 +81,14 @@ export class CheckoutPage {
             if(this.orderData.paymentOption.name === "bankwire"){
                 console.log("Méthode de paiement = bankwire");
                 this.checkoutService.payOrder(this.navParams.get('cartData').cart.id, this.orderData.paymentOption.name).subscribe(data => {
-                    console.log(data);
-                    //if(typeof data === "boolean" && data == true){
-                     if(data && typeof JSON.parse(data.state) ==="boolean" && JSON.parse(data.state) == true){
+                    //alert(data);
+                  //  alert(JSON.parse(data));
+                    if(data && typeof JSON.parse(data.state) ==="boolean" && JSON.parse(data.state) == true){
                         this.createToaster("Votre commande a bien été prise en compte",3000);
                         this.storage.remove('cart');
                         localStorage.removeItem('id_cart');
-                        //this.navCtrl.push('HomePage');
-                        this.navCtrl.push('RecapPaymentPage', {
+
+                        this.navCtrl.setRoot('RecapPaymentPage', {
                             payment: this.orderData.paymentOption.name,
                             totalPaid: this.navParams.get('totalPrice'),
                             paymentDetails: data
@@ -110,13 +100,14 @@ export class CheckoutPage {
             }else if(this.orderData.paymentOption.name === "cheque"){
                 console.log("Méthode de paiement = cheque");
                 this.checkoutService.payOrder(this.navParams.get('cartData').cart.id, this.orderData.paymentOption.name).subscribe(data => {
+                   // alert(data);
+                  //  alert(JSON.parse(data));
                     console.log(data);
                     if(data && typeof JSON.parse(data.state) ==="boolean" && JSON.parse(data.state) == true){
                         this.createToaster("Votre commande a bien été prise en compte",3000);
                         this.storage.remove('cart');
                         localStorage.removeItem('id_cart');
-                       // this.navCtrl.push('HomePage');
-                        this.navCtrl.push('RecapPaymentPage', {
+                        this.navCtrl.setRoot('RecapPaymentPage', {
                             payment: this.orderData.paymentOption.name,
                             totalPaid: this.navParams.get('totalPrice'),
                             paymentDetails: data
@@ -188,7 +179,12 @@ export class CheckoutPage {
     prepareOrderToBeSend(){
         //var cart = this.checkoutService.putCart(); // Obliger d'envoyer le panier?????????? => oui pour mettre à jour les addresseset option de livraison
         //==> peut etre fait dans la page des transporteurs
-        this.checkoutService.putCart(this.navParams.get('cartData').cart.id,this.putCartInfo(this.navParams.get('cartData').cart.id)).subscribe(); //A sup
+        /*this.checkoutService.putCart(this.navParams.get('cartData').cart.id,this.putCartInfo(this.navParams.get('cartData').cart.id)).subscribe(
+            data => {
+                alert(data);
+                alert(JSON.stringify(data))
+            }
+        ); //A sup*/
         var commandeAEnvoyer =  {
                     order: {
                         id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
@@ -482,18 +478,7 @@ export class CheckoutPage {
                 id_currency: 1,
                 id_customer: cart.cart.id_customer,
                 delivery_option: this.formatDeliveryOption(this.objectToArray(this.carrier.carrier_list)[0].instance.id),
-                //delivery_option: '2,',
-               // id_guest: null,
                 id_lang: 1,
-               // recyclable: null,
-               // gift: null,
-                //gift_message: null,
-                //mobile_theme: null,
-                //delivery_option: null,
-                //secure_key: null,
-               // allow_seperated_package: 0,
-                //date_add: null,
-                //date_upd: null,
                 associations: {
                     cart_rows: {
                         cart_row: []
@@ -516,7 +501,7 @@ export class CheckoutPage {
         return modif;        
     }
 
-    updateCartInfo(cartId){
+    /*updateCartInfo(cartId){
         //var id_customer = JSON.parse(localStorage.getItem('user')).id_customer;
         var cart = this.navParams.get('cartData');
         console.log(cart);
@@ -562,50 +547,6 @@ export class CheckoutPage {
         }
         console.log(modif);
         return modif;        
-    }
-
-    /*placeOrder() {
-        let loader = this.loadingCtrl.create({
-            content: 'please wait'
-        })
-        loader.present();
-        this.checkoutService.placeOrder(this.orderData)
-            .subscribe(order => {
-                //console.log("order_placed-"+JSON.stringify(order));
-                loader.dismiss();
-                this.saveLoyaltyData(order.orderID);
-                localStorage.removeItem('cartItem');
-                this.navCtrl.setRoot("ThankyouPage");
-            }, error => {
-                loader.dismiss();
-            })
-    }
-
-    savePaymentData(orderId, paymentDetails) {
-        this.checkoutService.savePaymentDetails(orderId, paymentDetails)
-            .subscribe(response => {
-                this.saveLoyaltyData(orderId);
-                //console.log("payment-"+JSON.stringify(response));
-                localStorage.removeItem('cartItem');
-                this.navCtrl.setRoot("ThankyouPage");
-            },error=>{
-               console.log("payment-errorr-"+JSON.stringify(error)); 
-            })
-    }
-
-    saveLoyaltyData(orderId){
-             if(this.orderData.appliedLoyalty){
-                let   loyaltyData = {
-                       credit:false,
-                       points:this.orderData.loyaltyPoints,
-                       orderId:orderId,
-                       dateAndTime:Date.now()
-                     };
-                this.checkoutService.saveLoyaltyPoints(this.userId,loyaltyData)
-                .subscribe(result=>{
-                    //console.log("loalty_result-"+JSON.stringify(result));
-                })
-                 }
     }*/
 
     showAlert(message){
@@ -615,24 +556,6 @@ export class CheckoutPage {
       });
       alert.present();
    }
-
-   /*calculateTotalPrice(){
-       var cart = JSON.parse(localStorage.getItem('cartItem'));
-       var totalPrice: number = 0;
-       var shippingPrice: number = this.carrier.total_price_with_tax;
-       console.log("shipping : "+shippingPrice);
-       for(var item of cart){
-           for(var declinaison of item.declinaison){
-               console.log(item);
-               console.log(declinaison);
-               totalPrice += declinaison.endPrice * declinaison.selectedQuantity;
-               console.log(totalPrice);
-           }
-       }
-       totalPrice = totalPrice + shippingPrice;
-       console.log(totalPrice);
-       return totalPrice;
-   }*/
 
    objectToArray(object){
        let item = Object.keys(object);

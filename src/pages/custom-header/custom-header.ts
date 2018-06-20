@@ -21,7 +21,6 @@ export class CustomHeaderPage {
       searching: boolean;
       searchPlaceholder: string;
       lastSearch: any[] = [];
-      
   constructor(public navCtrl: NavController,
               public navParams: NavParams,
               private storage:Storage,

@@ -35,4 +35,12 @@ export class CarrierService {
         return "http://www.bizztofly.com/" + carrierUrl + this.constService.keyDir;
     }
     
+    putCart(cartId, body){
+         const headers = new Headers();
+         var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir;
+
+         return this.http.put(urlDir, body, {
+             headers: headers
+         }).map((data: Response) => data.json() || {})
+     }
 }

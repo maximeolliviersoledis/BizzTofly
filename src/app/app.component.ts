@@ -44,31 +44,28 @@ export class MyApp {
                 public nativeTransition:NativePageTransitions,
                 private network:Network) {
 
-        this.service.getAppliSettings().subscribe(data => {
-            this.appliSettings = data;
-            localStorage.setItem('appli_settings', JSON.stringify(this.appliSettings));
-            console.log(this.appliSettings);
-        })
-
         platform.ready().then((res) => {
             if (res == 'cordova') {
                 //Peut permettre d'agir en conséquence lors de la perte de connexion pendant l'utilisation de l'appli
                 this.network.onDisconnect().subscribe(data => {
-                    alert('Vous avez été déconnecté');
+                    //alert('Vous avez été déconnecté');
                 })
 
                 this.network.onConnect().subscribe(data =>{
-                    alert('Vous êtes connecté');
+                    //alert('Vous êtes connecté');
                 })
-
                 
-
-                alert(this.network.type);
-               // alert(this.network.downlinkMax);
                 this.fcm.getToken().then(token => {
                     this.uniqueDeviceId.get().then(uuid => {
+                        //alert(JSON.stringify(uuid));
                         this.service.getNotification(uuid,token).subscribe((data)=> {
-                            alert(data);
+                           // alert(data);
+                        });
+
+                        this.storage.get('user').then(userData => {
+                            if(userData && userData.id_customer){
+                                this.service.updateCustomerNotificationUuid(uuid, userData.id_customer).subscribe();
+                            }
                         })
                     })                    
                 }).catch((error) => {
@@ -76,6 +73,52 @@ export class MyApp {
                 });
 
                 this.enableNotification();
+                this.fcm.onNotification().subscribe(data => {
+                    alert(JSON.stringify(data));
+                    if(data.wasTapped){
+                    /*if(data.landing != 0){
+                        let params = data.landing.split('/');
+                                this.nav.setRoot(params[0],{
+                                   productId: params[1]
+                                });
+                            }*/
+
+                    //if(data.landing != 0 && (data.landing.search("http://") || data.landing.search("https://")) == -1){
+                        let params = data.landing.split('/');
+
+                        //Applique le format des pages 
+                        //Doit commencer par une majuscule et se finir par le mot "Page"
+                        var url = params[0].endsWith("Page") ? params[0] : params[0] + "Page";
+                        url = url[0].toUpperCase() + url.substring(1,url.length);
+                        if(!data.type){
+                            this.nav.setRoot(url,{
+                                productId: params[1]
+                            });
+                        } else if(data.type == "Product"){
+                            this.nav.setRoot("ProductDetailsPage",{
+                                productId: data.id
+                            })
+                        } else if(data.type == "Category"){
+                            this.nav.setRoot("ProductListPage",{
+                                MenuId: data.id
+                            })
+                        }
+                    //}
+
+                    /*if(data.type && data.type == "Product"){
+                        alert("If Product :"+data.type+" : "+data.id);
+                        this.nav.setRoot("ProductDetailsPage",{
+                            productId: data.id
+                        });
+                    }else if(data.type && data.type == "Category"){
+                        this.nav.setRoot("ProductListPage", {
+                            MenuId: data.id
+                        })
+                    }*/
+                }else{
+                    alert("Data wasn't tapped!");
+                }
+            })
                 //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
                 /*this.oneSignal.startInit('b8136cb8-5acd-42b5-ad2c-38598c360287','383564956806');
                 //this.oneSignal.inFocusDisplaying(this.oneSignal.OSInFocusDisplayOption.InAppAlert); //Affiche une alerte classique avec le titre et le texte de la notif
@@ -97,46 +140,35 @@ export class MyApp {
         });
     }
 
-     ngOnInit(): any {
-        if (!this.isLogin()) {
-            this.rootPage = "LoginPage";
-        }
-        else {
-            this.rootPage = "HomePage";
-            this.socketService.establishConnection();
-            this.renderImage();
-            this.listenEvents();
-        }
-        this.useTranslateService();
+    ngOnInit(): any {
+        this.service.getAppliSettings().subscribe(data => {
+            this.appliSettings = data;
+            if(this.appliSettings.is_in_maintenance){
+                this.rootPage = "MaintenancePage";
+            }else if (!this.isLogin()) {
+                this.rootPage = "LoginPage";
+            }else {
+                console.log('HomePageif');
+                this.rootPage = "HomePage";
+                this.renderImage();
+                this.listenEvents();
+            }
+
+            localStorage.setItem('appli_settings', JSON.stringify(this.appliSettings));
+            console.log(this.appliSettings);
+        })
+        
+        this.useTranslateService();        
     }
 
     private enableNotification(){
-        //Prise en compte de l'activation ou non des notifs (à tester)
-        //Marche pas
-        console.log(localStorage.getItem('notification'));
+        console.log(JSON.parse(localStorage.getItem('notification')));
         var activ = JSON.parse(localStorage.getItem('notification'));
-        if(activ){ 
-            console.log("Notif activ");
-            this.fcm.onNotification().subscribe(data => {
-                alert(JSON.stringify(data));
-                if(data.wasTapped){
-                    if(data.landing != 0){
-                        let params = data.landing.split('/');
-                                this.nav.setRoot(params[0],{
-                                   productId: params[1]
-                                });
-                    }
-                }else{
-                     alert("Data wasn't tapped!");
-                }
+        this.uniqueDeviceId.get().then(uuid => {
+            this.service.enableNotification(uuid, activ).subscribe(data => {
+                alert(data);
             })
-        }else{
-            alert("Notif not activated");
-            //Envoyer vers presta la désactivation des notifs
-            this.events.unsubscribe('notification:changed', () => {
-                alert('EventListener unsubscribe');
-            });
-        }
+        })
     }
 
     private useTranslateService(){
@@ -218,9 +250,16 @@ export class MyApp {
         }
     }
 
-    private getIndex(){
 
-    }
+
+    /**
+    * Toutes les options pour les transitions
+    * Slide options : duration, direction, delay, slowdownfactor, slidePixels, fixedPixelsTop, fixedPixelsBottom
+    * Fade options : duration, delay
+    * Drawer options : duration, action ("open","close"), origin("right"), delay
+    * Flip options : duration, direction, delay, backgroundColor (doit commencer par '#')
+    * direction values : ['up', 'bottom', 'left', 'right']
+    **/
 
     gotoCart() {
         let options: NativeTransitionOptions = {
@@ -305,7 +344,7 @@ export class MyApp {
     }
 
     settings() {
-        this.nav.push("Settings");
+       this.nav.push("Settings");
     }
 
     aboutUs() {

@@ -10,8 +10,11 @@ export class RecapPaymentPage {
   paymentOption: any = {};
   paymentDetails: any = {};
   totalPaid: number = 0;
+  header_data: any;
 
   constructor(public navCtrl: NavController, public navParams: NavParams) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Recap Payment'};
+
   }
 
   ngOnInit(){
@@ -28,5 +31,9 @@ export class RecapPaymentPage {
 
   isBankWire(){
   	return this.paymentOption == "bankwire" ? true : false;
+  }
+
+  goToHome(){
+    this.navCtrl.setRoot('HomePage');
   }
 }

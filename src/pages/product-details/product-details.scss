@@ -291,4 +291,11 @@ page-product-details {
       z-index: 1;
     }
   }
+
+  .similar-products{
+    text-align: center;
+    font-size: 20px !important;
+    color: $primary !important;
+    font-weight: bold !important;
+  }
 }

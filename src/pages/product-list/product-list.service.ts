@@ -21,9 +21,9 @@ export class ProductListService {
         //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
     }*/
 
-       getMenuItems(categoryId) {
+       getMenuItems(categoryId, customerId = 0) {
         const headers = new Headers();
-        var urlDir = this.constService.baseDirApiSoledis+this.constService.categoriesListing+"/"+categoryId+"?&filter[user]=0";
+        var urlDir = this.constService.baseDirApiSoledis+this.constService.categoriesListing+"/"+categoryId+ this.constService.keyDir+ this.constService.formatDir + this.constService.filterUser + customerId;
         return this.http.get(urlDir,{
             headers: headers
         }).map((data: Response) => data.json() || {} )

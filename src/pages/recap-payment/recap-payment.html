@@ -5,18 +5,13 @@
   Ionic pages and navigation.
 -->
 <ion-header>
-
-  <ion-navbar>
-    <ion-title>Recap-payment</ion-title>
-  </ion-navbar>
-
+  	<custom-header [header]="header_data"></custom-header>
 </ion-header>
 
 
 <ion-content padding>
 	<div *ngIf="isCheque()">
-		<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par chèque</p>
-		<!-- Compléter les différents champs en fonction des données récupérées -->
+		<!--<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par chèque</p>
 		<ul>
 			<li> Montant du règlement : {{totalPaid | number:'.2-2'}}</li>
 			<li> Payable à l'ordre de {{paymentDetails.details.owner_name}}</li>
@@ -24,12 +19,20 @@
 			<li> N'oubliez pas d'indiquer la référence de la commande {{paymentDetails.details.order_reference}}</li>
 			<li> <strong>Votre commande vous sera envoyée dès réception du paiement</strong></li>
 			<li> Pour toute question ou information complémentaire merci de contacter notre support client</li>
+		</ul>-->
+		<p> {{'Please send us a cheque with' | translate}} :</p>
+		<ul>
+			<li> {{'Payment amount' | translate}} : {{totalPaid | number:'.2-2'}}</li>
+			<li> {{'Payable to the order of' | translate}} : {{paymentDetails.details.owner_name}}</li>
+			<li> {{'Mail to' | translate}} : {{paymentDetails.details.address}}</li>
+			<li> {{'Do not forget to insert your order reference' | translate}} {{paymentDetails.details.order_reference}}</li>
+			<li> <strong>{{'Your order will be sent as soon as we receive payment' | translate}}</strong></li>
+			<li> {{'If you have questions, comments or concerns, please contact our expert customer support team.' | translate}}</li>
 		</ul>
 	</div>
 
 	<div *ngIf="isBankWire()">
-		<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par virement bancaire</p>
-		<!-- Compléter les différents champs en fonction des données récupérées -->
+		<!--<p>Votre commande a bien été prise en compte. Vous trouverez ci-dessous les instructions concernant le règlement par virement bancaire</p>
 		<ul>
 			<li> Montant du règlement : {{totalPaid | number:'.2-2'}}</li>
 			<li> Payable à l'ordre de {{paymentDetails.details.owner_name}}</li>
@@ -38,6 +41,22 @@
 			<li> N'oubliez pas d'indiquer la référence de la commande {{paymentDetails.details.order_reference}}</li>
 			<li> <strong>Votre commande vous sera envoyée dès réception du paiement</strong></li>
 			<li> Pour toute question ou information complémentaire merci de contacter notre support client</li>
+		</ul>-->
+		<p> {{'Please send us a bank wire with' | translate}} :</p>
+		<ul>
+			<li> {{'Amount' | translate}} : {{totalPaid | number:'.2-2'}}</li>
+			<li> {{'Name of account owner' | translate}} : {{paymentDetails.details.owner_name}}</li>
+			<li> {{'Include these details' | translate}} : {{paymentDetails.details.details}}</li>
+			<li> {{'Bank name' | translate}} : {{paymentDetails.details.address}}</li>
+			<li> {{'Do not forget to insert your order reference' | translate}} {{paymentDetails.details.order_reference}}</li>
+			<li> <strong>{{'Your order will be sent as soon as we receive payment' | translate}}</strong></li>
+			<li> {{'If you have questions, comments or concerns, please contact our expert customer support team.' | translate}}</li>
 		</ul>
 	</div>
+
+	<ion-row>
+		<ion-col col-12>
+			<button class="button" ion-button (click)="goToHome()">{{'Go to home page' | translate}}</button>
+		</ion-col>
+	</ion-row>
 </ion-content>

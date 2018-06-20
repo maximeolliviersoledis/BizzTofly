@@ -27,9 +27,9 @@
             </ion-slides>
              <!--<span clear text-center (click)="toggleFavourite()"> -->
             <ion-icon class="fav" name="heart" *ngIf="like"
-                      (click)="removeFromFavourite(productDetails.id)"></ion-icon>
+                      (click)="removeFromFavourite(productId)"></ion-icon>
             <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
-                      (click)="addToFavourite(productDetails.id)"></ion-icon>
+                      (click)="addToFavourite(productId)"></ion-icon>
                   </ion-col>
      <!--</span>--> 
     </ion-row>
@@ -53,7 +53,7 @@
             </ion-select>
         </ion-item>
 
-        <p>{{'In stock' | translate}} :  {{quantity}}</p>    
+        <p *ngIf="displayNumberOfProductsInStock">{{'In stock' | translate}} :  {{quantity}}</p>    
             <!--<div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
             <ng-template #thenBlock>{{'In stock' | translate}} : {{quantity}}</ng-template>
             <ng-template #elseBlock>{{'Total in stock' | translate}} : {{productDetails.quantity}}</ng-template>-->
@@ -121,7 +121,11 @@
             </ion-col>
         </ion-row>
     </ion-list>-->
-    <ion-label>{{'Similar products'  | translate}}:</ion-label>
+    <ion-row>
+        <ion-col col-12>
+            <ion-label class="similar-products">{{'Similar products'  | translate}}:</ion-label>
+        </ion-col>
+    </ion-row>
 
     <ion-row>
          <ion-slides #similarProduct class="slides-similar-product" *ngIf="similarProducts && similarProducts.length > 0" speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10" (ionSlideTap)="goToProductPage()" (ionSlideNextStart)="onChange()" (ionSlidePrevStart)="onChange()">
@@ -166,7 +170,7 @@
             </ion-col>
 
             <ion-col col-8>
-                <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
+                <a (click)="addToCart(productId)" ion-button icon-left full class="btn-add-to-cart">
                     <ion-icon name="cart"></ion-icon>
                     {{'ADD TO CART' | translate}}
                 </a>

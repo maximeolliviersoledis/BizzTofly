@@ -48,34 +48,35 @@ export class CategoryPage {
         })
         loader.present();
 
-        this.categoryService.getCategory(2).subscribe(categories => {
-             this.lastCategoryId = categories.category.id;
-             console.log(this.lastCategoryId);
-             var subCategories = categories.category.associations;
-             if(subCategories && subCategories.categories){
-                 for(var sub of subCategories.categories){
-                     this.categoryService.getCategory(sub.id).subscribe(category => {
-                         if(category.category.level_depth>=2 && category.category.active == 1){
-                            var categ: any = {};
-                            categ.id = category.category.id;
-                            categ.id_parent = category.category.id_parent;
-                            categ.name = category.category.name[0].value;
-                            categ.description = category.category.description[0].value;
-                            categ.level = category.category.level_depth;
-                            categ.image = this.categoryService.getUrlForImage(categ.id);
-                            if(category.category.associations && category.category.associations.categories)
-                                categ.id_enfants = category.category.associations.categories;
+            this.categoryService.getCategory(2).subscribe(categories => {
+                 this.lastCategoryId = categories.category.id;
+                 console.log(this.lastCategoryId);
+                 var subCategories = categories.category.associations;
+                 if(subCategories && subCategories.categories){
+                     for(var sub of subCategories.categories){
+                         this.categoryService.getCategory(sub.id).subscribe(category => {
+                             if(category.category.level_depth>=2 && category.category.active == 1){
+                                var categ: any = {};
+                                categ.id = category.category.id;
+                                categ.id_parent = category.category.id_parent;
+                                categ.name = category.category.name[0].value;
+                                categ.description = category.category.description[0].value;
+                                categ.level = category.category.level_depth;
+                                categ.image = this.categoryService.getUrlForImage(categ.id);
+                                if(category.category.associations && category.category.associations.categories)
+                                    categ.id_enfants = category.category.associations.categories;
 
-                            this.categories.push(categ);
-                        }
-                     })
+                                this.categories.push(categ);
+                            }
+                         })
+                     }
                  }
-             }
 
-            /*this.searching = false;
-            this.searchPlaceholder = "Que recherchez-vous?";*/
-             loader.dismiss();
-        })
+                /*this.searching = false;
+                this.searchPlaceholder = "Que recherchez-vous?";*/
+                 loader.dismiss();
+            })
+        
 
         /*this.categoryService.getAllCategories().subscribe(categories => {
 

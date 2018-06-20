@@ -23,6 +23,17 @@ export class Service {
         return this.http.get(urlDir).map((data:Response) => data.json() || {})
     }
 
+    enableNotification(uuId, enable){
+        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.enable  + enable;
+        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    }
+
+    updateCustomerNotificationUuid(uuId, customerId){
+        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.idCustomer + customerId;
+      //  return this.http.get(urlDir).map((data:Response) => data.json() || {})
+      return this.http.get(urlDir);
+    }
+
     getAppliSettings(){
         var urlDir = this.constService.baseDirApiSoledis + this.constService.appliSettingsDir + "/0" + this.constService.keyDir + this.constService.formatDir;
         return this.http.get(urlDir).map((data:Response) => data.json() || {})
