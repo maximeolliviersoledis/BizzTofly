@@ -8,6 +8,7 @@ import {TwitterConnect} from '@ionic-native/twitter-connect';
 import {RegistrationService} from './registration.service';
 import {SocketService } from '../../providers/socket-service';
 import {Storage} from '@ionic/storage';
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -28,52 +29,71 @@ export class RegistrationPage {
                 public platform: Platform,
                 public registrationService: RegistrationService,
                 public socketService:SocketService,
-                private storage:Storage) {
+                private storage:Storage,
+                private constService:ConstService) {
     }
 
     onRegister() {
-        let loader = this.loadingCtrl.create({
-            content: 'please wait'
-        })
-        loader.present();
-        /*this.registrationService.createUser(this.user.value)
-            .subscribe(user => {
-                loader.dismiss();
-                localStorage.setItem('token', "bearer " + user.token);
-                this.navCtrl.setRoot("HomePage");
-                this.socketService.establishConnection();
-                this.displayToast('User Successfully added!', 5000);
-            }, error => {
-                loader.dismiss();
-            })*/
-        console.log(this.user);
-        var newUser: any = {
-            customer:{
-                firstname: this.user.value.firstName,
-                lastname: this.user.value.lastName,
-                email: this.user.value.email,
-                passwd: this.user.value.password,
-                active: '1',
-                id_lang: '1',
-                id_default_group: '3',
-                id_gender:  (this.user.value.gender ? 2 : 1)
+        this.constService.presentLoader();
+        this.registrationService.getKey().subscribe((key) => {
+            console.log(this.user);
+            var newUser: any = {
+                customer:{
+                    firstname: this.user.value.firstName,
+                    lastname: this.user.value.lastName,
+                    email: this.user.value.email,
+                    passwd: this.user.value.password,
+                    /*active: '1',
+                    id_lang: '1',
+                    id_default_group: '3',*/
+                    id_gender:  (this.user.value.gender ? 2 : 1),
+                    newsletter: this.user.value.newsletter,
+                    optin: this.user.value.optin
+                }
             }
-        }
-        console.log(newUser);
-        this.registrationService.postCustomer(newUser).subscribe(res => {
-             console.log(res);
-             var connect = {
-                     token: res.customer.secure_key,
-                     id_customer: res.customer.id,
-                     email: res.customer.email,
-                     firstname: res.customer.firstname,
-                     lastname: res.customer.lastname      
-             }
-             //localStorage.setItem('user',JSON.stringify(connect));
-             this.storage.set('user', connect);
-         })
+            console.log(newUser);
+            /*this.registrationService.postCustomer(newUser).subscribe(res => {
+                 console.log(res);
+                 var connect = {
+                         token: res.customer.secure_key,
+                         id_customer: res.customer.id,
+                         email: res.customer.email,
+                         firstname: res.customer.firstname,
+                         lastname: res.customer.lastname
+                 }
+                 this.displayToast("Votre compte a bien été enregistré", 2000);
+                 this.storage.set('user', connect);
+                 localStorage.setItem('userLoggedIn', "true");
+                 this.navCtrl.setRoot("HomePage");
+             })*/
 
-        loader.dismiss();      
+             this.registrationService.postUser(newUser.customer, key).subscribe(res => {
+                 if(res && !res.error){
+                     var connect = {
+                            token: res.token,
+                            id_customer: res.id,
+                            email: res.email,
+                            firstname: res.firstname,
+                            lastname: res.lastname
+                     }
+
+                     this.constService.user = connect;
+                     this.registrationService.getWebServiceToken(connect.id_customer).subscribe((data)=>{
+                         this.constService.accessToken = data;
+                     })
+
+                     this.displayToast("Votre compte a bien été enregistré", 2000);
+                     this.storage.set('user', connect);
+                     localStorage.setItem('userLoggedIn', "true");
+                     this.navCtrl.setRoot("HomePage");
+                 }else{
+                     alert(res.error);
+                 }
+             })
+             this.constService.dismissLoader();
+        }, () => {
+            this.constService.dismissLoader();
+        })
     }
 
     displayToast(message, duration) {
@@ -105,7 +125,9 @@ export class RegistrationPage {
             passwordConfirmation: ['', Validators.compose(
                 [Validators.required, Validators.minLength(8)]
                 )],
-            gender: [false, Validators.required]
+            gender: [false, Validators.required],
+            newsletter: [false, Validators.required],
+            optin: [false, Validators.required]
             //newsletter: [false]
         },{validator: this.passwordMatch});
     }
@@ -172,10 +194,6 @@ export class RegistrationPage {
             }
         })
     }
-
-    /*isLogin(){
-        return localStorage.getItem('user') != null ? true : false;
-    }*/
 
     isLogin(){
         return JSON.parse(localStorage.getItem('userLoggedIn')) != null;

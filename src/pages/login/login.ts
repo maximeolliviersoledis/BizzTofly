@@ -5,9 +5,8 @@ import {Facebook} from '@ionic-native/facebook';
 import {GooglePlus} from '@ionic-native/google-plus';
 import {TwitterConnect} from '@ionic-native/twitter-connect';
 import {LoginService} from './login.service';
-import {UserService} from '../../providers/user-service';
-import {SocketService } from '../../providers/socket-service';
 import {Storage} from '@ionic/storage';
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -18,7 +17,7 @@ import {Storage} from '@ionic/storage';
 export class LoginPage {
     user: FormGroup;
     passwordReset: boolean = false;
-
+    noOfItems: number = 0;
     constructor(public navCtrl: NavController,
         public navParams: NavParams,
         public alertCtrl: AlertController,
@@ -30,37 +29,27 @@ export class LoginPage {
         public twitter: TwitterConnect,
         public platform: Platform,
         public loginService: LoginService,
-        public userService:UserService,
-        public socketService:SocketService,
         private storage:Storage,
-        public toastCtrl:ToastController) {
+        public toastCtrl:ToastController,
+        private constService:ConstService) {
 
     }
 
     onLogin() {
-        let loader = this.loadingCtrl.create({
-            content: 'please wait'
-        })
-        loader.present();
-        console.log(this.user.value);
-        this.loginService.login(this.user.value)
-        .subscribe(user => {
-            console.log(user);
-            loader.dismiss();
+        this.constService.presentLoader();
+        this.loginService.getKey().subscribe(key => {
+          this.loginService.postLogin(this.user.value, key).subscribe((user:any) => {
             if(user.token){
-                /*localStorage.setItem('token',user.token);
-                localStorage.setItem('user',JSON.stringify(user));*/
-                console.log(user.id_customer)
+                this.loginService.getWebServiceToken(user.id_customer).subscribe((data:any) => {
+                    this.constService.user = user;
+                    console.log("access token : ", data);
+                    this.constService.accessToken = data;
+                })
+
                 this.storage.set('user',user);
                 localStorage.setItem('userLoggedIn',JSON.stringify(true));
+
                 this.checkIfCartExist(user);
-                /*if (this.navParams.get("flag") == 0) {
-                    this.navCtrl.setRoot("CartPage");
-                } else {
-                    this.navCtrl.setRoot("HomePage");
-                       // this.socketService.establishConnection();
-                        //this.renderImage();
-                    }*/
                     if(this.navCtrl.canGoBack())
                        this.navCtrl.pop();
                    else
@@ -81,10 +70,13 @@ export class LoginPage {
                     });
                     alert.present();
                 }
-                
+                this.constService.dismissLoader();                
             }, error => {
-                loader.dismiss();
-            })
+                this.constService.dismissLoader();
+            });
+      }, keyError => {
+          this.constService.dismissLoader();
+      });
     }
 
     ngOnInit(): any {
@@ -93,9 +85,9 @@ export class LoginPage {
         //De plus, le mot de passe saisit doit faire au minimum 5 caractères (se mettre en accord avec la page d'inscription)
         
         this.user = this.fb.group({
-            email: ['kevin.pidemont@groupe-soledis.com', Validators.compose(
+            email: ['', Validators.compose(
                 [Validators.required,Validators.pattern(emailRegex)])],
-            password: ['testtest', Validators.compose(
+            password: ['', Validators.compose(
                 [Validators.required, Validators.minLength(5)])],
 
         });
@@ -107,10 +99,10 @@ export class LoginPage {
     }
 
     private renderImage(){
-        this.userService.getUser()
+        /*this.userService.getUser()
         .subscribe(user=>{
             this.events.publish('imageUrl',user.imageUrl);
-        })
+        })*/
 
         
     }
@@ -182,11 +174,13 @@ export class LoginPage {
     checkIfCartExist(user){
         var cartId = -1;
         //Récupères les paniers en cours de l'utilisateur
-        this.loginService.getCartForCustomer(user.id_customer).subscribe(data => {
+        //this.loginService.getCartForCustomer(user.id_customer).subscribe((data:any) => {
+            this.loginService.getLastCart(user.id_customer).subscribe(data => {
             console.log(data);
             
             //Récupères le dernier panier s'il n'est pas vide et n'a pas été commandé
-            if(data.carts && data.carts[0].id){//&& data.carts[0].id_address_invoice == 0 && data.carts[0].associations
+            //if(data.carts && data.carts[0].id){//&& data.carts[0].id_address_invoice == 0 && data.carts[0].associations
+            if(data && data.id){
                 let alert = this.alertCtrl.create({
                     title: "Panier trouvé",
                     subTitle: "Un panier à votre nom a été trouvé en ligne.\n Souhaitez vous le chargez ? (Attention, si vous aviez déjà un panier d'enregistré celui-ci sera perdu)",
@@ -195,7 +189,8 @@ export class LoginPage {
                         text: 'Oui',
                         handler: () => {
                             console.log('Oui clicked');
-                            cartId = data.carts[0].id;
+                            //cartId = data.carts[0].id;
+                            cartId = data.id;
                             this.getExistingCart(cartId);
                         }
                     },
@@ -215,31 +210,19 @@ export class LoginPage {
     }
 
     cart: any[] = [];
-    /*product: any = {
-        name: ' ',
-        quantity: 0,
-        declinaison: []
-    }*/
     declinaisons: any[] = [];
     products: any[] = [];
-   // declinaison: any = {};
 
     getExistingCart(cartId){
-        this.loginService.getCart(cartId).subscribe(cartData => {
+        this.loginService.getCart(cartId).subscribe((cartData:any) => {
             console.log(cartData);
             localStorage.setItem('id_cart',cartData.cart.id);
-            //console.log(cartData.cart.associations.cart_rows);
             if(localStorage.getItem('cartItem'))
                 localStorage.removeItem('cartItem');
 
             if(cartData.cart && cartData.cart.associations && cartData.cart.associations.cart_rows){
                 for(var item of cartData.cart.associations.cart_rows){
-                    //console.log(item);
-                    //this.getProducts(item.id_product);
-                    //this.getDeclinaisons(item.id_product_attribute);
                     this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
-
-                    //this.addToCart(item.id_product,item.id_product_attribute, item.quantity);
                 }
             }else{
                 console.log("Le panier trouvé est vide");
@@ -263,10 +246,6 @@ export class LoginPage {
                 });
                 alert.present();
             }
-
-            //console.log(this.products);
-           // console.log(this.declinaisons);
-           // console.log(this.cart);
        })
     }
 
@@ -280,7 +259,7 @@ export class LoginPage {
         var declinaison: any = {};
 
         if(declinaisonId > 0){
-            this.loginService.getDeclinaisons(declinaisonId).subscribe(data => {
+            this.loginService.getDeclinaisons(declinaisonId).subscribe((data:any) => {
                 this.declinaisons.push(data);
                 declinaison = data;
 
@@ -289,11 +268,10 @@ export class LoginPage {
                 });
 
                 if(!productAlreadyFind){
-                    this.loginService.getMenuItemDetails(productId).subscribe(data => {
+                    this.loginService.getMenuItemDetails(productId).subscribe((data:any) => {
                         this.products.push(data);
                         console.log(data);
                         declinaison.selectedQuantity = parseInt(quantity);
-                        //declinaison.endPrice = data.price;
 
                         var id = declinaison.combination.id;
                         var index =  this.objectToArray(data.declinaisons).findIndex(function(elem){
@@ -315,16 +293,16 @@ export class LoginPage {
 
                         console.log(product);
                         this.cart.push(product);
-                        //localStorage.setItem('cartItem',JSON.stringify(this.cart));
+                        this.noOfItems += parseInt(quantity);
+                        this.events.publish("updateCartBadge", this.noOfItems);
                         this.storage.set('cart',this.cart);
                     })
                 }
             })
         }else if(productId > 0){
-            this.loginService.getMenuItemDetails(productId).subscribe(data => {
+            this.loginService.getMenuItemDetails(productId).subscribe((data:any) => {
                 this.products.push(data);
                 this.cart.push(product);
-                //localStorage.setItem('cartItem',JSON.stringify(this.cart));
                 this.storage.set('cart',this.cart);
             })
         }else{
@@ -349,7 +327,7 @@ export class LoginPage {
 
     sendMail(){
         console.log(this.emailForPassword.value);
-        this.loginService.resetPassword(this.emailForPassword.value.email).subscribe(data => {
+        this.loginService.resetPassword(this.emailForPassword.value.email).subscribe((data:any) => {
             if(data == 1){
                 this.createToaster("Votre mot de passe a été réinitialisé. Un email a été envoyé à l'adresse indiqué",3000);
                 this.passwordReset = false;

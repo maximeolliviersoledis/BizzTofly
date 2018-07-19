@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams,LoadingController,AlertController, ToastController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams,LoadingController,AlertController, ToastController, Events } from 'ionic-angular';
 import { AddressListService } from './address-list.service';
 import { UserService } from '../../providers/user-service';
 import {Storage} from '@ionic/storage';
@@ -11,37 +11,24 @@ import {Storage} from '@ionic/storage';
 })
 export class AddressListPage {
   addressList:any[] = [];
-  grandTotal:number;
   orderData:any={ };
-  showAddress: boolean = false;
   selectedAddress:any={};
   noOfItems: number;
   header_data:any;    
   order_header_data:any;
-  /*reductions: any[] = [];
-  reductionInput: String;*/
   user: any = {};
   manageAddress: boolean = false;
   public amountDetails:any={};
-  public pincodes:Array<any>;
-  public pincode_matched:boolean=false;
-  public loyaltyPercentage:number=0;
-  public loyaltyPoints:number=0;
-  public leftLoyaltyPoint:number=0;
-  public checked:boolean=false;
-  public loyaltyArray:any[]=[];
-  public loyaltyLimit:number;
   public payTotal: number;
-  public loyaltyObj:any={};
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
     public loadingCtrl:LoadingController,
     public alertCtrl:AlertController,
-    private userService:UserService,
     private addressListService:AddressListService,
     private storage:Storage,
-    public toastCtrl: ToastController) {
+    public toastCtrl: ToastController,
+    private events:Events) {
 
     this.amountDetails=this.navParams.get('amountDetails');
     this.orderData.grandTotal=this.amountDetails.grandTotal;
@@ -73,19 +60,13 @@ export class AddressListPage {
     if(!list){
       this.storage.get('user').then((data)=>{
         this.user = data;
-        /*this.addressListService.getReduction(this.user.id_customer).subscribe(reduction => {
-          this.reductions = reduction;
-        })*/
         this.addressListService.getAddressList(this.user.id_customer).subscribe(data => {
-          console.log(data);
           if(data.addresses){
             var addressList = this.objectToArray(data.addresses);
 
             for(var address of addressList){
-              console.log(address);
               this.addressListService.getAddress(address.id).subscribe(data => {
                 this.addressList.push(data);
-                console.log(this.addressList);
               })
             }
           }
@@ -98,28 +79,11 @@ export class AddressListPage {
       loader.dismiss();
     }
 
-    /*this.addressListService.getAvailablePincodes().subscribe(result=>{
-      console.log("pincodes-"+JSON.stringify(result));
-      this.pincodes=result;
-    });
-    this.addressListService.getLoyaltyStatus().subscribe(loyalty=>{
-      console.log("loyalty-"+JSON.stringify(loyalty));
-      this.loyaltyObj=loyalty;
-    })*/
-
-    /*this.userService.getUser().subscribe(user=>{
-      console.log("user-"+JSON.stringify(user));
-      this.loyaltyArray=user.loyaltyPoints;
-      if(this.loyaltyArray!=null){
-       let _points:number = 0;
-        for (let i = 0; i < this.loyaltyArray.length; i++) {
-         _points = Number(_points + this.loyaltyArray[i].points);
-         this.loyaltyPoints=_points;
-         console.log(this.loyaltyPoints);
-        } }
-      })*/
-
       this.orderData.status='pending';
+    }
+
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
 
     addAddress(){
@@ -127,78 +91,62 @@ export class AddressListPage {
         { 
           amountDetails:this.amountDetails,
           addressList: this.addressList,
-          cartData: this.navParams.get('cartData')
+          cartData: this.navParams.get('cartData'),
+          manageAddress : this.navParams.get('manageAddress')
          });
     }
-
-    updateLoyality(event){
-      if(this.loyaltyObj.loyalityProgram){
-        if(this.loyaltyPoints >= this.loyaltyObj.minLoyalityPoints) {
-          this.checked = event.value;
-          if(event.value==true){
-            if(this.payTotal < this.loyaltyPoints){
-              this.orderData.grandTotal = 0;
-              this.leftLoyaltyPoint = this.loyaltyPoints - this.payTotal;
-            }
-            else if(this.payTotal > this.loyaltyPoints){
-              this.orderData.grandTotal = this.payTotal - this.loyaltyPoints;
-              this.leftLoyaltyPoint = 0;
-            }
-          } else {
-            this.orderData.grandTotal=this.amountDetails.grandTotal;
-          }
-        } 
-      }
-
-    }
-
 
     selectAddress(address){
       this.orderData.shippingAddress = address;
       this.selectedAddress = address;
-     /* this.pincode_matched = false;
-      this.orderData.shippingAddress=address;
-      delete this.orderData.shippingAddress['_id'];
-      this.selectedAddress=address;
-      for (let i = 0; i <this.pincodes.length; i++) {
-        if(this.pincodes[i].pincode==address.pincode){
-          this.pincode_matched=true;
-        }
-      }*/
     }
 
 
     checkOut(){
-      console.log(this.navParams.get('cartData'));
       if(this.orderData.shippingAddress!=null){
-        /*this.navCtrl.push("CheckoutPage", {
-          orderData: this.orderData,
-          cartData: this.navParams.get('cartData')
-        });*/
-        this.navCtrl.push("CarrierPage", {
-          amountDetails: this.amountDetails,
-          orderData: this.orderData,
-          cartData: this.navParams.get('cartData')
+         var cartData = this.navParams.get('cartData');
+        this.addressListService.putCart(cartData.cart.id, this.putCartInfo(cartData.cart.id)).subscribe(() =>{
+          this.navCtrl.push("CarrierPage", {
+            amountDetails: this.amountDetails,
+            orderData: this.orderData,
+            cartData: this.navParams.get('cartData')
+          })
         })
       }else{
         this.showAlert('Please select address.');
       }
-      /*if(this.pincode_matched){
-        this.orderData.appliedLoyalty=this.checked;
-        if(this.orderData.appliedLoyalty==true){
-          this.orderData.usedLoyaltyPoints=this.loyaltyPoints;
+    }
+
+    putCartInfo(cartId){
+        var cart = this.navParams.get('cartData');
+        var modif = {
+            cart: {
+                id: cartId,
+                id_shop_group: 1, 
+                id_shop: 1,
+                id_address_delivery: this.orderData.shippingAddress.address.id,
+                id_address_invoice: this.orderData.shippingAddress.address.id,
+                id_currency: 1,
+                id_customer: cart.cart.id_customer,
+                id_lang: 1,
+                associations: {
+                    cart_rows: {
+                        cart_row: []
+                    }
+                }
+            }
+        };
+
+
+        for(var items of cart.cart.associations.cart_rows){
+            var product: any = {};
+            product.id_product = items.id_product;
+            product.id_product_attribute = items.id_product_attribute;
+            product.id_address_delivery = items.id_address_delivery;
+            product.quantity = items.quantity;
+            modif.cart.associations.cart_rows.cart_row.push(product);        
         }
-        if(this.orderData.shippingAddress!=null){
-          this.navCtrl.push("CheckoutPage",{
-            orderData:this.orderData
-          });
-        }
-        else {
-          this.showAlert('Please select address.');
-        }  
-      } else {
-        this.showAlert('Not available for delivery at your location yet.');
-      }*/
+        return modif;        
     }
 
     /**
@@ -206,7 +154,6 @@ export class AddressListPage {
     **/
     deleteAddress(addressId){
       this.addressListService.deleteAddress(addressId).subscribe(data => {
-        console.log(data);
         for(var i=0; i<this.addressList.length;i++){
           if(this.addressList[i].address.id === addressId){
             this.addressList.splice(i,1);
@@ -219,7 +166,6 @@ export class AddressListPage {
     * Old method. Use modify() instead of modifyAddress
     **/
     modifyAddress(address){
-      console.log("modify address "+address.id);
       this.navCtrl.push("AddressPage", {
         amountDetails:this.amountDetails,
         cartData: this.navParams.get('cartData'),
@@ -229,27 +175,34 @@ export class AddressListPage {
     }
 
     modify(){
-      console.log(this.selectedAddress);
       if(this.selectedAddress && this.selectedAddress.address){
         this.navCtrl.push("AddressPage", {
           amountDetails:this.amountDetails,
           cartData: this.navParams.get('cartData'),
           addressList: this.addressList,
-          address: this.selectedAddress.address
+          address: this.selectedAddress.address,
+          manageAddress : this.navParams.get('manageAddress')
         })
+      }else{
+        this.showAlert("Vous devez sélectionner une adresse afin de pouvoir la modifier");
       }
     }
 
     delete(){
       if(this.selectedAddress && this.selectedAddress.address){
-        this.addressListService.deleteAddress(this.selectedAddress.address.id).subscribe(data => {
-          console.log(data);
+        this.addressListService.deleteAddress(this.selectedAddress.address.id).subscribe(() => {
+          console.log("delete method");
           for(var i=0; i<this.addressList.length;i++){
             if(this.addressList[i].address.id === this.selectedAddress.address.id){
               this.addressList.splice(i,1);
+              this.selectedAddress = null;
+              this.orderData.shippingAddress = null;
+              this.createToaster("Votre adresse a bien été supprimée", 2000);
             }
           }
         })
+      }else{
+        this.showAlert("Vous devez sélectionner une adresse afin de pouvoir la supprimer");
       }
     }
 
@@ -277,31 +230,4 @@ export class AddressListPage {
         });
         toast.present();
     }
-    
-    /*checkReduction(){
-        if(this.reductionInput){
-            var reductionMatch = false;
-            for(var availableReduction of this.reductions){
-                if(this.reductionInput === availableReduction.code){
-                    this.addressListService.applyReduction(this.user.id_customer, this.navParams.get('cartData').cart.id, availableReduction.id_cart_rule).subscribe(data => {
-                        console.log(data);
-                    })
-                    reductionMatch = true;
-                    break;
-                }
-            }
-            if(reductionMatch){
-                this.createToaster("Bon de réduction appliqué avec succès !",3000);
-            }else{
-                this.createToaster("Aucune réduction correspondant à ce code n'a été trouvée",3000);
-            }
-        }else{
-            this.createToaster("Veuillez saisir un code de réduction",3000);
-        }
-    }*/
-
-    navcart(){
-      this.navCtrl.push('CartPage');
-    }
-
   }

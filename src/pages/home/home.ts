@@ -1,9 +1,13 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, IonicPage, LoadingController, Slides, Searchbar} from 'ionic-angular';
+import {NavController, IonicPage, LoadingController, Slides, Searchbar, Events} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {HomeService} from './home.service';
 import {Storage} from '@ionic/storage';
 import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
+import {ConstService} from '../../providers/const-service';
+//import * as CryptoJS from 'crypto-js';
+import CryptoJS from 'crypto-js';
+import Base64Url from 'base64url';
 
 @IonicPage()
 @Component({
@@ -13,30 +17,48 @@ import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/nati
 })
 export class HomePage {
     categories: any[];
-   // featured: any[];
     cartItems: any[];
     displayLastSearch: boolean = false;
     noOfItems: number = 0;
-    searchInput: string;
-    searchResults: any[];
-    searching: boolean;
-    searchPlaceholder: string;
-    lastSearch: any[] = [];
     slideProducts: any[] = [];
     currentProduct: any = {};
     welcomeProducts: any[] = [];
+    header_data: any;
     @ViewChild(Slides) slides: Slides;
-    @ViewChild(Searchbar) searchbar: Searchbar;
 
     constructor(public navCtrl: NavController,
                 public service: Service,
                 public homeService: HomeService,
                 public loadingCtrl: LoadingController,
                 private storage:Storage,
-                private pageTransition:NativePageTransitions) {
+                private pageTransition:NativePageTransitions,
+                private event:Events,
+                private constService:ConstService) {
+        //A sup juste pour tester le jwt
+       /* var test_header = {
+            "alg": "HS512",
+            "typ": "JWT"
+        };
 
-        //this.cartItems = JSON.parse(localStorage.getItem('cartItem'));
-        
+        var content = {
+            "message": "My message",
+            "data": "Some other datas"
+        };
+        var content_hash = Base64Url.encode(JSON.stringify(content));
+        var header_hash = Base64Url.encode(JSON.stringify(test_header));
+        var verif = CryptoJS.HmacSHA512(header_hash+"."+content_hash, "mysecretkey");
+       /* console.log(verif.toString());
+        console.log(header_hash+"."+content_hash+"."+Base64Url.encode(verif.toString()));
+        console.log(Base64Url.encode(verif.toString()));
+
+        this.homeService.testJWT("data="+header_hash+"."+content_hash+"."+Base64Url.encode(verif.toString())).subscribe((data) => {
+
+        })*/
+
+        //var content_hash = CryptoJS.HmacSHA256(JSON.stringify(content)).toString();
+        //var header_hash = CryptoJS.HmacSHA256(JSON.stringify(test_header)).toString();
+       // var verif = CryptoJS
+
         this.storage.get('cart').then((cartData)=>{
             this.cartItems = cartData;
             if(this.cartItems != null) {
@@ -45,9 +67,7 @@ export class HomePage {
                 }
             }
         })
-
-        this.searching = false;
-        this.searchPlaceholder = "Que recherchez-vous?";
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'BizzToFly'};     
     }
     /*ionViewWillLeave(){
      let options: NativeTransitionOptions = {
@@ -73,31 +93,17 @@ export class HomePage {
     * direction values : ['up', 'bottom', 'left', 'right']
     **/
     ionViewDidLoad() {
-        let loader = this.loadingCtrl.create({
-            content: 'please wait..'
-        })
-        loader.present();
-       /* this.homeService.getCategories()
-            .subscribe(response => {
-                this.categories = response;
-                for(var i of this.categories){
-                    i.image = this.homeService.getImageUrlForCategory(i.id_category);
-                }
-                loader.dismiss();
-            }, error => {
-                loader.dismiss();
-            })*/
-
+       this.constService.presentLoader();
        this.storage.get('user').then((userData) => {
            var customerId = userData && userData.id_customer ? userData.id_customer : null;
            this.getSlideProducts(customerId);
-           this.homeService.getAccueilProduct(customerId).subscribe(data => {
-               console.log(data);
-               this.welcomeProducts = data;
-           })
+           this.getAccueilProducts(customerId);
        })
+       this.constService.dismissLoader();
+    }
 
-       loader.dismiss();
+    ionViewWillLeave(){
+        this.event.publish("hideSearchBar");
     }
 
     navigate(MenuId) {
@@ -122,72 +128,7 @@ export class HomePage {
         this.navCtrl.push("CartPage");
     }
 
-    noResultFound: boolean = false;
-    onSearch($event){
-        this.searchPlaceholder = "Que recherchez-vous?";
-        this.noResultFound = false;
-
-        if(this.searchInput.length > 2){
-            this.searching = true;
-            this.service.search('query='+this.searchInput+'&language=1')
-            .subscribe((response) => {     
-                this.searching = false;
-                if(response.products){                    
-                    this.searchResults = response.products;
-                }else{
-                    //this.searchInput = "";
-                    this.searchResults = [];
-                    this.noResultFound = true;
-                    this.searchPlaceholder = "Aucun résultat";
-                    this.displayLastSearch = false;
-                }
-            })
-        }else{
-            this.searchResults = [];
-        }
-    }
-
-    offSearch($event){
-        this.displayLastSearch = false;
-        this.noResultFound = false;
-    }
-    onFocus($event){
-        console.log("onFocus appelé");
-        this.displayLastSearch = true;
-        this.storage.get('search').then(data => {
-            this.lastSearch = data;
-        })
-    }
-
-    completeUserInput(keyword){
-        console.log(this.searchbar);
-        this.searchInput = keyword;
-        this.displayLastSearch = false;
-        this.onSearch(null);
-    }
-
-    saveSearchInput(keyword){
-        if(keyword){
-            this.storage.get('search').then(data => {
-                this.lastSearch = data;
-            })
-            if(this.lastSearch){
-                var keywordAlreadyPresent = this.lastSearch.find(function(elem){
-                    return elem == keyword;
-                })
-
-                if(!keywordAlreadyPresent)
-                    this.lastSearch.splice(0,0,keyword);
-            }else{
-                this.lastSearch = [];
-                this.lastSearch.push(keyword);
-            }
-            this.storage.set('search',this.lastSearch);
-        }
-    }
-
     goToProductPage(productId, product = null, productName = null) {
-        this.saveSearchInput(productName);
         product != null ? this.navCtrl.push("ProductDetailsPage", {
             product: product
         }) : this.navCtrl.push("ProductDetailsPage", {
@@ -196,15 +137,19 @@ export class HomePage {
     }
 
     getSlideProducts(customerId){
-        this.homeService.getSlideCategorie(customerId).subscribe(data => {
+        var id = JSON.parse(localStorage.getItem('appli_settings')).slide_category;
+        this.homeService.getCategory(id, customerId).subscribe(data => {
             this.slideProducts = data;
             this.currentProduct = this.slideProducts[0];
         })
     }
 
-  /*  goToProduct(){
-        this.goToProductPage(this.currentProduct.id_product);
-    }*/
+    getAccueilProducts(customerId){
+        var id = JSON.parse(localStorage.getItem('appli_settings')).accueil_category;
+        this.homeService.getCategory(id, customerId).subscribe(data => {
+               this.welcomeProducts = data;            
+        })
+    }
 
     onChange(next){
         console.log(this.slides.realIndex);

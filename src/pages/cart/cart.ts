@@ -1,7 +1,9 @@
 import {Component} from "@angular/core";
-import {IonicPage, AlertController, NavParams, NavController, PopoverController, ToastController} from "ionic-angular";
+import {IonicPage, AlertController, NavParams, NavController, PopoverController, ToastController, Events} from "ionic-angular";
 import {CartService} from './cart.service';
 import {Storage} from '@ionic/storage';
+import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -32,12 +34,16 @@ export class CartPage {
                 public popoverCtrl: PopoverController,
                 public toastCtrl: ToastController,
                 private cartService:CartService,
-                private storage:Storage) {
+                private storage:Storage,
+                private event:Events,
+                private nativeTransition:NativePageTransitions,
+                private constService:ConstService) {
 
         this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart', hideBackButton: true};        
     }
 
     ngOnInit(){
+        this.constService.presentLoader();
         this.storage.get('cart').then((data)=>{
             this.cartItems = data;
 
@@ -45,17 +51,43 @@ export class CartPage {
                 for(var items of this.cartItems)
                     this.noOfItems += items.quantity
                 
+                console.log(this.noOfItems);
                 this.calculatePrice();
                 this.storage.get('user').then((data)=>{
                     this.user = data;
                     if(this.user){
                         this.cartService.getReduction(data.id_customer).subscribe(reduction => {
                             this.reductions = reduction;
+                        }, error => {
+                            this.constService.dismissLoader();
                         })
                     }
+                }).catch(() => {
+                    this.constService.dismissLoader();
                 })
             }
-        })
+            this.constService.dismissLoader();
+        }).catch(() => {
+            this.constService.dismissLoader();
+        })        
+    }
+
+    ionViewWillLeave(){
+        this.event.publish("hideSearchBar");
+    }
+
+    ionViewWillEnter(){
+        let options: NativeTransitionOptions = {
+            direction: 'left', //up, left, right, down
+            duration: 100,
+            slowdownfactor: 3,
+            slidePixels: 20,
+            iosdelay: 100,
+            androiddelay: 100,
+            fixedPixelsTop: 0,
+            fixedPixelsBottom: 60
+        };
+        this.nativeTransition.slide(options); //Pas trop mal
     }
 
     deleteItem(data){
@@ -63,6 +95,8 @@ export class CartPage {
         for(let i=0; i<this.cartItems.length;i++){
             for(let j=0;j<this.cartItems[i].declinaison.length;j++){
                 if(this.cartItems[i].declinaison[j].combination.id == data.combination.id && this.cartItems[i].declinaison[j].name == data.name){
+                    this.noOfItems -= this.cartItems[i].declinaison[j].selectedQuantity;
+                    this.cartItems[i].quantity -= this.cartItems[i].declinaison[j].selectedQuantity;
                     this.cartItems[i].declinaison.splice(j,1);
                 }
             }
@@ -77,76 +111,9 @@ export class CartPage {
         }else{
             this.calculatePrice();
             this.storage.set('cart',this.cartItems);
-
-            /*A voir l'utilité de refaire un get sur ce qu'on vient de set*/
-            /*this.storage.get('cart').then((data)=>{
-                this.cartItems = data;
-            })*/
-            this.noOfItems = this.noOfItems - 1;
-        }
-        //this.applyReduction();
-    }
-
-    /**!! Déjà géré par presta => inutile!!**/
-    //Système de promotion(réduction brut et pourcentage) fonctionnel mais usine à gaz
-    applyReduction(){
-        console.log("Prix avant réduction = "+this.subTotalPrice);
-
-        for(var item of this.cartItems){
-            for(var declinaison of item.declinaison){
-                for(var promo of this.promotion){
-                    console.log("Promo en cours : "+promo.specific_price.id);
-                    if(promo.specific_price.id_product == item.productId && promo.specific_price.id_product_attribute == declinaison.combination.id){
-                        console.log("Réduction pour la déclinaison "+declinaison.name);
-                        if(declinaison.selectedQuantity >= promo.specific_price.from_quantity && promo.specific_price.reduction_type == "amount"){
-                            console.log("Réduction déclinaison amount accepté : "+promo.specific_price.reduction);
-                            this.subTotalPrice -= parseFloat(promo.specific_price.reduction);
-                        }else if(declinaison.selectedQuantity >= promo.specific_price.from_quantity && promo.specific_price.reduction_type == "percentage"){
-                            console.log("Réduction déclinaison percent accepté : "+promo.specific_price.reduction);
-                            this.subTotalPrice = this.subTotalPrice - declinaison.selectedQuantity * declinaison.endPrice; // On retire le montant avant la promo
-                            this.subTotalPrice += (declinaison.selectedQuantity * declinaison.endPrice) * promo.specific_price.reduction; // On applique la réduction
-                        }
-                    }else if(promo.specific_price.id_product == item.productId && promo.specific_price.id_product_attribute == 0){
-                        console.log("Réduction pour le produit "+item.name);
-                        if(item.quantity >= promo.specific_price.from_quantity && promo.specific_price.reduction_type == "amount"){
-                            console.log("Réduction produit amount accepté : "+promo.specific_price.reduction);
-                            this.subTotalPrice -= parseFloat(promo.specific_price.reduction);
-                        }else if(item.quantity >= promo.specific_price.from_quantity && promo.specific_price.reduction_type == "percentage"){
-                            console.log("Réduction produit percent accepté : "+promo.specific_price.reduction);
-                            this.subTotalPrice = this.subTotalPrice - item.quantity * item.price; // On retire le montant avant la promo
-                            this.subTotalPrice += (item.quantity * item.price) * promo.specific_price.reduction; // On applique la réduction
-                        }
-                    }else{
-                        console.log("Aucune promo trouvé pour le produit "+item.name);
-                    }
-                }
-            }
         }
 
-        console.log("Prix après réduction = "+this.subTotalPrice);
-    }
-
-    /*Code inutile prestashop gère déjà les promos*/
-    getPromotion(){
-        
-        //Si aucune condition d'appliquée sur la promo, id_product = 0
-        //Si une condtion est appliquée mais pas sur une catégorie, l'applique sur id_product 1 par défaut
-
-
-        //Il faudrait pouvoir récupérer toutes les promos et garde seulement celles qui sont encores actives
-        //Ou directement récupérer les promos atives (le serveur s'occupe du traitement)
-        this.cartService.getSpecificPrices(54).subscribe( res => {
-            console.log(res);
-            this.promotion.push(res);
-        })        
-        this.cartService.getSpecificPrices(18).subscribe( res => {
-            console.log(res);
-            this.promotion.push(res);
-        })
-        this.cartService.getSpecificPrices(35).subscribe( res => {
-            console.log(res);
-            this.promotion.push(res);
-        })
+        this.event.publish("updateCartBadge", this.noOfItems);
     }
 
     checkout() {
@@ -224,6 +191,7 @@ export class CartPage {
             }
             
             this.noOfItems++;
+            this.event.publish("updateCartBadge",  this.noOfItems);
             this.calculatePrice();
         }else{
             let alert = this.alertCtrl.create({
@@ -251,6 +219,7 @@ export class CartPage {
             this.storage.set('cart',this.cartItems);
 
             this.noOfItems--;
+            this.event.publish("updateCartBadge", this.noOfItems);            
             this.calculatePrice();      
         }
         //this.applyCoupon();
@@ -276,6 +245,8 @@ export class CartPage {
     deleteAllItem(){
        this.cartItems.splice(0,this.cartItems.length);
        this.storage.remove('cart');
+       this.noOfItems = null;
+       this.event.publish("updateCartBadge", this.noOfItems);
 
        if(localStorage.getItem('id_cart')){
            var customerId = this.user.id_customer;

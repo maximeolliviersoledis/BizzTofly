@@ -33,10 +33,11 @@
   <div *ngIf="displaySearchBar && header_data.enableSearchbar">
     <ion-searchbar 
         [(ngModel)]="searchInput"
-        [showCancelButton]="true"
+        [showCancelButton]="enableCancelButton()"
         (ionInput)="onSearch($event)"
         (ionCancel)="offSearch($event)"
         (ionFocus)="onFocus($event)"
+        (keypress)="goToSearchPage($event)"
         animated="true"
         autocomplete="on"
         placeholder="{{searchPlaceholder}}">
@@ -44,11 +45,15 @@
   <div *ngIf="searching" class="spinner-container">
     <ion-spinner></ion-spinner>
   </div>
+
   <ion-list *ngIf="displayLastSearch" class="search-results">
+    <ion-item *ngIf="lastSearch"><ion-label class="previous-search">Recherches précédentes</ion-label></ion-item>
     <ion-item *ngFor="let search of lastSearch" (click)="completeUserInput(search)">
+      <button icon-only item-start (click)="deleteLastSearch(search)"><ion-icon name="close-circle"></ion-icon></button>
       {{search}}
     </ion-item>
   </ion-list>
+
   <ion-list *ngIf="searchResults" class="search-results">
     <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id, searchResult.name)">
       {{searchResult.name}}

@@ -17,12 +17,22 @@
     <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
-<ion-content [ngClass]="{bg:!isFavourite()}">
+<!--<ion-content [ngClass]="{bg:!isFavourite()}">-->
+<ion-content>
     <div *ngIf="!isFavourite()">
         <ion-row>
             <ion-icon class="empty-cart" name="heart"></ion-icon>
         </ion-row>
-        <h4>{{"Wish List is empty!" | translate}}</h4>
+        <ion-row>
+            <ion-col col-12>
+                <h1 class="empty-text">{{"Wish List is empty!" | translate}}</h1>
+            </ion-col>
+        </ion-row>
+        <ion-row>
+            <ion-col col-12>
+                <button ion-button class="empty-btn" (click)="home()">{{'Go to home page' | translate}}</button> 
+            </ion-col>
+        </ion-row>
     </div>
     <div *ngIf="isFavourite()">
         <ion-card *ngFor="let favouriteItem of favouriteItems">
@@ -37,7 +47,7 @@
                         <ion-col col-8 class="add-col">
                             <button class="add" ion-button (click)="buyNow(favouriteItem.id)">
                                 <ion-icon name="cart"></ion-icon>
-                                &nbsp; {{"Buy Now" | translate}}
+                                <div class="btn-text"> &nbsp; {{"Buy Now" | translate}}</div>
                             </button>
                         </ion-col>
                         <ion-col col-4>

@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams, Slides,IonicPage,LoadingController} from 'ionic-angular';
+import {NavController, NavParams, Slides,IonicPage,LoadingController, Events} from 'ionic-angular';
 import { OfferService } from './offer.service'; 
 import { Storage } from '@ionic/storage';
 
@@ -19,7 +19,8 @@ export class OfferPage {
                 public navParams: NavParams,
                 private loadingCtrl:LoadingController,
                 private offerService:OfferService,
-                private storage:Storage) {
+                private storage:Storage,
+                private events:Events) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Offers'};        
     }
 
@@ -35,6 +36,10 @@ export class OfferPage {
         })
       })
       loader.dismiss();
+    }
+
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
 
     gotoNextSlide() {

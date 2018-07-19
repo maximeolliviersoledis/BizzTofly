@@ -1,87 +1,70 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers} from "@angular/http";
-import {Observable} from "rxjs/Observable";
-import {map} from 'rxjs/Operator/map'
 import {ConstService} from "../../providers/const-service";
+import {Md5} from 'ts-md5/dist/md5';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 @Injectable()
 export class LoginService {
 
-    constructor(public http: Http,
+    constructor(public http: HttpClient,
                 public constService: ConstService) {
     }
 
-
-    /*login(user: any) {
-        const body = JSON.stringify(user);
-        const headers = new Headers();
-        headers.append('Content-Type', 'application/json');
-        return this.http.post(this.constService.base_url + 'auth/local', body, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
-
-
-    login(user: any) {
-        //http://www.bizztofly.com/modules/sld_notification/mobile-notification.php?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON&login=0&email=undefined&passwd=undefined
-        const body = JSON.stringify(user);
-        const headers = new Headers();
-
-        headers.append('Content-Type', 'application/json');
-        return this.http.post(this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir+ '&login=0' + '&email=' + user.email + '&passwd=' + user.password, body, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
-            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
+    postLogin(user, key) : any{
+        var urlDir = this.constService.baseDirApiSoledis + "/login/0" + this.constService.keyDir + this.constService.formatDir;
+        var data = "mail="+user.email+"&passwd="+Md5.hashStr(key+user.password);
+            return this.http.post(urlDir, data, {
+                headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'})
+            });
     }
 
-    getCartForCustomer(customerId){
+    getWebServiceToken(customerId) : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.getAccessToken + "/" + customerId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
+
+    getKey() : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.getKeyDir + "/0" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
+
+    getCartForCustomer(customerId) : any{
         var urlDir = this.constService.baseDir + this.constService.cartDir + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId + this.constService.sortIdDesc + this.constService.limitQuery + 1 ;
-        const headers = new Headers();
-        console.log(urlDir);
-        return this.http.get(urlDir, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {})
+        return this.http.get(urlDir);
     }
 
-    getCart(cartId){
+    getCart(cartId) : any{
         var urlDir = this.constService.baseDir + this.constService.cartDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
-        const headers = new Headers();
-        return this.http.get(urlDir, {
-            headers: headers
-        })
-            .map((data: Response) => data.json() || {});
+        return this.http.get(urlDir);
     }
 
-    getMenuItemDetails(menuItemId) {
-        const headers = new Headers();
-       // var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + user_id;;
+    getLastCart(customerId) : any{
+        var urlDir = this.constService.baseDirApiSoledis + "/get_last_cart/" + customerId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir).retryWhen(error => {
+            return error.flatMap((error:any) => {
+                if(error.status === 401){
+                    return Observable.of(error.status).delay(this.constService.delayOfRetry);
+                }
+                return Observable.throw({error: 'No retry'});
+            }).take(this.constService.nbOfRetry).concat(Observable.throw({error: 'Sorry, there was an error after 5 retries'}));
+        });
+    }
+
+    getMenuItemDetails(menuItemId) : any{
         var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + menuItemId + this.constService.keyDir + this.constService.formatDir;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
-        //.catch((error:any) => Observable.throw(error.json().error || 'Server error'));
+        return this.http.get(urlDir);
     }
 
-    getDeclinaisons(declinaisonId){
-        const headers = new Headers();
+    getDeclinaisons(declinaisonId) : any{
         var urlDir = this.constService.baseDir+this.constService.combinationDir+"/"+declinaisonId+this.constService.keyDir+this.constService.formatDir;
-        //var urlDir = "http://www.bizztofly.com/api/combinations/"+declinaisonId+"?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON";
-        return this.http.get(urlDir,{
-            headers: headers
-        }).map((data: Response) => data.json() || {})
+        return this.http.get(urlDir);
 
     }
 
-    resetPassword(email){
-        const headers = new Headers();
+    resetPassword(email) : any{
         var urlDir = this.constService.baseDirApiSoledis + this.constService.resetPasswordDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.email + email;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response)=> data.json() || {}) 
+        return this.http.get(urlDir);
     }
 
 }

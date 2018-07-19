@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams, IonicPage} from 'ionic-angular';
+import {NavController, NavParams, IonicPage, Events} from 'ionic-angular';
 import {Nav, Platform} from 'ionic-angular';
 import {Slides} from 'ionic-angular';
 import {CallNumber} from '@ionic-native/call-number';
@@ -24,15 +24,14 @@ export class AboutUsPage {
                 public navCtrl: NavController,
                 public navParams: NavParams,
                 public callNumber: CallNumber,
-                public emailComposer: EmailComposer) {
+                public emailComposer: EmailComposer,
+                private events:Events) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'About Us'};        
     }
 
-    ionViewDidLoad() {
-        console.log('ionViewDidLoad AboutUsPage');
-
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
-
 
     goToSlide() {
         this.slides.slideTo(2, 500);

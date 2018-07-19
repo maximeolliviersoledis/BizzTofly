@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events } from 'ionic-angular';
 import { CarrierService } from './carrier.service';
 import {Storage} from '@ionic/storage';
 import {CgvPage} from '../cgv/cgv';
@@ -21,61 +21,58 @@ export class CarrierPage {
     cardDetails: {},
     status: 'pending'
   };
+  cartData: any;
+
   constructor(public navCtrl: NavController, 
   			  public navParams: NavParams,
   			  public carrierService: CarrierService,
     		  public alertCtrl:AlertController,
           private storage:Storage,
-          public popoverCtrl:PopoverController
+          public popoverCtrl:PopoverController,
+          private events:Events
   			  ) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Carrier'};        
         this.order_header_data = {currentStep: 2, pageName: "Carrier"};
         this.orderData = this.navParams.get('orderData');
-
+        this.cartData = this.navParams.get('cartData');
   }
 
   ngOnInit(){
-    console.log("ngOnInit() carrier appelé");
-    //var customer = JSON.parse(localStorage.getItem('user'));
+    console.log(this.orderData);
+    console.log(this.cartData);
     this.storage.get('user').then((customer)=>{
-      var cart = this.navParams.get('cartData');
-      console.log(cart);
-      console.log(customer);
-      this.carrierService.getAllCarriers(customer.id_customer,cart.cart.id).subscribe(data => {
+     /* this.carrierService.getAllCarriers(customer.id_customer,this.cartData.cart.id).subscribe(data => {
         console.log(data);
-        for(var carrier of this.objectToArray(data[0])){
+        console.log(this.objectToArray(data));
+        for(var carrier of this.objectToArray(data)){
           console.log(carrier);
-          console.log(this.objectToArray(this.objectToArray(carrier.carrier_list)[0].instance.delay)[0]);
-          console.log(this.objectToArray(carrier.carrier_list)[0].logo);
           if(this.objectToArray(carrier.carrier_list)[0].logo)
             carrier.image = this.carrierService.getCarrierImageUrl(this.objectToArray(carrier.carrier_list)[0].logo);
           else
             carrier.image = false;
           this.carriers.push(carrier);
         }
-        console.log(this.carriers);
-      /*for(var test of this.objectToArray(data[0])){
-        //console.log(test);
-        console.log(this.objectToArray(test.carrier_list)[0]);
-        this.carriers.push(this.objectToArray(test.carrier_list)[0]);
-      }*/
-      
-    });
+        console.log(this.carriers);      
+      });*/
+      this.carrierService.getAllCarriers(customer.id_customer, this.cartData.cart.id).subscribe(data => {
+        for(var i of this.objectToArray(data)){
+          for(var carrier of this.objectToArray(i)){
+            if(this.objectToArray(carrier.carrier_list)[0].logo)
+            carrier.image = this.carrierService.getCarrierImageUrl(this.objectToArray(carrier.carrier_list)[0].logo);
+            else
+              carrier.image = false;
+            this.carriers.push(carrier);
+          }
+        }
+      });
     })
-    
-  	/*this.carrierService.getAllCarriers().subscribe(data => {
-  		console.log(data);
-  		for(var carrier of data.carriers){
-  			this.carrierService.getCarrierById(carrier.id).subscribe(response => {
-  				console.log(response);
-  				this.carriers.push(response);
-  			})
-  		}
-  	});*/
   }
 
+  ionViewWillLeave(){
+      this.events.publish("hideSearchBar");
+  }
+  
   selectCarrier(carrier){
-    console.log(carrier);
   	this.carrier = carrier;
   }
 
@@ -147,18 +144,7 @@ export class CarrierPage {
                 id_currency: 1,
                 id_customer: cart.cart.id_customer,
                 delivery_option: this.formatDeliveryOption(this.objectToArray(this.carrier.carrier_list)[0].instance.id),
-                //delivery_option: '2,',
-               // id_guest: null,
                 id_lang: 1,
-               // recyclable: null,
-               // gift: null,
-                //gift_message: null,
-                //mobile_theme: null,
-                //delivery_option: null,
-                //secure_key: null,
-               // allow_seperated_package: 0,
-                //date_add: null,
-                //date_upd: null,
                 associations: {
                     cart_rows: {
                         cart_row: []

@@ -1,8 +1,9 @@
 import {Component} from '@angular/core';
-import {NavController,NavParams, IonicPage,LoadingController} from 'ionic-angular';
+import {NavController,NavParams, IonicPage,LoadingController, Events} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {CategoryService} from './category.service';
 import {Storage} from '@ionic/storage';
+import {ConstService} from '../../providers/const-service';
 
 
 @IonicPage()
@@ -16,37 +17,21 @@ export class CategoryPage {
     level: number = 2;
     lastCategoryId: number = 0;
     noOfItems: number = 0;
-        /**Searchbar**/
-        //Inutile depuis que le custom header est utilisé
-    /*searchInput: string;
-    searchResults: any[];
-    searching: boolean;
-    searchPlaceholder: string;
-    lastSearch: any[] = [];*/
     header_data:any;    
+
     constructor(public navCtrl: NavController,
                 private loadingCtrl:LoadingController,
                 public categoryService:CategoryService,
                 public nav:NavParams,
                 private storage:Storage,
-                public service:Service) {
-
-        /*this.storage.get('cart').then((data)=>{
-            if(data){
-                for(var items of data){
-                    this.noOfItems += items.quantity;
-                }
-            }
-        })*/
-
+                public service:Service,
+                private events:Events,
+                private constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Category'};
      }
 
     ionViewDidLoad(){
-        let loader=this.loadingCtrl.create({
-            content:'please wait'
-        })
-        loader.present();
+            this.constService.presentLoader();
 
             this.categoryService.getCategory(2).subscribe(categories => {
                  this.lastCategoryId = categories.category.id;
@@ -71,42 +56,14 @@ export class CategoryPage {
                          })
                      }
                  }
-
-                /*this.searching = false;
-                this.searchPlaceholder = "Que recherchez-vous?";*/
-                 loader.dismiss();
+                 this.constService.dismissLoader();
+            }, error => {
+                this.constService.dismissLoader();
             })
-        
+    }
 
-        /*this.categoryService.getAllCategories().subscribe(categories => {
-
-            for(var id of categories.categories){
-                this.categoryService.getCategory(id.id).subscribe(category => {
-                    if(category.category.level_depth>=2 && category.category.active == 1){
-                        var categ: any = {};
-                        categ.id = category.category.id;
-                        categ.id_parent = category.category.id_parent;
-                        categ.name = category.category.name[0].value;
-                        categ.description = category.category.description[0].value;
-                        categ.level = category.category.level_depth;
-                        if(category.category.associations && category.category.associations.categories)
-                            categ.id_enfants = category.category.associations.categories;
-
-                        this.categories.push(categ);
-                    }
-                    console.log(this.categories);
-                });
-            }
-            loader.dismiss();
-        })*/
-        /*this.categoryService.getCategories()
-        .subscribe(categories=>{
-            console.log("res-"+JSON.stringify(categories));
-            this.categories=categories;
-            loader.dismiss();
-        },error=>{
-            loader.dismiss();
-        })*/
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
 
     getSubCategories(categoryId){

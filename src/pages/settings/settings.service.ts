@@ -1,43 +1,73 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers} from "@angular/http";
-import {Observable} from "rxjs/Observable";
-import {map} from 'rxjs/Operator/map'
 import {ConstService} from "../../providers/const-service";
+import {Md5} from 'ts-md5/dist/md5';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
+import {Observable} from 'rxjs';
 
 @Injectable()
 
 export class SettingsService {
-    constructor(public http: Http, public constService: ConstService) {
+    constructor(public http: HttpClient, public constService: ConstService) {
 
     }
 
-     /*updateUserInfo(userId,userInfo){  
-         let body=userInfo;   
-         const headers = new Headers();
-         let authtoken = localStorage.getItem('token');
-         headers.append('Authorization', authtoken);
-         headers.append('Content-Type', 'application/json');
-        return this.http.put(this.constService.base_url+'api/users/'+userId,body,{
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-           // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
-
-    getUser(userId){
-        const headers = new Headers();
+    getUser(userId) : any{
         var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
+        return this.http.get(urlDir);
     }
 
-    putUser(userId, userInfo){
-        const headers = new Headers();
+    putUser(userId, userInfo) : any{
         var urlDir = this.constService.baseDir + this.constService.customerDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
-        return this.http.put(urlDir, userInfo, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
+        return this.http.put(urlDir, userInfo);
     }
 
+    modifyUser(userId, userInfo, key) : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.modifyUserDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
+        if(userInfo.password && userInfo.passwordConfirmation)
+            userInfo.passwd = Md5.hashStr(key, userInfo.password);
+        delete userInfo.password;
+        delete userInfo.passwordConfirmation;
+        var data = this.formatData(userInfo);
+        return this.http.post(urlDir, data, {
+            headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'})
+        }).retryWhen(error => {
+            return error.flatMap((error:any) => {
+                if(error.status === 401){
+                    return Observable.of(error.status).delay(this.constService.delayOfRetry);
+                }
+                return Observable.throw({error: 'No retry'});
+            }).take(this.constService.nbOfRetry).concat(Observable.throw({error: 'Sorry, there was an error after 5 retries'}));
+        });
+    }
+
+    getKey() : any{
+        var urlDir = this.constService.baseDirApiSoledis + "/get_key/0" + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
+
+    getUserInfo(userId) : any{
+        var urlDir = this.constService.baseDirApiSoledis + "/get_user_info/"+userId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir).retryWhen(error => {
+            return error.flatMap((error:any) => {
+                if(error.status === 401){
+                    return Observable.of(error.status).delay(this.constService.delayOfRetry);
+                }
+                return Observable.throw({error: 'No retry'});
+            }).take(this.constService.nbOfRetry).concat(Observable.throw({error: 'Sorry, there was an error after 5 retries'}));
+        });
+    }
+
+    private formatData(data) : any{
+        let item = Object.keys(data);
+        let ret = '';
+        for(var i = 0; i < item.length; i++){
+            if(data[item[i]] != null){
+                ret += item[i].toLowerCase() + "=" + data[item[i]];
+
+                if(i != item.length -1)
+                    ret += "&";
+            }
+        }
+        return ret;
+    }
 }

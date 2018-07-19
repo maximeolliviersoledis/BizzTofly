@@ -23,7 +23,7 @@ export class OrderStatusPage {
     }
 
     ionViewDidLoad() {
-        console.log('ionViewDidLoad OrderStatusPage');
+        /*console.log('ionViewDidLoad OrderStatusPage');
         let loader =this.loadingCtrl.create({
             content:'please wait'
         })
@@ -35,7 +35,7 @@ export class OrderStatusPage {
                 loader.dismiss();
             },error=>{
                 loader.dismiss();
-            })
+            })*/
     }
 
 }

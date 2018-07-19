@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams, ToastController, LoadingController, IonicPage, Searchbar} from 'ionic-angular';
+import {NavController, NavParams, ToastController, LoadingController, IonicPage, Events} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {ProductListService} from './product-list.service';
 import {Storage} from '@ionic/storage';
@@ -21,14 +21,7 @@ export class ProductListPage {
     maxItem: number = 0;
     allProductsId: any[] = [];
     noOfItemToLoad: number = 0;
-    /**Searchbar**/
-    /*searchInput: string;
-    searchResults: any[];
-    searching: boolean;
-    searchPlaceholder: string;
-    lastSearch: any[] = [];*/
     header_data:any;
-    //@ViewChild(Searchbar) searchbar: Searchbar;
 
 
     constructor(public navCtrl: NavController,
@@ -37,17 +30,10 @@ export class ProductListPage {
                 public productListService: ProductListService,
                 public navParams: NavParams,
                 public toastCtrl: ToastController,
-                public storage: Storage) {
+                public storage: Storage,
+                private events:Events) {
 
         this.menuId = navParams.get('MenuId');
-        /*this.storage.get('cart').then((data)=>{
-            this.cartItems = data;
-            if(this.cartItems){
-                for(var items of this.cartItems){
-                    this.noOfItems += items.quantity;
-                }
-            }
-        })*/
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Product list'};
 
     }
@@ -81,42 +67,22 @@ export class ProductListPage {
                 }
             })
         loader.dismiss();
-
-       /* this.searching = false;
-        this.searchPlaceholder = "Que recherchez-vous?";*/
-
     }
 
-    initializeItems() {
-        this.items = this.menuItems;
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
-
-
-    /*getItems(ev: any) {
-        this.initializeItems();
-        let val = ev.target.value;
-        if (val && val.trim() != '') {
-            this.items = this.items.filter((data) => {
-                console.log(data);
-               // return (data.title.toLowerCase().indexOf(val.toLowerCase()) > -1);
-            })
-        }
-    }*/
 
     navigateBack(){
         this.navCtrl.pop();
     }
 
     navigate(productId, item) {
+        console.log(productId, item);
         this.navCtrl.push("ProductDetailsPage", {
             productId: productId,
             product: item
         });
-    }
-
-
-    navcart() {
-        this.navCtrl.push("CartPage");
     }
 
     infinite(event){
@@ -138,103 +104,9 @@ export class ProductListPage {
                 }
             })
         }
-        /*var oldlength = this.items.length;
-        console.log(oldlength);
-        this.items.concat(this.items);
-        for(var i=0; i<oldlength;i++){
-            this.items.push(this.items[i]);
-        }
-        console.log(this.items.length);
-
-        if(this.items.length>100)
-            event.enable(false);
-
-        if(this.items.length == oldlength*2){
-            event.complete();
-        }*/
     }
 
     priceIsReduced(product){
         return product.prices.specific_price < product.prices.normal_price ? true : false; 
     }
-
-    /**Searchbar**/
-    /*displayLastSearch: boolean = false;
-    noResultFound: boolean = false;
-    onSearch($event){
-        this.searchPlaceholder = "Que recherchez-vous?";
-        this.noResultFound = false;
-
-        if(this.searchInput.length > 2){
-            this.searching = true;
-            this.service.search('query='+this.searchInput+'&language=1')
-            .subscribe((response) => {     
-                this.searching = false;
-                if(response.products){                    
-                    this.searchResults = response.products;
-                }else{
-                    //this.searchInput = "";
-                    this.searchResults = [];
-                    this.noResultFound = true;
-                    this.searchPlaceholder = "Aucun résultat";
-                    this.displayLastSearch = false;
-                }
-            })
-        }else{
-            this.searchResults = [];
-        }
-    }
-
-    offSearch($event){
-        this.displayLastSearch = false;
-        this.noResultFound = false;
-    }
-    onFocus($event){
-        console.log("onFocus appelé");
-        this.displayLastSearch = true;
-
-        this.storage.get('search').then(data => {
-            this.lastSearch = data;
-            console.log(this.lastSearch);
-        })
-    }
-
-    completeUserInput(keyword){
-        this.searchInput = keyword;
-        this.displayLastSearch = false;
-        this.onSearch(null);
-    }
-
-    saveSearchInput(keyword){
-        this.storage.get('search').then(data => {
-            this.lastSearch = data;
-        })
-        if(this.lastSearch){
-            var keywordAlreadyPresent = this.lastSearch.find(function(elem){
-                return elem == keyword;
-            })
-
-            if(!keywordAlreadyPresent)
-                this.lastSearch.splice(0,0,keyword);
-        }else{
-            this.lastSearch = [];
-            this.lastSearch.push(keyword);
-        }
-        this.storage.set('search',this.lastSearch);
-    }
-
-    goToProductPage(productId, productName = null) {
-        console.log(productId);
-        this.displayLastSearch = false;
-        this.saveSearchInput(productName);           
-        this.navCtrl.push("ProductDetailsPage", {
-            productId: productId
-        });
-    }
-    
-    displaySearchBar: boolean = false;
-    showSearchBar(){
-        this.displaySearchBar = !this.displaySearchBar;
-        this.displayLastSearch = false;
-    }*/
 }

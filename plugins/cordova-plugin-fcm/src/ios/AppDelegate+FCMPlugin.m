@@ -131,7 +131,8 @@ NSString *const kGCMMessageIDKey = @"gcm.message_id";
     [FCMPlugin.fcmPlugin notifyOfMessage:jsonData];
     
     // Change this to your preferred presentation option
-    completionHandler(UNNotificationPresentationOptionNone);
+    //completionHandler(UNNotificationPresentationOptionNone);
+    completionHandler(UNNotificationPresentationOptionAlert); //Devrait afficher la notif quand l'appli est en exécution
 }
 
 // Handle notification messages after display notification is tapped by the user.

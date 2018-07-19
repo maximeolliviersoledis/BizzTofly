@@ -1,47 +1,47 @@
 import {Injectable} from '@angular/core';
-import {Http, Response} from "@angular/http";
-import {Observable} from "rxjs/Observable";
-import {map} from 'rxjs/Operator/map';
 import {ConstService} from "../providers/const-service";
+import {HttpClient, HttpResponse, HttpHeaders, HttpRequest} from '@angular/common/http';
 
 @Injectable()
 export class Service {
-    constructor(private http: Http, public constService: ConstService) {
+    constructor(public constService: ConstService, private httpClient: HttpClient) {
     }
-    getData() {
-       return this.http.get('assets/json/restaurantAppJson.json')
-          .map((response: Response) => response.json());
-    }
-    search(searchQuery){
+
+    search(searchQuery) : any{
         var urlDir = this.constService.baseDir + this.constService.search + this.constService.keyDir + "&" + searchQuery + this.constService.formatDir;
-        return this.http.get(urlDir)
-        .map((data: Response) => data.json() || {})
+        return this.httpClient.get(urlDir);
     }
 
-    getNotification(uuId, Token){
-        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.fcm + Token;
-        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    getNotification(uuId, Token, osType) : any{
+        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.fcm + Token + this.constService.osType + osType;
+        return this.httpClient.get(urlDir);
     }
 
-    enableNotification(uuId, enable){
+    enableNotification(uuId, enable) : any{
         var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.enable  + enable;
-        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+        return this.httpClient.get(urlDir);
     }
 
-    updateCustomerNotificationUuid(uuId, customerId){
-        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.idCustomer + customerId;
-      //  return this.http.get(urlDir).map((data:Response) => data.json() || {})
-      return this.http.get(urlDir);
+    updateCustomerNotificationUuid(uuId, customerId) : any{
+        var urlDir = this.constService.notificationDir + this.constService.keyDir + this.constService.formatDir + this.constService.uuid + uuId + this.constService.idCustomer + customerId
+      return this.httpClient.get(urlDir);
     }
 
-    getAppliSettings(){
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.appliSettingsDir + "/0" + this.constService.keyDir + this.constService.formatDir;
-        return this.http.get(urlDir).map((data:Response) => data.json() || {})
+    getAppliSettings() : any{
+        var urlDir = this.constService.settingsModuleDir;
+       return this.httpClient.get(urlDir);
     }
 
+    getImageData(url) : any{
+         return this.httpClient.get(url);
+    }
+
+    getWebServiceToken(customerId) : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.getAccessToken + "/" + customerId + this.constService.keyDir + this.constService.formatDir;
+        return this.httpClient.get(urlDir);
+    }
+
+    getRequest(request: HttpRequest<any>){
+        return this.httpClient.request(request);
+    }
 }
-
-
-
-
-

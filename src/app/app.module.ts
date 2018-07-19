@@ -13,8 +13,9 @@ import {UserService } from '../providers/user-service';
 import {SocketService } from '../providers/socket-service';
 import {GoogleMaps} from '@ionic-native/google-maps';
 import {CgvPageModule} from '../pages/cgv/cgv.module';
-
-
+import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
+import {ResponseInterceptor} from '../providers/interceptor-service';
+import {JWT} from '../providers/jwt-service';
 export function createTranslateLoader(http: Http) {
     return new TranslateStaticLoader(http, './assets/i18n', '.json');
 }
@@ -24,22 +25,25 @@ export function createTranslateLoader(http: Http) {
         MyApp
     ],
     imports: [
-        IonicModule.forRoot(MyApp),
+        IonicModule.forRoot(MyApp/* ,{
+            scrollPadding: false,
+            scrollAssist: true,
+            autoFocusAssist: false       
+        }*/),
         IonicStorageModule.forRoot({
             name: 'bizztoflydb'
         }),
         BrowserModule,
-        HttpModule,
+        HttpClientModule,
+       // HttpModule,
         TranslateModule.forRoot({
             provide: TranslateLoader,
             useFactory: createTranslateLoader,
             deps: [Http]
         }),
         CgvPageModule
-
-
     ],
-    exports: [BrowserModule, HttpModule, TranslateModule],
+    exports: [BrowserModule, TranslateModule],
     bootstrap: [IonicApp],
     entryComponents: [
         MyApp
@@ -52,7 +56,9 @@ export function createTranslateLoader(http: Http) {
         ConstService,
         SocketService,
         UserService,
-        GoogleMaps
+        GoogleMaps,
+        JWT,
+        {provide: HTTP_INTERCEPTORS, useClass: ResponseInterceptor, multi:true}
     ]
 })
 export class AppModule {

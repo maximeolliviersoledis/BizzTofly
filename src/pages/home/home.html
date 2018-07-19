@@ -1,44 +1,5 @@
 <ion-header>
-    <ion-navbar hideBackButton="true">
-        <button ion-button menuToggle>
-            <ion-icon name="menu"></ion-icon>
-        </button>
-        <ion-title>{{"BizzToFly" | translate}}</ion-title>
-        <ion-buttons end>
-            <button ion-button icon-only color="royal" (click)="navcart()" class="header-btn-cart">
-                <ion-icon name="cart"></ion-icon>
-                <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
-            </button>
-        </ion-buttons>
-        
-    </ion-navbar>
-    <ion-searchbar
-        [(ngModel)]="searchInput"
-        [showCancelButton]="true"
-        (ionInput)="onSearch($event)"
-        (ionCancel)="offSearch($event)"
-        (ionFocus)="onFocus($event)"
-        animated="true"
-        autocomplete="on"
-        placeholder="{{searchPlaceholder}}">
-    </ion-searchbar>
-    <div *ngIf="searching" class="spinner-container">
-        <ion-spinner></ion-spinner>
-    </div>
-    
-    <ion-list *ngIf="displayLastSearch" class="search-results">
-        <ion-item *ngFor="let search of lastSearch" (click)="completeUserInput(search)">
-            {{search}}
-        </ion-item>
-    </ion-list>
-    <ion-list *ngIf="searchResults" class="search-results">
-        <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id, null, searchResult.name)">
-            {{searchResult.name}}
-        </ion-item>
-    </ion-list>
-    <ion-item *ngIf="noResultFound" class="search-results">
-        {{'No result found' | translate}}
-    </ion-item>
+    <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
 <ion-content>
@@ -46,12 +7,12 @@
         <ion-row>
          <ion-slides *ngIf="slideProducts && slideProducts.length" speed="300" loop="true" autoplay="3000" pager="true" (ionSlideTap)="goToProductPage(currentProduct.id_product, currentProduct)" (ionSlideNextStart)="onChange(true)" (ionSlidePrevStart)="onChange(false)">
                 <ion-slide *ngFor="let product of slideProducts" activeSlide="true">
-                        <div class="overlay">
-                            <img src={{product.image}} class="slider-img">
-                        </div>
                         <div class="card-title">{{product.name}}</div>
                         <div class="card-description" [innerHTML]="product.description_short"></div>
                         <div class="card-price">{{product.prices.specific_price}} €</div>
+                        <div class="overlay">
+                            <img src={{product.image}} class="slider-img">
+                        </div>
                 </ion-slide>
             </ion-slides>
         </ion-row>

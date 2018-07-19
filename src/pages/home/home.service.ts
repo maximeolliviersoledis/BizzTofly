@@ -1,46 +1,37 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers} from "@angular/http";
-//import  "rxjs/Rx";
-import {Observable} from "rxjs/Observable";
-import {map} from 'rxjs/Operator/map'
 import {ConstService} from "../../providers/const-service";
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 
 @Injectable()
 
 export class HomeService {
-    constructor(public http: Http, public constService: ConstService) {
+    constructor(public http: HttpClient, public constService: ConstService) {
 
     }
 
-    getCategories() {
-        const headers = new Headers();
+    getCategories() : any{
         var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/0" + this.constService.keyDir + this.constService.formatDir;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response)=> data.json()|| {});
+        return this.http.get(urlDir);
     }
 
 
-    getImageUrlForCategory(categoryId){
+    getImageUrlForCategory(categoryId) : any{
         return this.constService.baseDir + this.constService.imageDir + this.constService.categoryDir + "/" + categoryId + this.constService.keyDir;
     }
 
-    getSlideCategorie(customerId){
-        const headers = new Headers();
-        //Récupérer l'id depuis presta
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/14" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
+    getCategory(categoryId, customerId) : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/" + categoryId + this.constService.keyDir + this.constService.formatDir
+        + this.constService.filterUser + customerId;
+        return this.http.get(urlDir);
     }
 
-    getAccueilProduct(customerId){
-        const headers = new Headers();
-        //Récupérer l'id depuis presta        
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.categoriesListing + "/15" + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
-        return this.http.get(urlDir, {
-            headers: headers
-        }).map((data: Response) => data.json() || {})
+    testJWT(jwt) : any{
+        const headers = new Headers({'Content-Type': 'application/x-www-form-urlencoded'});
+
+        var urlDir = "http://www.bizztofly.com/api-soledis/test/1?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON";
+        return this.http.post(urlDir, jwt, {
+            headers: new HttpHeaders({'Content-Type': 'application/x-www-form-urlencoded'})
+        });
     }
 
 }

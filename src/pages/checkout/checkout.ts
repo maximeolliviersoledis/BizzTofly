@@ -8,7 +8,8 @@ import {UserService } from '../../providers/user-service';
 import {Storage} from '@ionic/storage';
 
 
-const payPalEnvironmentSandbox = 'AcgkbqWGamMa09V5xrhVC8bNP0ec9c37DEcT0rXuh7hqaZ6EyHdGyY4FCwQC-fII-s5p8FL0RL8rWPRB';
+//const payPalEnvironmentSandbox = 'AcgkbqWGamMa09V5xrhVC8bNP0ec9c37DEcT0rXuh7hqaZ6EyHdGyY4FCwQC-fII-s5p8FL0RL8rWPRB';
+const payPalEnvironmentSandbox = 'ATPQQMVbCNqTWLm6Lyp2OWoKbcFx7xFrv9OkIjaSqCjAyU6N4YEXiiYNgWl_VJu5WINZ44Ab-obw7d7B';
 const publishableKey = 'pk_test_mhy46cSOzzKYuB2MuTWuUb34';
 const stripe_secret_key = 'sk_test_GsisHcPqciYyG8arVfVe2amE';
 
@@ -152,7 +153,7 @@ export class CheckoutPage {
                     //Possibilité d'ajouter plus d'info concernant le client, utile??
                 }
 
-                this.stripe.createCardToken(card)
+               /* this.stripe.createCardToken(card)
                 .then((data) => {
                     this.showAlert(JSON.stringify(data));
                     this.checkoutService.chargeStripe(JSON.parse(data).id, "EUR", this.navParams.get('totalPrice'), stripe_secret_key)
@@ -160,13 +161,13 @@ export class CheckoutPage {
                             this.showAlert(JSON.stringify(result));
                            /* let res: any = result;
                             this.paymentDetails.transactionId = res.balance_transaction;
-                            this.cardInfo = '';*/
+                            this.cardInfo = '';
                         }, error => {
                             this.showAlert(JSON.stringify(error));
                         });
                 }).catch(
                     error => this.showAlert(JSON.stringify(error))
-                );
+                );*/
             }else{ //En théorie ce cas la ne devrait pas arriver
                 console.log("Erreur méthode de paiement inconnu");
                 this.createToaster("Unknown payment method",3000);

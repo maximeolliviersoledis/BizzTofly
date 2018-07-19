@@ -1,5 +1,5 @@
 <ion-header>
-    <ion-navbar>
+    <!--<ion-navbar>
         <button ion-button menuToggle start>
             <ion-icon name="menu"></ion-icon>
         </button>
@@ -10,29 +10,26 @@
                 <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
             </button>
         </ion-buttons>
-    </ion-navbar>
+    </ion-navbar>-->
+    <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
 
 <ion-content >
-    <ion-row class="productImage">
-            <!---<img class="main-image" src={{productDetails.image}} alt="">-->
-            <ion-col col12>
-            <ion-slides #productImage class="slides-main-image" *ngIf="productDetails.images && productDetails.images.length" id="productImage"  speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10">
-                <ion-slide *ngFor="let img of productDetails.images" activeSlide="true">
-                    <div class="overlay">
+    <ion-row>
+        <ion-slides #productImage class="image-slide" *ngIf="productDetails.images && productDetails.images.length" id="productImage"  speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10">
+            <ion-slide *ngFor="let img of productDetails.images" activeSlide="true">
+                <div class="overlay">
                         <img src={{img}} class="main-image">
-                    </div>
-                </ion-slide>
-            </ion-slides>
-             <!--<span clear text-center (click)="toggleFavourite()"> -->
+                </div>
+            </ion-slide>
+        </ion-slides>
             <ion-icon class="fav" name="heart" *ngIf="like"
                       (click)="removeFromFavourite(productId)"></ion-icon>
             <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
                       (click)="addToFavourite(productId)"></ion-icon>
-                  </ion-col>
-     <!--</span>--> 
     </ion-row>
+
     <ion-row>
         <ion-col *ngFor="let img of productDetails.images">
             <img src={{img}} class="small-image" (click)="changerImagePrincipale(img)">
@@ -45,7 +42,7 @@
             <!-- <span>{{'Price' | translate}} : </span> -->
             <span class="price">{{price | number:'.2-2'}} €</span>
         </div>
-        <div class="info-container">{{'Selected quantity' | translate}}: {{count}} | {{'Total price' | translate}}: {{totalPrice | number:'.2-2'}}</div>
+        <div class="info-container">{{'Selected quantity' | translate}}: {{count}} | {{'Total price' | translate}}: {{totalPrice | number:'.2-2'}} €</div>
         <ion-item>
             <ion-label>{{'Combination' | translate}} :</ion-label>            
             <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="{{'Select a combination' | translate}}">
@@ -130,7 +127,7 @@
     <ion-row>
          <ion-slides #similarProduct class="slides-similar-product" *ngIf="similarProducts && similarProducts.length > 0" speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10" (ionSlideTap)="goToProductPage()" (ionSlideNextStart)="onChange()" (ionSlidePrevStart)="onChange()">
                 <ion-slide *ngFor="let simp of similarProducts" activeSlide="true">
-                        <div class="overlay">
+                      <!-- <div class="overlay">
                             <img src={{simp.image}} class="slider-img">
                         </div>
                         <div class="card-title">{{simp.name}}</div>
@@ -146,7 +143,51 @@
                           </div>
                           <div *ngIf="simp.nb_comment == 1 " class="card-info-comment">{{simp.nb_comment}} {{'people comment out this product' | translate}}</div>
                           <div *ngIf="simp.nb_comment > 1 " class="card-info-comment">{{simp.nb_comment}} {{'peoples comment out this product' | translate}}</div>
-                        <div class="card-price">{{simp.price}} €</div>
+                        <div class="card-price">{{simp.price}} €</div>-->
+                       <!-- <ion-row>
+                            <ion-col col-12>
+                                <div class="overlay-test">
+                                    <img src={{simp.image}} class="slider-img">
+                                </div>
+                            </ion-col>
+                        </ion-row >-->
+                        <div class="overlay-test">
+                            <img src={{simp.image}} class="slider-img">
+                        </div>
+                        <ion-row align-items-center class="vertical-align">
+                            <ion-col col12>
+                                <ion-row>
+                                    <ion-col col-12>
+                                        <div class="test">{{simp.name}}</div>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col col-12>                         
+                                        <div *ngIf="simp.nb_comment > 0">
+                                            <rating name="rating" id="rating" class="test-rating"
+                                            [(ngModel)]="simp.avg_grade" readOnly="true"
+                                            max="5"
+                                            emptyStarIconName="star-outline"
+                                            halfStarIconName="star-half"
+                                            starIconName="star"
+                                            nullable="false"
+                                            ></rating>
+                                        </div>
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col col-12>
+                                        <div *ngIf="simp.nb_comment == 1 ">{{simp.nb_comment}} {{'people comment out this product' | translate}}</div>
+                                        <div *ngIf="simp.nb_comment > 1 ">{{simp.nb_comment}} {{'peoples comment out this product' | translate}}</div>                       
+                                    </ion-col>
+                                </ion-row>
+                                <ion-row>
+                                    <ion-col col-12>
+                                        <div class="test">{{simp.price}} €</div>
+                                    </ion-col>
+                                </ion-row>
+                            </ion-col>
+                        </ion-row>
                 </ion-slide>
         </ion-slides>
     </ion-row>
@@ -160,7 +201,7 @@
                 <span class="item-count" (click)="remove()">
                   -
                 </span>
-                    <span class="item-count show-count">
+                   <span class="item-count show-count">
                   {{count}}
                 </span>
                     <span class="item-count" (click)="add()">

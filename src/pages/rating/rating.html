@@ -47,10 +47,10 @@
             ></rating>
           </div>
         </ion-col>
-        <ion-col col-4>
+        <ion-col col-4 *ngIf="comment && (!comment.no_vote || !comment.no_vote == true)">
           <button *ngIf="user && user.token && !comment.already_voted" class="comment-button" ion-button (click)="usefullComment(comment)">{{'Usefull' | translate}}</button>
         </ion-col>
-        <ion-col col-4>
+        <ion-col col-4 *ngIf="comment && (!comment.no_vote || !comment.no_vote == true)">
           <button *ngIf="user && user.token && !comment.already_voted" class="comment-button" ion-button (click)="uselessComment(comment)">{{'Useless' | translate}}</button>
         </ion-col>
       </ion-row>
@@ -58,7 +58,7 @@
         <p class="comment-advice">{{comment.total_useful}} personne(s) sur {{comment.total_advice}} trouve ce commentaire utile!</p>
       </ion-row>
       <ion-row>
-        <ion-col col-12>
+        <ion-col col-12 *ngIf="comment && (!comment.no_report || !comment.no_report == true)">
           <a *ngIf="user && user.token && !comment.already_reported" (click)="reportComment(comment)">{{'Report this comment' | translate}}</a>
         </ion-col>
       </ion-row>
@@ -95,7 +95,7 @@
 <div *ngIf="comments.length ==0">
   <p>{{'Be the first to leave out a comment' | translate}}</p>
 </div>
-<button class="feedback" ion-button (click)="show()">{{'Give your feedback' | translate}}</button>
+<button *ngIf="user && user.token" class="feedback" ion-button (click)="show()">{{'Give your feedback' | translate}}</button>
   <form *ngIf="displayForm" (ngSubmit)="onSubmit(f)" #f="ngForm">
     <div class="product-rating">
       <rating name="rating" id="rating" [(ngModel)]="review.rating"
@@ -108,15 +108,23 @@
       </rating>
     </div>
 
-    <ion-row>
+    <!--<ion-row>
       <ion-col col-12>
-        <!--<ion-label>{{"Review" | translate}}</ion-label>-->
         <ion-label for="title">{{'Title' | translate}}</ion-label>
         <ion-input class="title-input" type="text" name="title" id="title" [(ngModel)]="review.title" required></ion-input>
         <ion-label for="message">{{'Comment' | translate}}</ion-label>
         <ion-textarea rows="3" name="message" id="message" [(ngModel)]="review.comment" required></ion-textarea>
       </ion-col>
-    </ion-row>
+    </ion-row>-->
+    <!--A tester pour voir si cela corrige le bug du clavier-->
+    <ion-item>
+        <ion-label for="title" stacked>{{'Title' | translate}}</ion-label>
+        <ion-input class="title-input" type="text" name="title" id="title" [(ngModel)]="review.title" required></ion-input>
+    </ion-item>
+    <ion-item>
+        <ion-label for="message" stacked>{{'Comment' | translate}}</ion-label>
+        <ion-textarea rows="3" name="message" id="message" [(ngModel)]="review.comment" required></ion-textarea>
+    </ion-item>
     <ion-row>
       <ion-col col-12>
         <button class="submit-btn" ion-button block type='submit' [disabled]="!f.valid"> {{"Submit" | translate}}</button>

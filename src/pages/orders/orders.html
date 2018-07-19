@@ -1,18 +1,3 @@
-<!--<ion-header>
-  <ion-navbar color="primary">
-      <button ion-button menuToggle start>
-        <ion-icon name="menu"></ion-icon>
-      </button>
-      <ion-title>{{"Orders" | translate}}</ion-title>
-      <ion-buttons end>
-        <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
-          <ion-icon name="cart"></ion-icon>
-          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
-        </button>
-      </ion-buttons>
-  </ion-navbar>
-</ion-header>-->
-
 <ion-header>
   <custom-header [header]="header_data"></custom-header>
 </ion-header>
@@ -30,14 +15,14 @@
       <ion-row *ngFor="let order of orders">
         <ion-col col-9>
           <p class="item-name"><strong>{{"Order Id:" | translate}} {{order.order.id}}</strong></p>
-          <p class="item-price">{{"Grandtotal:" | translate}}  ${{order.order.total_paid_real | number:'.2-2'}}</p>
-          <p class="date">{{"Date:" | translate}} {{order.order.date_add | date}}</p>
+          <p class="item-price">{{"Grandtotal:" | translate}}  {{order.order.total_paid_tax_incl | number:'.2-2'}} €</p>
+          <!--Sur IOS le format de la date est invalide-->
+          <!--<p class="date">{{"Date:" | translate}} {{order.order.date_add | date}}</p>-->
+          <p *ngIf="platform.is('ios')" class="date">{{'Date:' | translate}} {{order.order.date_add}}</p>
+          <p *ngIf="!platform.is('ios')" class="date">{{'Date' | translate}} {{order.order.date_add | date}}</p>
         </ion-col>
         <ion-col col-3>
-          <!-- <button class="btn-cart"ion-button color="danger">
-            <ion-icon ios="ios-cart" md="md-cart"></ion-icon>
-          </button> --><br>
-          <button class="btn-view"ion-button color="primary" (click)="orderDetails(order)">
+          <button class="btn-view" ion-button color="primary" (click)="orderDetails(order)">
             {{"View" | translate}}
           </button>
         </ion-col>
@@ -45,4 +30,11 @@
     </ion-card>
   </ion-list>
 </div>
+
+  <ion-infinite-scroll (ionInfinite)="infinite($event)" threshold="5%" *ngIf="maxItem > orders.length">
+      <ion-infinite-scroll-content
+      loadingSpinner="bubbles"
+      loadingText="Loading more data...">
+      </ion-infinite-scroll-content>
+  </ion-infinite-scroll>
 </ion-content>

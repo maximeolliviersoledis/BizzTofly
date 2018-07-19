@@ -1,70 +1,24 @@
 import {Injectable} from '@angular/core';
-import {Http, Response, Headers} from "@angular/http";
+//import {Http, Response, Headers} from "@angular/http";
 import {Observable} from "rxjs/Observable";
 import {map} from 'rxjs/Operator/map'
 import {ConstService} from "../../providers/const-service";
-
+import {HttpClient} from '@angular/common/http';
 
 @Injectable()
 export class AddressService {
 
-    constructor(private http: Http,
+    constructor(private http: HttpClient,
                 public constService:ConstService) {
     }
 
     addAddress(data){
         var urlDir = this.constService.baseDir + this.constService.adresses + this.constService.keyDir + this.constService.formatDir;
-        return this.http.post(urlDir, data).map((data: Response) => data.json() || {})
+        return this.http.post(urlDir, data);
     }
 
     putAddress(addressId, body){
         var urlDir = this.constService.baseDir + this.constService.adresses + "/" + addressId + this.constService.keyDir + this.constService.formatDir;
-        return this.http.put(urlDir, body).map((data: Response) => data.json() || {})
+        return this.http.put(urlDir, body);
     }
-
-    /*addAddress(body) {
-        console.log("body-"+body);
-         const headers = new Headers();
-         headers.append('Content-Type', 'application/json');
-         let authtoken = localStorage.getItem('token');
-         headers.append('Authorization', authtoken);
-        return this.http.post(this.constService.base_url+'api/addresses/',body, {
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-          // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
-
-    /*updateAddress(addressId,address){
-         console.log("addressId-"+addressId);
-         const body =address;
-         console.log("body-"+JSON.stringify(body));
-         const headers = new Headers();
-         headers.append('Content-Type', 'application/json');
-         let authtoken = localStorage.getItem('token');
-         headers.append('Authorization', authtoken);
-        return this.http.put(this.constService.base_url+'api/addresses/'+addressId+'/',body, {
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-          // .catch((error:any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
-
-    /*getAddressById(addressId){
-       console.log("addressId-"+addressId);
-         const headers = new Headers();
-         let authtoken = localStorage.getItem('token');
-         headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url+'api/addresses/'+ addressId, {
-            headers: headers
-        })
-            .map((data: Response)=> data.json()|| {})
-           //.catch((error:any) => Observable.throw(error.json().error || 'Server error')); 
-    }*/
- 
-
- 
-
-   
-    
 }

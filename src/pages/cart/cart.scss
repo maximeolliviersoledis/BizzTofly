@@ -64,9 +64,11 @@ page-cart {
         float: right;
       }
     }
-    .cart-total {
+  }
+      .cart-total {
       font-size: 1.2em;
       padding: 7px 0px;
+      width: 97%;
       color: #666;
       span {
         float: right;
@@ -74,7 +76,6 @@ page-cart {
         color: $primary
       }
     }
-  }
     .delete-button{
       background-color: $danger !important;
       height: 25px;
@@ -87,8 +88,6 @@ page-cart {
     background-color: $primary !important;
     height: 46px;
     font-size: 1.8rem;
-    //border-radius: 0;
-   // margin-top: 1em;
   }
   .empty-all-btn {
     background-color: #ff0000;
@@ -153,4 +152,12 @@ page-cart {
   .coupon-applied{
     color:$primary;
   }
+  .reduction-btn{
+    background-color: $primary !important;
+  }
+  .reduction-lbl{
+    white-space: pre-wrap;
+    color: #424242;
+  }
+
 }

@@ -1,9 +1,11 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams, AlertController, LoadingController, ToastController, IonicPage, Slides} from 'ionic-angular';
+import {NavController, NavParams, AlertController, LoadingController, ToastController, IonicPage, Slides, Events} from 'ionic-angular';
 import {Service} from '../../app/service';
 import {Storage} from '@ionic/storage';
 import {ProductDetailsService} from './product-details.service';
 import {Vibration} from '@ionic-native/vibration';
+import {ConstService} from '../../providers/const-service';
+import {TranslateService} from 'ng2-translate/ng2-translate';
 
 
 @IonicPage()
@@ -37,6 +39,7 @@ export class ProductDetailsPage {
     totalPrice: number = 0;
     similarProducts: any[] = [];
     displayNumberOfProductsInStock: boolean = false;
+    header_data: any;
 
     constructor(public navCtrl: NavController,
         public loadingCtrl: LoadingController,
@@ -46,7 +49,10 @@ export class ProductDetailsPage {
         private storage: Storage,
         public service: Service,
         public productDetailsService: ProductDetailsService,
-        private vibration:Vibration
+        private vibration:Vibration,
+        private event:Events,
+        private constService:ConstService,
+        private translateService:TranslateService
         ) {
 
         this.productId = navParams.get('productId');
@@ -57,70 +63,13 @@ export class ProductDetailsPage {
                     this.noOfItems += items.quantity;
             }
         })
+
+
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Produit'};
     }
 
     ngOnInit() {
-        let loader = this.loadingCtrl.create({
-            content: 'please wait'
-        })
-        loader.present();
-
-        /*this.storage.get('user').then((data)=>{
-            this.user = data;
-            var product = this.navParams.get('product');
-            if(product){
-                this.productDetails = product;
-                this.id_declinaisons = this.productDetails.cache_default_attribute;
-                this.getCorrespondingCombination(); //On force le programme à aller chercher les infos de la déclinaison par défaut
-                let details:any=this.productDetails;
-                this.initPrice = this.productDetails.price;
-                let dec = Object.keys(this.productDetails.declinaisons);
-                let goodDec = [];
-                for(var d of dec){
-                    goodDec.push(this.productDetails.declinaisons[d]);
-                }
-                this.productId = details.id_product;
-                this.productDetails.declinaisons = goodDec;
-                this.product.productId = details.id;
-                this.product.name = details.name;
-                this.product.price = details.prices.specific_price;
-                this.product.imageUrl = details.image;
-                console.log(this.productId);
-                this.productDetailsService.getFamilyProducts(this.productId).subscribe(data => {
-                    this.similarProducts = data;
-                    console.log(this.similarProducts);
-                })
-                console.log(this.productDetails);
-                loader.dismiss();
-            }else{
-                if(this.productId){
-                    var customerId = this.user && this.user.id_customer ? this.user.id_customer : null;
-                    this.productDetailsService.getProductDetails(this.productId, customerId).subscribe(data => {
-                        console.log(data);
-                        this.productDetails = data ;
-                        this.id_declinaisons = this.productDetails.cache_default_attribute;
-                        let details:any=this.productDetails;
-                        this.initPrice = this.productDetails.price;
-                        let dec = Object.keys(this.productDetails.declinaisons);
-                        let goodDec = [];
-                        for(var d of dec){
-                            goodDec.push(this.productDetails.declinaisons[d]);
-                        }
-                        this.productDetails.declinaisons = goodDec;
-                        this.product.productId = details.id;
-                        this.product.name = details.name;
-                        this.product.price = details.price;
-                        this.product.imageUrl = details.image;
-                        this.productDetailsService.getFamilyProducts(this.productId).subscribe(data => {
-                            this.similarProducts = data;
-                            console.log(this.similarProducts);
-                        })
-                    })
-                }
-                loader.dismiss();
-            }
-        })*/
-
+        this.constService.presentLoader();
         this.storage.get('user').then(userData => {
             this.user = userData;
             var product = this.navParams.get('product');
@@ -128,12 +77,14 @@ export class ProductDetailsPage {
             if(product){
                 console.log("Product already loaded");
                 this.productDetails = product;
-                this.productId = this.productDetails.id_product;
+                console.log(product);
+                this.productId = this.productDetails.id_product != null ? this.productDetails.id_product : this.productDetails.id;
                 this.initProduct();
             }else if(this.productId){ //Si le produit n'a pas été chargé par une page précédente, alors récupère les infos
                 console.log("Product isn't loaded yet");
                 var customerId = this.user && this.user.id_customer ? this.user.id_customer : null;
                 this.productDetailsService.getProductDetails(this.productId, customerId).subscribe(data => {
+                    console.log(data);
                     this.productDetails = data;
                     this.initProduct();
                 })
@@ -141,13 +92,17 @@ export class ProductDetailsPage {
                 //On ne devrait jamais arrivé dans ce cas là normalement (Voir comment se comporte l'appli lorsqu'elle sort de veille)
                 console.log("Unable to load product");
             }
-            loader.dismiss();
         })
 
         this.displayNumberOfProductsInStock = JSON.parse(localStorage.getItem('appli_settings')).display_nb_product_in_stock;
         console.log(this.displayNumberOfProductsInStock);
 
         this.checkFavourite();
+        this.constService.dismissLoader();
+   }
+
+   ionViewWillLeave(){
+       this.event.publish("hideSearchBar");
    }
 
    initProduct(){
@@ -214,7 +169,7 @@ export class ProductDetailsPage {
                    this.product.declinaison.push(this.declinaison);
                    this.itemInCart.splice(0,this.itemInCart.length);
                    this.itemInCart.push(this.product);
-                //localStorage.setItem('cartItem', JSON.stringify(this.itemInCart));
+
                 this.storage.set('cart',this.itemInCart);
                 var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();
 
@@ -227,6 +182,8 @@ export class ProductDetailsPage {
                         localStorage.setItem('id_cart',data.cart.id);
                     });
                 }
+                
+                this.event.publish("updateCartBadge", this.noOfItems);                
                 this.createToaster("Successfully added to cart!",2000);
                 this.vibration.vibrate(200);
             }else{
@@ -304,11 +261,8 @@ export class ProductDetailsPage {
                     this.product.declinaison.push(this.declinaison);
 
                     this.Cart.push(this.product);
-                    console.log(this.Cart);
                     this.storage.set('cart',this.Cart);
-                    console.log(this.user);
                     var panier = this.user && this.user.id_customer ? this.sendCart(this.user.id_customer) : this.sendCart();
-                    console.log(panier);
                     if(localStorage.getItem('id_cart')){
                         this.productDetailsService.putCart(localStorage.getItem('id_cart'), panier).subscribe(data => {
                             console.log(data);
@@ -318,6 +272,8 @@ export class ProductDetailsPage {
                             localStorage.setItem('id_cart',data.cart.id);
                         });
                     }
+                    console.log(this.noOfItems);
+                    this.event.publish("updateCartBadge", this.noOfItems);
                     this.createToaster("Successfully added to cart!",2000);
                     this.vibration.vibrate(200);
                 }else{
@@ -381,20 +337,6 @@ export class ProductDetailsPage {
                         modif.cart.associations.cart_rows.cart_row.push(product);
                     }
                 }
-
-                /*for(var items of this.cartItems){
-                    console.log(items);
-                    for(var declinaison of items.declinaison){
-                        console.log(declinaison);    
-                        var product: any = {};
-                        product.id_product = items.productId;
-                        product.id_product_attribute = declinaison.combination.id;
-                        product.id_address_delivery = null;
-                        product.quantity = declinaison.selectedQuantity;
-                        modif.cart.associations.cart_rows.cart_row.push(product);
-                    }
-                }*/
-                console.log(modif);
                 return modif;
 
         }else{
@@ -444,46 +386,9 @@ export class ProductDetailsPage {
                         panier.cart.associations.cart_rows.cart_row.push(product);
                     }
                 }
-
-               /* for(var items of this.cartItems){
-                    console.log(items);
-                    for(var declinaison of items.declinaison){
-                        console.log(declinaison);    
-                        var product: any = {};
-                        product.id_product = items.productId;
-                        product.id_product_attribute = declinaison.combination.id;
-                        product.id_address_delivery = null;
-                        product.quantity = declinaison.selectedQuantity;
-                        panier.cart.associations.cart_rows.cart_row.push(product);
-                    }
-                }*/
-                console.log(panier);
                 return panier;
         }
     }
-
-
-    /*checkOptions(option) {
-        if (this.product.extraOption.length !== 0) {
-            for (let i = 0; i <= this.product.extraOption.length - 1; i++) {
-                if (this.product.extraOption[i].name == option.name) {
-                    this.product.extraOption.splice(i, 1);
-                    break;
-                }
-                else {
-                    this.product.extraOption.push(option);
-                    break;
-                }
-            }
-        }
-        else {
-            this.product.extraOption.push(option);
-        }
-    }*/
-
-    /*sizeOptions(price) {
-        this.product.sizeOption = price;
-    }*/
 
     add() { 
         //Non prise en compte de la quantité des déclinaisons
@@ -504,7 +409,6 @@ export class ProductDetailsPage {
     }
 
     checkQuantityInCart(){
-        //let productInCart = JSON.parse(localStorage.getItem('cartItem'));
         let productInCart;
         this.storage.get('cart').then((val) =>{
             productInCart = val;
@@ -549,6 +453,7 @@ export class ProductDetailsPage {
                     console.log(data);
                 })
                 this.like = true;  
+                this.createToaster('Produit bien ajouté aux favoris', 1000, 'top');
             }else{
                 this.createToaster('Please login first!', 3000);
             }
@@ -561,123 +466,11 @@ export class ProductDetailsPage {
                     console.log(data);
                 })
                 this.like = false;  
+                this.createToaster('Produit supprimé des favoris', 1000, 'top');
             }else{
                 this.createToaster('Please login first!', 3000);
             }
     }
-    /*addToFavourite(productId) {
-        console.log("addFavourite appelé : "+this.productId);
-        this.storage.get('user').then((val) => {
-            var user = val;
-            if(user && user.token){
-                this.storage.get('favourite').then((val) => {
-                    var favouriteList = val;
-                    if(favouriteList){
-                    }else{
-                        favouriteList = [];
-                        favouriteList.push(productId);
-                    }
-                this.storage.set('favourite',favouriteList);
-                this.productDetailsService.addToFavourite(productId, 1, user.id_customer, 1).subscribe(data => {
-                    console.log(data);
-                })
-                this.like = true;  
-            })
-
-            }else{
-                this.createToaster('Please login first!', 3000);
-            }
-        })
-    }
-
-    removeFromFavourite(productId) {
-        this.storage.get('user').then((val) => {
-            var user = val;
-            if(user.token){
-                this.storage.get('favourite').then((val)=>{
-                    var favouriteList = val;
-                    if(favouriteList.length == 1)
-                        this.storage.remove('favourite');
-                    else{
-                        for(var i=0; i<favouriteList.length;i++){
-                            if(favouriteList[i] == productId){
-                                favouriteList.splice(i,1);
-                            }
-                        }
-                        this.storage.set('favourite',favouriteList);
-                    }
-                    this.productDetailsService.removeFromFavourite(productId, 1, user.id_customer).subscribe(data => {
-                        console.log(data);
-                    })
-                    this.like = false;
-                })
-            }
-        })
-    }*/
-
-    /*addToFavourite(productId) {
-        console.log("addFavourite appelé : "+this.productId);
-        var user: any = {};
-        this.storage.get('user').then((val) => {
-            console.log(val);
-            user = val;
-        })
-        console.log(user);
-        //if(JSON.parse(localStorage.getItem('user')).token){
-         if(user && user.token){
-            //var favouriteList: any[] = JSON.parse(localStorage.getItem('favourite'));
-            var favouriteList = null;
-            this.storage.get('favourite').then((val) => {
-                favouriteList = val;
-            })
-            if(favouriteList){
-                favouriteList.push(productId);
-            }else{
-                favouriteList = [];
-                favouriteList.push(productId);
-            }
-            //localStorage.setItem('favourite', JSON.stringify(favouriteList));
-            this.storage.set('favourite',favouriteList);
-            this.productDetailsService.addToFavourite(productId,1,1,"d5f1da826483ec93e23dabb4c6d10539").subscribe(data => {
-                console.log(data);
-            })
-            this.like = true;            
-        }else{
-            this.createToaster('Please login first!', 3000);
-        }
-    }*/
-
-   /* removeFromFavourite(productId) {
-        console.log("productId"+productId);
-        var user = null;
-        this.storage.get('user').then((val) => {
-            user = val;
-        })
-        //if (JSON.parse(localStorage.getItem('user')).token) {
-        if(user.token){
-            //var favouriteList: any [] = JSON.parse(localStorage.getItem('favourite'));
-            var favouriteList = null;
-            this.storage.get('favourite').then((val)=>{
-                favouriteList = val;
-            })
-            if(favouriteList.length == 1)
-                this.storage.remove('favourite');
-                //localStorage.removeItem('favourite');
-            else{
-                for(var i=0; i<favouriteList.length;i++){
-                    console.log(favouriteList[i]);
-                    if(favouriteList[i] == productId){
-                        console.log("if ok");
-                        favouriteList.splice(i,1);
-                    }
-                }
-                console.log(favouriteList);
-                //localStorage.setItem('favourite',JSON.stringify(favouriteList));
-                this.storage.set('favourite',favouriteList);
-            }
-            this.like = false;
-        }
-    }*/
 
     checkFavourite(){
         console.log("checkFavourite appele");
@@ -691,24 +484,15 @@ export class ProductDetailsPage {
                         })
                     }
                 })
-                /*this.storage.get('favourite').then((val)=>{
-                    var favouriteList = val;
-                    var idProduct = this.productId;
-                    console.log(this.productId);
-                    if(favouriteList){
-                        this.like = favouriteList.find(function(elem){
-                            return elem == idProduct;
-                        })
-                    }
-                })*/
             }
         })
     }
 
-    createToaster(message, duration) {
+    createToaster(message, duration, position = "bottom") {
         let toast = this.toastCtrl.create({
             message: message,
-            duration: duration
+            duration: duration,
+            position: position
         });
         toast.present();
     }
@@ -717,7 +501,6 @@ export class ProductDetailsPage {
     changerImagePrincipale(image){
         this.productImage.autoplayDisableOnInteraction = false;
 
-        //this.productDetails.image = image;
         var index = this.productDetails.images.findIndex(function(elem){
             return elem == image;
         })
@@ -727,29 +510,16 @@ export class ProductDetailsPage {
 
     getCorrespondingCombination(){
         console.log("getCorrespondingCombination()"+this.id_declinaisons);
-       /* this.productDetailsService.getDeclinaisons(this.id_declinaisons).subscribe(res => {
-            console.log("ok");
-        })*/
         this.productDetailsService.getDeclinaisons(this.id_declinaisons)
         .subscribe(res => {
             this.declinaison = res;
             console.log(this.declinaison);
             if(this.declinaison.combination.associations && this.declinaison.combination.associations.images)
                 this.productDetails.image = this.productDetailsService.getImageUrl(this.productId, this.declinaison.combination.associations.images[0].id);
-            //this.updatePrice(res.combination.unit_price_impact);
             this.updatePrice(this.id_declinaisons);
             this.updateQuantity(res.combination.quantity);
         })
     }
-
-    /*updatePrice(price){
-        if(price != 0){
-            var productPrice = this.productDetails.price;
-            this.productDetails.price = parseFloat(productPrice) + parseFloat(price);
-        }else{
-            this.productDetails.price = this.initPrice;
-        }
-    }*/
 
     updatePrice(id){
         for(var i=0; i < this.productDetails.declinaisons.length;i++){

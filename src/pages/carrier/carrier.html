@@ -1,9 +1,3 @@
-<!--<ion-header>
-  <ion-navbar>
-    <ion-title>{{'Carrier' | translate}}</ion-title>
-  </ion-navbar>
-</ion-header>-->
-
 <ion-header>
 	<custom-header [header]="header_data"></custom-header>
 	<custom-order-header [headerDATA]="order_header_data"></custom-order-header>
@@ -11,7 +5,7 @@
 
 
 <ion-content>
-	<ion-list radio-group>
+	<ion-list radio-group *ngIf="carriers">
 		<ion-item *ngFor="let carrier of carriers">
 			<ion-label>
 				<ion-row>
@@ -20,29 +14,22 @@
 					</ion-col>
 					<ion-col col-9>
 					<p><strong>{{objectToArray(carrier.carrier_list)[0].instance.name}}</strong></p>
-					<p>Délai de livraison : {{objectToArray(objectToArray(carrier.carrier_list)[0].instance.delay)[0]}}</p>
-					<p>Prix : {{carrier.total_price_with_tax}}</p>
-					<p *ngIf="carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide et au meilleur prix !</p>
-					<p *ngIf="carrier.is_best_price && !carrier.is_best_grade">Transporteur au meilleur prix !</p>
-					<p *ngIf="!carrier.is_best_price && carrier.is_best_grade">Transporteur le plus rapide !</p>
+					<p>{{'Delivery delay' | translate}} : {{objectToArray(objectToArray(carrier.carrier_list)[0].instance.delay)[0]}}</p>
+					<p>{{'Prix' |  translate}} : {{carrier.total_price_with_tax | number:'.2-2'}}€</p>
+					<p *ngIf="carrier.is_best_price && carrier.is_best_grade">{{'Best price and delivery delay' | translate}} !</p>
+					<p *ngIf="carrier.is_best_price && !carrier.is_best_grade">{{'Best price' | translate}} !</p>
+					<p *ngIf="!carrier.is_best_price && carrier.is_best_grade">{{'Best delivery delay' | translate}} !</p>
 				</ion-col>
 				</ion-row>
 			</ion-label>
-			<!--<ion-label>
-				<p><strong>{{carrier.instance.name}}</strong></p>
-				<p>Délai de livraison : {{objectToArray(carrier.instance.delay)[0]}}</p>
-				<!--<p>Délai de livraison: {{carrier.instance.delay[0].value}}</p>
-				<p>Prix : {{carrier.price_with_tax}}</p>
-
-			</ion-label>-->
 			<ion-radio (ionSelect)="selectCarrier(carrier)"></ion-radio>
 		</ion-item>
 	</ion-list>
 	<ion-item>
-		<ion-label>Accepter les cgv <ion-item class="cgv" (click)="showCGV($event)">(Lire les conditions générales de ventes)</ion-item></ion-label>
+		<ion-label>{{'Accept CGV' | translate}} <ion-item class="cgv" (click)="showCGV($event)">({{'Read the CGV' | translate}})</ion-item></ion-label>
 		<ion-checkbox [(ngModel)]="acceptCGV"></ion-checkbox>
 	</ion-item>
-	<button ion-button block class="continue-btn"  (click)="goToPayment()"> Continue &nbsp;
+	<button ion-button block class="continue-btn"  (click)="goToPayment()"> {{'Continue' | translate}} &nbsp;
       <ion-icon name="arrow-forward"></ion-icon>
     </button> 
 </ion-content>

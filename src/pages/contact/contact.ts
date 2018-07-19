@@ -93,9 +93,9 @@ export class ContactPage {
 
     onSubmit(){
         console.log(this.user.value);
-       this.contactService.postMessage(this.user.value.email, this.user.value.message, this.user.value.id_contact, this.order, this.user.value.id_product).subscribe(data => {
+       this.contactService.postMessage(this.user.value.email, this.user.value.message, this.user.value.id_contact, this.order != null ? this.order : '', this.user.value.id_product).subscribe(data => {
             console.log(data);
-            if(data && data == "true"){
+            if(data && (data == "true" || data == true)){
                 this.createToaster("Votre demande a bien été prise en compte",3000);                
             }else{
                 this.createToaster("Une erreur est survenue pendant le traitement de votre demande",3000);                

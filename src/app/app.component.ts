@@ -1,5 +1,5 @@
 import {Component, ViewChild} from '@angular/core';
-import {Nav, Platform,Events, NavController} from 'ionic-angular';
+import {Nav, Platform,Events, NavController, App, AlertController} from 'ionic-angular';
 import {StatusBar} from '@ionic-native/status-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {Service} from '../app/service';
@@ -13,6 +13,7 @@ import {FCM} from '@ionic-native/fcm';
 import {UniqueDeviceID} from '@ionic-native/unique-device-id';
 import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
 import {Network} from '@ionic-native/network';
+import {ConstService} from '../providers/const-service';
 
 @Component({
     templateUrl: 'app.html',
@@ -42,23 +43,56 @@ export class MyApp {
                 private fcm:FCM,
                 private uniqueDeviceId:UniqueDeviceID,
                 public nativeTransition:NativePageTransitions,
-                private network:Network) {
+                private network:Network,
+                private app:App,
+                private constService:ConstService,
+                private alertCtrl:AlertController) {
 
         platform.ready().then((res) => {
+            /*A tester, doit permettre au page d'activer l'animation quand elles sont pop*/
+            //Marche mais augmenter le délai pour que ce soit plus beau
+            platform.registerBackButtonAction(() => {
+                if(this.app.getActiveNav().canGoBack()){
+                    let options: NativeTransitionOptions = {
+                        direction: 'right', //up, left, right, down
+                        duration: 500,
+                        slowdownfactor: 3,
+                        slidePixels: 20,
+                        iosdelay: 0,
+                        androiddelay: 0,
+                        fixedPixelsTop: 56, //Nb de pixel du header à garder
+                        fixedPixelsBottom: 0 //Nb de pixel du footer à garder
+                    };
+                    this.nativeTransition.slide(options); //Pas trop mal
+                    this.app.getActiveNav().pop();
+                }else{
+                    this.platform.exitApp();
+                }
+            })
+
             if (res == 'cordova') {
-                //Peut permettre d'agir en conséquence lors de la perte de connexion pendant l'utilisation de l'appli
+                //Si l'appli perd la connexion envoie vers la page prévu à cet effet
                 this.network.onDisconnect().subscribe(data => {
-                    //alert('Vous avez été déconnecté');
+                    alert('Vous avez été déconnecté');
+                    //alert(this.nav.getActive().name);
+
+                    if(this.rootPage != null)
+                        this.nav.setRoot('NoNetworkPage',{
+                            previous_page: this.nav.getActive().name
+                        });
+                    else
+                        this.rootPage = "NoNetworkPage";
+                    //this.rootPage = "NoNetworkPage";
+                    //this.nav.push("NoNetworkPage");
                 })
 
-                this.network.onConnect().subscribe(data =>{
+               /* this.network.onConnect().subscribe(data =>{
                     //alert('Vous êtes connecté');
-                })
+                })*/
                 
                 this.fcm.getToken().then(token => {
                     this.uniqueDeviceId.get().then(uuid => {
-                        //alert(JSON.stringify(uuid));
-                        this.service.getNotification(uuid,token).subscribe((data)=> {
+                        this.service.getNotification(uuid != null ? uuid : '',token, this.platform.is('ios')).subscribe((data)=> {
                            // alert(data);
                         });
 
@@ -74,16 +108,7 @@ export class MyApp {
 
                 this.enableNotification();
                 this.fcm.onNotification().subscribe(data => {
-                    alert(JSON.stringify(data));
                     if(data.wasTapped){
-                    /*if(data.landing != 0){
-                        let params = data.landing.split('/');
-                                this.nav.setRoot(params[0],{
-                                   productId: params[1]
-                                });
-                            }*/
-
-                    //if(data.landing != 0 && (data.landing.search("http://") || data.landing.search("https://")) == -1){
                         let params = data.landing.split('/');
 
                         //Applique le format des pages 
@@ -103,18 +128,6 @@ export class MyApp {
                                 MenuId: data.id
                             })
                         }
-                    //}
-
-                    /*if(data.type && data.type == "Product"){
-                        alert("If Product :"+data.type+" : "+data.id);
-                        this.nav.setRoot("ProductDetailsPage",{
-                            productId: data.id
-                        });
-                    }else if(data.type && data.type == "Category"){
-                        this.nav.setRoot("ProductListPage", {
-                            MenuId: data.id
-                        })
-                    }*/
                 }else{
                     alert("Data wasn't tapped!");
                 }
@@ -135,7 +148,8 @@ export class MyApp {
                 this.oneSignal.endInit();*/
             }
 
-            statusBar.styleDefault();
+           // statusBar.styleDefault();
+            statusBar.hide();
             splashScreen.hide();
         });
     }
@@ -143,13 +157,21 @@ export class MyApp {
     ngOnInit(): any {
         this.service.getAppliSettings().subscribe(data => {
             this.appliSettings = data;
+
             if(this.appliSettings.is_in_maintenance){
                 this.rootPage = "MaintenancePage";
+                
             }else if (!this.isLogin()) {
                 this.rootPage = "LoginPage";
             }else {
-                console.log('HomePageif');
                 this.rootPage = "HomePage";
+                this.storage.get('user').then((userData) => {
+                    this.constService.user = userData;
+                    this.service.getWebServiceToken(userData.id_customer).subscribe((token) => {
+                        console.log(token);
+                        this.constService.accessToken = token.toString();
+                    })
+                })
                 this.renderImage();
                 this.listenEvents();
             }
@@ -162,11 +184,12 @@ export class MyApp {
     }
 
     private enableNotification(){
-        console.log(JSON.parse(localStorage.getItem('notification')));
+        console.log("notification : "+JSON.parse(localStorage.getItem('notification')));
         var activ = JSON.parse(localStorage.getItem('notification'));
         this.uniqueDeviceId.get().then(uuid => {
-            this.service.enableNotification(uuid, activ).subscribe(data => {
-                alert(data);
+            //Permet d'activer les notifications aux premiers lancement de l'appli
+            this.service.enableNotification(uuid, activ == null? true : activ).subscribe(data => {
+                //alert(data);
             })
         })
     }
@@ -174,7 +197,7 @@ export class MyApp {
     private useTranslateService(){
       let value= localStorage.getItem('language');
       let language = value!=null ? value:'en';
-      language=='ar'?this.platform.setDir('rtl', true):this.platform.setDir('ltr', true);;
+      language=='ar'?this.platform.setDir('rtl', true):this.platform.setDir('ltr', true);
       this.translateService.use(language);
     }
     
@@ -213,10 +236,10 @@ export class MyApp {
     displayChildCategories: boolean = false;
     catagory() {
             if(!this.categories || this.categories.length == 0){
-                this.category.getCategory(2).subscribe(data => {
+                this.category.getCategory(2).subscribe((data:any) => {
                     if(data.category.level_depth <= 2){
                         for(var child of data.category.associations.categories){
-                            this.category.getCategory(child.id).subscribe(childData => {
+                            this.category.getCategory(child.id).subscribe((childData:any) => {
                                 this.categories.push(childData);
                             })
                         }
@@ -268,16 +291,16 @@ export class MyApp {
             slowdownfactor: 3,
             slidePixels: 20,
             iosdelay: 100,
-            androiddelay: 150,
-            fixedPixelsTop: 0,
-            fixedPixelsBottom: 60
+            androiddelay: 500,
+            fixedPixelsTop: 54,
+            fixedPixelsBottom: 0
         };
         this.nativeTransition.slide(options); //Pas trop mal
         this.nav.push("CartPage");
     }
 
     yourOrders() {
-        let options: NativeTransitionOptions = {
+       /* let options: NativeTransitionOptions = {
             direction: 'up',
             duration: 500,
             slowdownfactor: 3,
@@ -287,47 +310,35 @@ export class MyApp {
             fixedPixelsTop: 0,
             fixedPixelsBottom: 60
         };
-        this.nativeTransition.flip(options); //Bof
+        this.nativeTransition.flip(options); //Bof*/
         this.nav.push("OrdersPage");
     }
 
     favourite() {        
-        let options: NativeTransitionOptions = {
+       /* let options: NativeTransitionOptions = {
             direction: 'up',
             duration: 1000,
             slowdownfactor: 3,
-            slidePixels: 20,
+            slidePixels: 200,
             iosdelay: 100,
             androiddelay: 500,
             fixedPixelsTop: 0,
             fixedPixelsBottom: 60
         };
-        this.nativeTransition.fade(options); //Pas trop mal
+        this.nativeTransition.fade(options); //Pas trop mal*/
         this.nav.push("FavouritePage");
     }
-
-    /*bookTable(){
-        this.nav.push("TableBookingPage");
-    }
-
-    bookHistory(){
-        this.nav.push("BookingHistoryPage");
-    }*/
 
     offer() {
         this.nav.push("OfferPage");
     }
-
-    /*news() {
-        this.nav.push("NewsPage");
-    }*/
 
     contact() {
         //Bug reste sur le côté droite de l'écran
         //Le bug est surement causé par le menu (pas tout à fait fermer quand la transition s'exeute) => il faudrait s'assurer que le menu soit totalement 
         //fermer avant de push la vue
         //Bug tout le temps en fait => l'animation ne va ps jusqu'au bout
-        let options: NativeTransitionOptions = {
+        /*let options: NativeTransitionOptions = {
             direction: 'up',
             action: "close", //action: "open" => provoque le bug
             origin: "right",
@@ -339,7 +350,7 @@ export class MyApp {
             fixedPixelsTop: 0,
             fixedPixelsBottom: 0
         };
-        this.nativeTransition.drawer(options); 
+        this.nativeTransition.drawer(options);*/ 
         this.nav.push("ContactPage");
     }
 
@@ -350,24 +361,22 @@ export class MyApp {
     aboutUs() {
         this.nav.push("AboutUsPage");
     }
-    /* invite() {
-    this.socialSharing.share("share Restaurant App with friends to get credits", null, null, 'https://ionicfirebaseapp.com/#/');
-  }
-    
-    chat(){
-      this.nav.push("ChatPage");
-    }*/
-     orderStatus(){
+
+    orderStatus(){
       this.nav.push("OrderStatusPage");
     }
+
     login() {
         this.nav.setRoot("LoginPage");
     }
 
     logout() {
         this.storage.remove('user');
+        this.storage.remove('cart');
         localStorage.removeItem('userLoggedIn');
         localStorage.removeItem('id_cart');
+        this.constService.accessToken = null;
+        this.constService.user = null;
         this.events.publish('imageUrl','assets/img/profile.jpg')
         this.nav.setRoot("LoginPage");
     }
@@ -381,4 +390,22 @@ export class MyApp {
   shopsLocalisation(){
       this.nav.push("LocationPage");
   }
+
+  displayParametersChoice: boolean = false;
+  changeDisplayParametersChoice(){
+      this.displayParametersChoice = !this.displayParametersChoice;
+  }
+
+  goToAdressPage(){
+        this.nav.push("AddressListPage",{
+          amountDetails: 0,
+          cartData: null,
+          manageAddress: true,
+          noOfItems: this.noOfItems  
+      })
+  }
+
+ goToReductionPage(){
+    this.nav.push("ReductionListPage");
+ }
 }

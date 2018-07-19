@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {IonicPage, NavController, NavParams, ToastController} from 'ionic-angular';
+import {IonicPage, NavController, NavParams, ToastController, Events} from 'ionic-angular';
 import {RatingService} from './rating.service';
 import {Storage} from '@ionic/storage';
 
@@ -15,7 +15,7 @@ export class RatingPage {
   review: any = {
     productId: 0,
     customerId: 0,
-    rating: 3,
+    rating: 5,
     comment: '',
     title: ''
   }
@@ -28,7 +28,8 @@ export class RatingPage {
               public navParams: NavParams,
               private ratingService:RatingService,
               private storage:Storage,
-              public toastCtrl:ToastController) {
+              public toastCtrl:ToastController,
+              private events:Events) {
 
             this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Rate product'};
 
@@ -38,6 +39,10 @@ export class RatingPage {
                 this.comments = data;
               })
             })
+           }
+
+           ionViewWillLeave(){
+             this.events.publish("hideSearchBar");
            }
 
            onSubmit(f){
@@ -52,6 +57,17 @@ export class RatingPage {
                else{
                  this.ratingService.postComments(this.navParams.get('productId'), data.id_customer, this.review.rating, this.review.title, this.review.comment).subscribe((data)=>{
                    console.log(data);
+                   if(data && data === true){
+                     this.toastCtrl.create({
+                       message: "Votre commentaire a bien été pris en compte !",
+                       duration: 2000
+                     }).present();
+                   }else{
+                     this.toastCtrl.create({
+                       message: "Une erreur est survenue lors de l'envoi de votre commentaire",
+                       duration: 2000
+                     }).present();
+                   }
                  })
                }
              })
@@ -84,5 +100,4 @@ export class RatingPage {
            show(){
              this.displayForm = !this.displayForm;
            }
-
 }

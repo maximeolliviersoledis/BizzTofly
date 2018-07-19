@@ -8,8 +8,8 @@ page-rating {
   &.rating li {
     padding: 0px !important;
     background: none;
-    color: #ffb400;
- 
+    //color: #ffb400;
+    color: $primary;
     ion-icon {
       font-size: 15px;
     }
@@ -25,8 +25,8 @@ page-rating {
   &.rating li {
     padding: 0px !important;
     background: none;
-    color: #ffb400;
- 
+    //color: #ffb400;   
+    color: $primary; 
     ion-icon {
       height: 20px;
       width: 10px;

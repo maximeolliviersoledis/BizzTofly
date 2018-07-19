@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController, Events , IonicPage,ToastController,LoadingController,Platform} from 'ionic-angular';
+import {NavController, Events , IonicPage,ToastController,LoadingController,Platform, AlertController} from 'ionic-angular';
 import {NgForm, FormBuilder, Validators, FormGroup} from "@angular/forms";
 import {TranslateService} from 'ng2-translate';
 import {UserService} from '../../providers/user-service';
@@ -7,7 +7,7 @@ import {FileUploader} from 'ng2-file-upload';
 import {CloudinaryOptions, CloudinaryUploader } from 'ng2-cloudinary';
 import {SettingsService} from './settings.service';
 import {Storage} from '@ionic/storage';
-
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -24,6 +24,10 @@ export class Settings {
     lastname: string;
     noOfItems: number = 0;
     header_data:any;
+    newsletter: boolean = false;
+    optin: boolean = false;
+    private groups: any;
+
 
     options = [
         {
@@ -33,10 +37,6 @@ export class Settings {
         {
             "language": "FRENCH",
             "value": "fr"
-        },
-        {
-            "language": "ARABIC",
-            "value": "ar"
         }
     ];
 
@@ -53,6 +53,7 @@ export class Settings {
   imageUrl:string='assets/img/profile.jpg';
   userImage: string;
   public notification:any;
+  customerId = 0;
 
 
   constructor(public navCtrl: NavController,
@@ -64,7 +65,9 @@ export class Settings {
     public translate: TranslateService,
     private userService: UserService,
     private settingService:SettingsService,
-    private storage:Storage) {
+    private storage:Storage,
+    private constService:ConstService,
+    private alertCtrl:AlertController) {
 
     let value= localStorage.getItem('language');
     this.value = value!=null ? value : 'en';
@@ -75,20 +78,19 @@ export class Settings {
 
 
     ngOnInit() {
-      let loader =this.loadingCtrl.create({
-        content:'please wait...'
-      })
-      loader.present();
+      this.constService.presentLoader();
       var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
       var userRegex = "^[a-zA-Z- ]+";
       this.newUserInfo = this.fb.group({
             firstName: ['', Validators.pattern(userRegex)],
             lastName: ['',Validators.pattern(userRegex)],
             email: ['', Validators.pattern(emailRegex)],
-            birthday: [''],
+            birthday: [null],
             password: ['', Validators.minLength(8)],
-            passwordConfirmation: ['', Validators.minLength(8)]
-      },{validator: [this.passwordMatch,this.checkBirthDate]});
+            passwordConfirmation: ['', Validators.minLength(8)],
+            newsletter: [false],
+            optin: [false]
+      },{validator: [this.passwordMatch,this.checkBirthDate]}); //Empêche les autres champs d'être envoyé si ceux-ci ne sont pas vérifiés
 
       this.storage.get('image').then((imageData)=>{
         this.userImage = imageData;
@@ -96,20 +98,41 @@ export class Settings {
 
       this.storage.get('user').then((data)=>{
         if(data && data.token){
-          this.settingService.getUser(data.id_customer).subscribe(data => {
-            this.user = data;
-            this.firstname = this.user.customer.firstname;
-            this.lastname = this.user.customer.lastname;
+          this.customerId = data.id_customer;
+          this.settingService.getUserInfo(data.id_customer).subscribe(userData => {
+            console.log("settings :", userData);
+            this.user = userData;
+            this.firstname = userData.firstname;
+            this.lastname = userData.lastname;
+            this.newsletter = userData.newsletter;
+            this.optin = userData.optin;
+          }, (error) => {
+            console.log(error);
+            /*this.events.subscribe('PendingRequestExecuted', (userData)=>{
+              console.log("settings :", userData);
+              this.user = userData;
+              this.firstname = userData.firstname;
+              this.lastname = userData.lastname;
+              this.newsletter = userData.newsletter;
+              this.optin = userData.optin;
+            })*/
           })
         }else{
-          this.navCtrl.push('LoginPage');
+          this.navCtrl.setRoot('LoginPage');
         }
+        this.constService.dismissLoader();
+      }, () => {
+        this.constService.dismissLoader();
       })
-        loader.dismiss();
     }
 
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
+    }
 
     checkBirthDate(control: FormGroup){
+      if(control.controls['birthday'].value == null || control.controls['birthday'].value == '')
+        return null;
       var today = new Date().getTime();
       var date = new Date(control.controls['birthday'].value).getTime();
       return today - date > 0 ? null : {'invalid-date':true}; 
@@ -120,7 +143,7 @@ export class Settings {
         return control.controls['password'].value === control.controls['passwordConfirmation'].value ? null : {'mismatch': true};
     }
 
-    onSubmit(user: NgForm){
+   /* onSubmit(user: NgForm){
     let loader = this.loadingCtrl.create({
       content:'please wait...'
     })
@@ -145,56 +168,73 @@ export class Settings {
       if(this.newUserInfo.value.birthday)
         this.user.customer.birthday = this.newUserInfo.value.birthday;
 
+      if(this.newsletter != this.newUserInfo.value.newsletter)
+        this.user.customer.newsletter = this.newUserInfo.value.newsletter;
+
+      if(this.optin != this.newUserInfo.value.optin)
+        this.user.customer.optin = this.newUserInfo.value.optin;
+
       console.log(this.user);
 
-      /*Obliger de reformater les données reçues par prestashop car sinon l'utilisateur n'appartient plus à aucun groupe*/
-      var customerGroups = this.user.customer.associations.groups;
+      //var customerGroups = this.user.customer.associations.groups;
 
       //this.user.customer.associations.groups = [];
       this.user.customer.associations.groups = {group :[]};
 
-      for(var g of customerGroups){
+      for(var g of this.groups){
         this.user.customer.associations.groups.group.push({id:g.id});
       }
+      //this.user.customer.associations.groups.group = this.groups;
+      console.log(this.user);
       this.settingService.putUser(this.user.customer.id,this.user).subscribe(data => {
-        console.log(data);
+        if(data && !data.error){
+          this.createToaster("Vos modifications ont bien été prise en compte", 2000);
+        }else{
+          alert(data.error);
+        }
+
         loader.dismiss();
       })
     }
 
-    }
+    }*/
 
- /* onSubmit(user: NgForm) {
-    let loader = this.loadingCtrl.create({
-      content:'please wait...'
-    })
-    loader.present();
-     if(this.user.flag==1){
-     this.uploader.uploadAll();
-     this.uploader.onSuccessItem = (item: any, response: string, status: number, headers: any): any => {
-     let res:any=JSON.parse(response);
-     this.user.imageUrl=res.secure_url;
-     this.user.publicId=res.public_id;
-     console.log("user-"+JSON.stringify(this.user));
-     this.settingService.updateUserInfo(this.userId,this.user)
-    .subscribe(response=>{
-      loader.dismiss();
-      console.log("update response-with img-"+JSON.stringify(response));
-      this.events.publish('imageUrl',response.imageUrl);
-      this.createToaster('user information updated',3000);    
-     })
-        }
-    } else {
-      console.log("else-user-"+JSON.stringify(this.user));
-       this.settingService.updateUserInfo(this.userId,this.user)
-      .subscribe(response=>{
-        console.log("update response-"+JSON.stringify(response));
-        loader.dismiss();
-        this.events.publish('imageUrl',this.user.imageUrl);
-        this.createToaster('user information updated',3000);  
-    })
+  onSubmit(user: NgForm){
+    console.log(this.newUserInfo);
+    this.constService.presentLoader();
+    if(this.checkIfFieldsAreEmpty()){
+      this.constService.dismissLoader();
+    }else{
+      this.settingService.getKey().subscribe((key) => {
+        this.settingService.modifyUser(this.customerId, this.newUserInfo.value, key).subscribe(data => {
+          if(data && !data.error){
+            var response  = {
+              token: data.token,
+              firstname: data.firstname,
+              lastname: data.lastname,
+              email: data.email,
+              id_customer: data.id
+            }
+            this.storage.set('user', response);
+            this.createToaster("Vos modifications ont bien été enregistré", 2000);
+          }else{
+            this.alertCtrl.create({
+              title: "Erreur",
+              subTitle: data.error,
+              buttons: ['OK']
+            }).present();
+          }
+          this.constService.dismissLoader();
+        }, () => {
+          this.constService.dismissLoader();
+        });
+      }, () => {
+        this.constService.dismissLoader();
+      })
     }
-  }*/
+  }
+
+  /**Check if the fields are empty or if the value is unchanged**/
   checkIfFieldsAreEmpty(){
     if(this.newUserInfo.value.firstName)
       return false;
@@ -210,6 +250,13 @@ export class Settings {
 
     if(this.newUserInfo.value.birthday)
       return false;
+
+    if(this.newsletter != this.newUserInfo.value.newsletter)
+      return false;
+
+    if(this.optin != this.newUserInfo.value.optin)
+      return false;
+
     return true;
   }
 
@@ -280,4 +327,5 @@ export class Settings {
     navcart(){
       this.navCtrl.push("CartPage");
     }
+
 }

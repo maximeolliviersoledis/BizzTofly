@@ -10,22 +10,6 @@
 
 <ion-content class="login" *ngIf="!isLogin()">
     <img class="logo" src="assets/img/logo-icon.png">
-
-    <!--inputs-->
-    <!--name-->
-    <!--<ion-row radio-group [formControl]="user.controls['gender']">
-        <ion-item>
-            <ion-label>Civilité:</ion-label>
-        </ion-item>
-        <ion-item>
-            <ion-label>Mr:</ion-label>
-            <ion-radio value="1">Mr</ion-radio>
-        </ion-item>
-        <ion-item>
-            <ion-label>Mme:</ion-label>
-            <ion-radio value="2">Mme</ion-radio>
-        </ion-item>
-    </ion-row>-->
     <ion-row class="gender">
         <ion-col col-5>
             <ion-label class="text-gender">{{'Gender' | translate}}:</ion-label>
@@ -57,7 +41,6 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--email-->
         <ion-row>
             <ion-col col-12>
                 <ion-item>
@@ -66,7 +49,6 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--password-->
         <ion-row>
             <ion-col col-12>
                 <ion-item>
@@ -75,7 +57,6 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <!--password-->
         <ion-row>
             <ion-col col-12>
                 <ion-item>
@@ -87,15 +68,24 @@
         <div class="invalid-feedback" *ngIf="user.errors?.mismatch && (user.controls['passwordConfirmation'].dirty || user.controls['passwordConfirmation'].touched)">
             {{"Passwords don't match." | translate}}
         </div>
-      <!--  <ion-row>
+
+        <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{"Souhaitez vous recevoir des newsletter:" | translate}}</ion-label>
-                    <ion-checkbox formControlName="newsletter"></ion-checkbox>
+                    <ion-label class="text-without-input">{{'NewsLetter' | translate}}: </ion-label>
+                    <ion-toggle formControlName="newsletter"></ion-toggle>
                 </ion-item>
             </ion-col>
-        </ion-row>-->
-        <!--button-->
+        </ion-row>
+
+        <ion-row>
+            <ion-col col-12>
+                <ion-item>
+                    <ion-label class="text-without-input">{{'Receive specials offers' | translate}}: </ion-label>
+                    <ion-toggle formControlName="optin"></ion-toggle>
+                </ion-item>
+            </ion-col>
+        </ion-row>
         <ion-row>
             <ion-col col-12>
                 <button class="login-btn" ion-button type="submit" [disabled]="!user.valid">{{"Register" |

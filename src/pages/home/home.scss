@@ -10,12 +10,16 @@ page-home {
       .overlay {
         background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
         display: inline-flex;
+        z-index: 1;
       }
       .slider-img {
         /*height: 220px;*/
+        //background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+        max-height: 250px;
+        max-width: 250px;
         width: 100%;
         position: relative;
-        z-index: -111;
+        z-index: -1;
       }
       .slider-text {
         color: #fff;

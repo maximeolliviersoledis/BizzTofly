@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController, NavParams, IonicPage, LoadingController, ToastController} from 'ionic-angular';
+import {NavController, NavParams, IonicPage, LoadingController, ToastController, Events} from 'ionic-angular';
 import {Storage} from '@ionic/storage';
 import {UserService} from '../../providers/user-service';
 import {FavouriteService} from './favourite.service';
@@ -24,23 +24,15 @@ export class FavouritePage {
                 public toastCtrl: ToastController,
                 public storage: Storage,
                 public userService: UserService,
-                public favouriteService: FavouriteService) {
+                public favouriteService: FavouriteService,
+                private events:Events) {
 
         this.bg = 'assets/img/bg.jpg';
-        /*this.storage.get('cart').then((data)=>{
-            this.cartItems = data;
-            if(this.cartItems){
-                for(var items of this.cartItems){
-                    this.noOfItems += items.quantity;
-                }
-            }
-        })*/
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Favourite'};        
 
     }
     favouriteList: any[] = [];
     ngOnInit() {
-        //this.favouriteList = JSON.parse(localStorage.getItem('favourite'));
         this.storage.get('user').then((userData)=>{
             if(userData && userData.token){
                 this.favouriteService.getFavourite(userData.id_customer).subscribe(data => {
@@ -53,17 +45,10 @@ export class FavouritePage {
                 })
             }
         })
-        /*this.storage.get('favourite').then((favourite) => {
-            this.favouriteList = favourite;
-            if(this.favouriteList && this.favouriteList.length){
-                for(var favourite of this.favouriteList){
-                    this.favouriteService.getProduct(favourite).subscribe(data => {
-                        this.favouriteItems.push(data);
-                    })
-                }
-            }
-        })*/
-
+    }
+    
+    ionViewWillLeave(){
+        this.events.publish("hideSearchBar");
     }
 
     navcart() {
@@ -90,18 +75,6 @@ export class FavouritePage {
                 })
             }
         })
-        /*console.log("remove : "+productId);
-        for(var i=0; i<this.favouriteItems.length;i++){
-            if(this.favouriteItems[i].id == productId){
-                this.favouriteItems.splice(i,1);
-            }
-
-            if(this.favouriteList[i] == productId){
-                this.favouriteList.splice(i,1);
-                //localStorage.setItem('favourite',JSON.stringify(this.favouriteList));
-                this.storage.set('favourite', this.favouriteList);
-            }
-        }*/
     }
 
 

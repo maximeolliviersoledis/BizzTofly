@@ -1,0 +1,18 @@
+page-search {
+	.item-name{
+		color: $grey;
+		white-space: pre-wrap;
+		text-align:center;
+		font-size: 1.1em;
+	}
+	.item-prices{
+		font-weight: bold;
+		font-size: 1em;
+		text-align: center;
+		color: $primary;
+		.item-reduction{
+			color: $danger;
+			text-decoration: line-through;
+		}
+	}
+}

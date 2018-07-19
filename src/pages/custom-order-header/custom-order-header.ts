@@ -25,7 +25,9 @@ export class CustomOrderHeaderPage {
 
     goToSelectedPage(stepNb){
       if(stepNb < this.order_header_data.currentStep){
-        this.navCtrl.push(this.pages[stepNb-1]+"Page", this.navParams); //Marche mais doit prendre ne compte les navParams
+        for(var i=0; i<this.order_header_data.currentStep - stepNb;i++)
+          this.navCtrl.pop({animate: false});
+        //this.navCtrl.push(this.pages[stepNb-1]+"Page", this.navParams); //Marche mais doit prendre ne compte les navParams
       }
     }
 }

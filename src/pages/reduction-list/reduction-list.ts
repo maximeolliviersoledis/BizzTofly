@@ -15,6 +15,8 @@ export class ReductionListPage {
 	reductions: any[];
   	showInfo: boolean = false;
   	selectedReduction: any =  {};
+  header_data: any;
+  currency: string;
 
   constructor(public navCtrl: NavController,
   			  public navParams: NavParams,
@@ -22,12 +24,15 @@ export class ReductionListPage {
   			  public reductionListService:ReductionListService,
   			  public alertCtrl:AlertController,
           public service:Service) {
+        this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'My reductions'};        
+
   }
 
   ngOnInit(){
   	if(this.navParams.get("showInfo")){
   		this.showInfo = this.navParams.get("showInfo");
   		this.selectedReduction = this.navParams.get("reduction");
+      this.currency = this.selectedReduction.reduction_amount != 0 ? "€" : "%";
   	}else{
 	  	this.storage.get('user').then((data)=>{
 	  		this.user = data;

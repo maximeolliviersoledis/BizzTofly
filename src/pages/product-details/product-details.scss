@@ -6,13 +6,6 @@ page-product-details {
     font-size: 2rem;
     color: #ffab23;
   }
-
-  /*.slider {
-    img {
-      width: 100% !important;
-      height: 192px !important;
-    }
-  }*/
   .text-over-image {
     color: $white;
     font-size: 18px;
@@ -26,16 +19,6 @@ page-product-details {
     height: 100%;
     width: 100%;
   }
-  /*.productImage {
-    max-height:300px;
-    position: relative;
-  }*/
- /* .main-image {
-    width: 75% !important;
-   // max-height: 50px;
-    //height: 200px !important;
-    margin: auto;
-  }*/
   .prod-price {
     font-weight: 700;
     color: $primary;
@@ -148,11 +131,6 @@ page-product-details {
     background-color: $secondary !important;
     color: red
   }
-
-  /*img {
-   width: 100% !important;
-   height: 200px !important;
-  }*/
   .desc{
     padding:0 1rem;
   }
@@ -182,7 +160,6 @@ page-product-details {
       display: inline-flex;
     }
     .slider-img {
-      /*height: 220px;*/
       width: 100%;
       height: 200px;
       position: relative;
@@ -267,17 +244,11 @@ page-product-details {
       background-color: $primary;
     }
 
-  .productImage{
-    /*.slides-main-image{
-       .overlay{
-          margin:auto;
-          .main-image{
-            width: 75% !important;
-            height: 300px;
-            z-index: -111;
-          }
-        }
-    }*/
+  /*.productImage{
+    .overlay{
+     //margin: auto;
+      display: inline-flex;
+    }
     .fav{
       color: $danger;
       font-size: 40px;
@@ -290,12 +261,66 @@ page-product-details {
       color:$primary;
       z-index: 1;
     }
+  }*/
+
+  .main-image{
+    display: inline-flex;
   }
+
+    .fav{
+      color: $danger;
+      font-size: 40px;
+      position: absolute;
+      top: 0.5em;
+      right: 0.5em;
+      z-index: 1;
+    }
+    .heart-clicked{
+      color:$primary;
+      z-index: 1;
+    }
 
   .similar-products{
     text-align: center;
     font-size: 20px !important;
     color: $primary !important;
     font-weight: bold !important;
+  }
+
+  .test{
+    color: #ffffff;
+    text-align: center;
+  }
+
+  .vertical-align{
+    color: #ffffff;
+    position: relative;
+    bottom: 20px;
+  }
+
+  .test-rating{
+      ul {
+        padding: 5px 0px;
+        text-align: center;
+     
+        &.rating li {
+         padding: 0px !important;
+          background: none;
+          color: $primary;
+       
+         /* ion-icon {
+            height: 20px;
+            width: 15px;
+          }*/
+        }
+      }
+  }
+
+  .overlay-test{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+
+    max-height: 220px;
+    max-width: 200px;
+    display: inline-flex;
   }
 }

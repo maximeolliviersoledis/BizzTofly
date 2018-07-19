@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events} from 'ionic-angular';
 import { LocationService } from './location.service';
 import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
 
@@ -14,7 +14,7 @@ export class LocationPage {
   header_data: any;
   shops: any [] = [];
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, public locationService:LocationService, public pageTransition:NativePageTransitions) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, public locationService:LocationService, public pageTransition:NativePageTransitions, private events:Events) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Shops'};        
   }
   ngOnInit(){
@@ -26,6 +26,10 @@ export class LocationPage {
       }
     });
 
+  }
+
+  ionViewWillLeave(){
+    this.events.publish("hideSearchBar");
   }
 
   /*ionViewWillLeave(){

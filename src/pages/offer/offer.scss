@@ -4,22 +4,28 @@ page-offer {
   }
   .slider-img {
     height: 330px;
+    //z-index: -111;    
   }
   .card-title {
     position: absolute;
     font-size: 2.6rem;
+    max-height: 30%;
+    height:100%;
     width: 100%;
     color: $white;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.2);
-    padding: 8px 0px;
+  //  padding: 8px 0px;   
+    display: flex;
+    align-items: center;
+    text-align: center;
   }
   .swiper-pagination-bullet-active {
     background: $primary;
   }
   .overlay {
-    background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
-    display: inline-flex;
+   // background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+  //  display: inline-flex;
     position: relative;
   }
   .swiper-pagination-fraction, .swiper-pagination-custom, .swiper-container-horizontal > .swiper-pagination-bullets {
@@ -50,6 +56,7 @@ page-offer {
     font-size: 20px;
     font-weight: 700;
     color: $primary;
+    display: inline-flex;
   }
   .line {
     text-decoration: line-through;
@@ -75,13 +82,7 @@ page-offer {
   .btn-add-to-cart {
     background-color: $primary !important;
     color: #fff;
-    padding: 10px;
-    box-shadow: none;
     font-size: 14px;
-   // margin: 0;
-    //position: fixed;
-   // bottom: 0;
-
   }
   .slide-zoom {
     height: 100%;

@@ -77,7 +77,8 @@ export class AddressPage {
             this.navCtrl.push('AddressListPage',{
               amountDetails:this.navParams.get('amountDetails'),
               cartData: this.navParams.get('cartData'),
-              addressList: addressList
+              addressList: addressList,
+              manageAddress : this.navParams.get('manageAddress')
             })
           })
         }else{
@@ -90,7 +91,8 @@ export class AddressPage {
               this.navCtrl.push('AddressListPage',{
                 amountDetails:this.navParams.get('amountDetails'),
                 cartData: this.navParams.get('cartData'),
-                addressList: addressList
+                addressList: addressList,
+                manageAddress : this.navParams.get('manageAddress')
               })
             })
           })

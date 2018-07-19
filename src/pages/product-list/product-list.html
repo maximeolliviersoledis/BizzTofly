@@ -1,65 +1,20 @@
-<!--<ion-header>
-  <ion-navbar class="navbar-item">
-    <button ion-button menuToggle start>
-      <ion-icon name="menu"></ion-icon>
-    </button>
-      <ion-title>{{"Restaurant App" | translate}}</ion-title>
-      <ion-buttons end>
-        <button ion-button icon-only color="royal" (click)="showSearchBar()"><ion-icon name="search"></ion-icon></button>
-        <button ion-button icon-only color="royal" class="header-btn-cart" (click)="navcart()">
-          <ion-icon name="cart"></ion-icon>
-          <ion-badge class="carts" item-right color="danger">{{noOfItems}}</ion-badge>
-        </button>
-      </ion-buttons>
-  </ion-navbar>
-  <div *ngIf="displaySearchBar">
-    <ion-searchbar 
-        [(ngModel)]="searchInput"
-        [showCancelButton]="true"
-        (ionInput)="onSearch($event)"
-        (ionCancel)="offSearch($event)"
-        (ionFocus)="onFocus($event)"
-        animated="true"
-        autocomplete="on"
-        placeholder="{{searchPlaceholder}}">
-  </ion-searchbar>
-  <div *ngIf="searching" class="spinner-container">
-    <ion-spinner></ion-spinner>
-  </div>
-  <ion-list *ngIf="displayLastSearch" class="search-results">
-    <ion-item *ngFor="let search of lastSearch" (click)="completeUserInput(search)">
-      {{search}}
-    </ion-item>
-  </ion-list>
-  <ion-list *ngIf="searchResults" class="search-results">
-    <ion-item *ngFor="let searchResult of searchResults" (click)="goToProductPage(searchResult.id, searchResult.name)">
-      {{searchResult.name}}
-    </ion-item>
-  </ion-list>
-  <ion-item *ngIf="noResultFound" class="search-results">
-    {{'No result found' | translate}}
-  </ion-item>
-</div>
-</ion-header>-->
+
 <ion-header>
     <custom-header [header]="header_data"></custom-header>
 </ion-header>
 <ion-content>
- <!--<ion-searchbar (ionInput)="getItems($event)" placeholder="{{'Type Item Name' | translate}}">
-    </ion-searchbar>-->
-
-      <ion-list *ngFor="let menuItem of items"><!-- list -->
+      <ion-list *ngFor="let menuItem of items">
         <ion-item text-wrap (click)="navigate(menuItem.id,menuItem)">
-          <ion-row class="catagory"><!-- row -->
-            <ion-col col-6><!-- col with 50  width -->
+          <ion-row class="catagory">
+            <ion-col col-6>
               <img src={{menuItem.image}} alt="{{menuItem.name}}"/>
             </ion-col>
-            <ion-col col-6><!-- col with 50% width -->
+            <ion-col col-6>
               <p class="item-name">{{menuItem.name}}</p>
               <p class="item-detail" text-wrap><span class="trim-info">{{menuItem.name}}</span></p>
               <p class="item-detail">{{"Price:" | translate}}
-                <span class="item-reduction" *ngIf="priceIsReduced(menuItem)">${{menuItem.prices.normal_price}}</span>
-                 <span class="item-price">${{menuItem.prices.specific_price | number:'.2-2'}}</span>
+                <span class="item-reduction" *ngIf="priceIsReduced(menuItem)">{{menuItem.prices.normal_price}} €</span>
+                 <span class="item-price">{{menuItem.prices.specific_price | number:'.2-2'}} €</span>
                 <!--<span class="item-reduction" *ngIf="menuItem.prices.specific_price!=menuItem.prices.normal_price">${{menuItem.prices.specific_price}}</span>
                 <span class="item-price">
                 ${{menuItem.price | number:'.2-2'}}</span>-->
@@ -80,8 +35,8 @@
               <ion-badge class="badge-rating" item-end>({{menuItem.nb_comment}})</ion-badge>
           </ion-row>
             </ion-col>
-          </ion-row><!--end row -->
-        </ion-item><!-- item -->
+          </ion-row>
+        </ion-item>
     </ion-list>
 
     <ion-infinite-scroll (ionInfinite)="infinite($event)" threshold="5%" *ngIf="maxItem > items.length">

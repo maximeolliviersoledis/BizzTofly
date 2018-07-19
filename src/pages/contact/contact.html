@@ -11,7 +11,7 @@
         <ion-row>
             <ion-col col-12>
                 <ion-item>
-                    <ion-label>{{'Objet:' | translate}}</ion-label>
+                    <ion-label stacked>{{'Objet:' | translate}}</ion-label>
                     <ion-select formControlName="id_contact" placeholder="Choisissez un objet">
                         <ion-option *ngFor="let contact of contacts" value="{{contact.id_contact}}">{{contact.name}}</ion-option>
                     </ion-select>
@@ -23,7 +23,7 @@
     <ion-row *ngIf="orders && orders.length > 0">
         <ion-col col-12>
             <ion-item>
-                <ion-label>{{'Référence de commande:' | translate}}</ion-label>
+                <ion-label stacked>{{'Référence de commande:' | translate}}</ion-label>
                 <ion-select [(ngModel)]="order" (ionChange)="select()"> 
                     <ion-option value="null">{{'No order' | translate}}</ion-option>                           
                     <ion-option *ngFor="let order of orders" value="{{order.id_order}}">{{order.reference}}</ion-option>
@@ -43,7 +43,7 @@
                 </ion-item>
             </ion-col>
         </ion-row>
-        <ion-row>
+      <!--  <ion-row>
             <ion-col col-12>
                 <ion-item>
                     <ion-label>{{'Email:' | translate}}</ion-label>
@@ -60,7 +60,16 @@
                                   formControlName="message" required></ion-textarea>
                 </ion-item>
             </ion-col>
-        </ion-row>
+        </ion-row>-->
+        <ion-item>
+            <ion-label stacked>{{'Email:' | translate}}</ion-label>
+            <ion-input type="email" name="email" id="email" formControlName="email" required></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label stacked>{{'Message:' | translate}}</ion-label>
+            <ion-textarea rows="6" lineHeight="42" name="message" id="message"
+                                  formControlName="message" required></ion-textarea>
+        </ion-item>
         <ion-row>
             <ion-col col-12>
                 <button class="submit-btn" ion-button type='submit' [disabled]="!user.valid"> {{'Send' | translate}}</button>

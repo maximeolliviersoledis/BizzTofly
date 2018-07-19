@@ -60,7 +60,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 		Log.d(TAG, "\tNotification Data: " + data.toString());
         FCMPlugin.sendPushPayload( data );
         //TODO: Voir si tittle et message sont génants dans les données sinon les supprimer
-        //sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody(), remoteMessage.getData(), bitmap);
+      //  sendNotification(remoteMessage.getNotification().getTitle(), remoteMessage.getNotification().getBody(), remoteMessage.getData(), bitmap);
         sendNotification((String)remoteMessage.getData().get("title"), (String)remoteMessage.getData().get("message"),remoteMessage.getData(),bitmap);
         
     }

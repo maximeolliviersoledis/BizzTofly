@@ -1,8 +1,8 @@
 import { Component,Input } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Keyboard, Events, Platform} from 'ionic-angular';
 import { Storage } from '@ionic/storage';
 import { Service } from '../../app/service';
-import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
+import { NativePageTransitions, NativeTransitionOptions } from '@ionic-native/native-page-transitions';
 
 
 @IonicPage()
@@ -12,7 +12,6 @@ import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/nati
   providers: [Service, NativePageTransitions]
 })
 export class CustomHeaderPage {
-
       header_data: any;
       cartItems:any[];
       noOfItems:number = 0;
@@ -25,7 +24,10 @@ export class CustomHeaderPage {
               public navParams: NavParams,
               private storage:Storage,
               private service:Service,
-              private pageTransition:NativePageTransitions) {
+              private pageTransition:NativePageTransitions,
+              public keyboard:Keyboard,
+              private events:Events,
+              public platform:Platform) {
 
 
         this.searching = false;
@@ -37,6 +39,16 @@ export class CustomHeaderPage {
                     this.noOfItems += items.quantity;
                 }
             }
+        })
+
+        this.events.subscribe("updateCartBadge", (quantity) => {
+            console.log(quantity);
+            this.noOfItems = quantity;
+        });
+
+        this.events.subscribe("hideSearchBar", () => {
+            console.log("hideSearchBar");
+            this.displaySearchBar = false;
         })
   }
 
@@ -69,6 +81,10 @@ export class CustomHeaderPage {
         }
     }
 
+    ionViewWillLeave(){
+        this.displaySearchBar = false;
+    }
+
     gotoHome() {
         this.navCtrl.setRoot("HomePage");
     }
@@ -78,7 +94,8 @@ export class CustomHeaderPage {
     onSearch($event){
         this.searchPlaceholder = "Que recherchez-vous?";
         this.noResultFound = false;
-
+        console.log(this.searchInput);
+        console.log(this.keyboard.hasFocusedTextInput());
         if(this.searchInput.length > 2){
             this.searching = true;
             this.service.search('query='+this.searchInput+'&language=1')
@@ -87,11 +104,10 @@ export class CustomHeaderPage {
                 if(response.products){                    
                     this.searchResults = response.products;
                 }else{
-                    //this.searchInput = "";
                     this.searchResults = [];
                     this.noResultFound = true;
                     this.searchPlaceholder = "Aucun résultat";
-                    this.displayLastSearch = false;
+                 //   this.displayLastSearch = false;
                 }
             })
         }else{
@@ -102,15 +118,21 @@ export class CustomHeaderPage {
     offSearch($event){
         this.displayLastSearch = false;
         this.noResultFound = false;
+        /*if(this.keyboard.isOpen())
+            this.keyboard.close();*/
+        if(this.platform.is('ios') && this.keyboard.isOpen())
+            setTimeout(this.keyboard.close(), 500);
     }
+    
     onFocus($event){
         console.log("onFocus appelé");
+
         this.displayLastSearch = true;
 
         this.storage.get('search').then(data => {
             this.lastSearch = data;
             console.log(this.lastSearch);
-        })
+        })        
     }
 
     completeUserInput(keyword){
@@ -152,4 +174,33 @@ export class CustomHeaderPage {
         this.displayLastSearch = false;
     }
 
+    goToSearchPage($event){
+      console.log(this.searchResults);
+      if($event.keyCode === 13 && this.searchResults.length > 0)
+          this.navCtrl.push("SearchPage", {
+              results: this.searchResults
+          });
+    }
+
+    //Temporary disabled on ios
+    enableCancelButton(){
+        if(this.platform.is('ios'))
+            return false;
+
+        return true;
+    }
+
+    deleteLastSearch(search){
+        console.log(search);
+        for(var i=0; i<this.lastSearch.length;i++){
+            if(this.lastSearch[i] === search){
+                this.lastSearch.splice(i,i+1);
+            }
+        }
+        if(this.lastSearch.length == 0){
+            this.storage.remove('search');
+        }else{
+            this.storage.set('search', this.lastSearch);
+        }
+    }
 }
