@@ -18,16 +18,21 @@
 			<ion-col col-9>
 				<p class="product">{{item.name}} : {{product.name}}</p>
 				<p>{{'Quantity' | translate}} : {{product.selectedQuantity}}</p>
-				<p>{{'Price' | translate}} : {{product.endPrice | number:'.2-2'}} €</p>
-				<p>{{'Total' | translate}} : {{totalProductPrice(product.endPrice, product.selectedQuantity) | number:'.2-2'}} €<p>
+				<!--<p>{{'Price' | translate}} : {{product.endPrice | number:'.2-2'}} €</p>
+				<p>{{'Total' | translate}} : {{totalProductPrice(product.endPrice, product.selectedQuantity) | number:'.2-2'}} €<p>-->
+				<p>{{'Price' | translate}} : {{product.endPrice | currencyPipe:constService.currency}}</p>
+				<p>{{'Total' | translate}} : {{totalProductPrice(product.endPrice, product.selectedQuantity) | currencyPipe:constService.currency}}<p>
 			</ion-col>
 		</ion-row>
 	</ion-item>
 </ion-list>
 <ion-item>
-	<p>{{'Products total incl_tax' | translate}} : {{totalPrice | number:'.2-2'}} €</p>
+	<!--<p>{{'Products total incl_tax' | translate}} : {{totalPrice | number:'.2-2'}} €</p>
 	<p>{{'Total shipping cost (incl_tax)' | translate}} : {{carrierData.total_price_with_tax | number:'.2-2'}} €</p>
-	<p>{{'Total incl_tax' | translate}}: {{totalPriceWithCarrier | number:'.2-2'}} €</p>
+	<p>{{'Total incl_tax' | translate}}: {{totalPriceWithCarrier | number:'.2-2'}} €</p>-->
+	<p>{{'Products total incl_tax' | translate}} : {{totalPrice | currencyPipe:constService.currency}}</p>
+	<p>{{'Total shipping cost (incl_tax)' | translate}} : {{carrierData.total_price_with_tax | currencyPipe:constService.currency}}</p>
+	<p>{{'Total incl_tax' | translate}}: {{totalPriceWithCarrier | currencyPipe:constService.currency}}</p>
 	<br>
 	<ion-row>
 		<ion-col col-9>

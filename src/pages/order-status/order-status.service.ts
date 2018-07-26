@@ -9,16 +9,14 @@ export class OrderStatusService {
 
     }
 
-    /*getStatus(orderId) {
-        const headers = new Headers();
-        let authtoken = localStorage.getItem('token');
-        headers.append('Authorization', authtoken);
-        return this.http.get(this.constService.base_url + 'api/orders/user/status/' + orderId, {
-            headers: headers
-        })
+    getAllStatus(): any{
+        var urlDir = this.constService.baseDir + this.constService.orderStates + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
 
-            .map((data: Response) => data.json() || {})
-            //.catch((error: any) => Observable.throw(error.json().error || 'Server error'));
-    }*/
+    getStatusById(statusId): any{
+        var urlDir = this.constService.baseDir + this.constService.orderStates + '/' + statusId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
 
 }

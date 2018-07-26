@@ -1,15 +1,90 @@
-import {LoadingController, Loading} from 'ionic-angular';
+import {LoadingController, Loading, AlertController, ToastController} from 'ionic-angular';
 import {Injectable} from '@angular/core';
+import {TranslateService} from 'ng2-translate';
 
 @Injectable()
 export class ConstService {
-    constructor(private loadCtrl:LoadingController){}
+    constructor(private loadCtrl:LoadingController,
+                private alertCtrl:AlertController, 
+                private translateService:TranslateService,
+                private toastCtrl:ToastController){}
 
+    /**
+    * Use this method if you want translated alert
+    * @param options The alert option (see ionic doc for more informations)
+    */
+    createAlert(options: any){
+        if(options.title){
+            this.translateService.get(options.title).subscribe(translatedTitle => {
+                options.title = translatedTitle;
+            });
+        }
+
+        if(options.subTitle){
+            this.translateService.get(options.subTitle).subscribe((translatedSubtitle) => {
+                options.subTitle = translatedSubtitle; 
+            });
+        }
+
+        if(options.message){
+        this.translateService.get(options.message).subscribe(translatedMessage => {
+                options.message = translatedMessage;
+            });
+        }
+
+        //Set the default style 
+        if(!options.cssClass){
+            options.cssClass = "alert-style";
+        }
+
+        //Set default 'OK' buttons
+        if(!options.buttons){
+            options.buttons = [
+                {
+                    text: 'OK'
+                }
+            ];
+        }else{
+            for(var i = 0; i < options.buttons.length; i++){
+                console.log(options.buttons[i]);
+                this.translateService.get(options.buttons[i].text).subscribe((translatedButtonText) => {
+                   options.buttons[i].text = translatedButtonText;
+                })
+            }
+        }
+
+        this.alertCtrl.create(options).present();
+    }
+
+    /**
+    * Use this method if you want to display translated toast
+    * @param options The toast options (see ionic doc for more details)
+    */
+    createToast(options: any){
+        if(options.message){
+            this.translateService.get(options.message).subscribe((translatedMessage) => {
+                options.message = translatedMessage;
+            });
+        }
+
+        //Set the default duration to 2s
+        if(!options.duration)
+            options.duration = 2000;
+
+        this.toastCtrl.create(options).present();
+    }
+
+    /**
+    * Use this method to present the soledis loader
+    */
     presentLoader(){
         this.createLoader();
         this.loader.present();
     }
 
+    /**
+    * Use this method to dismiss the loader
+    */
     dismissLoader(){
         this.loader.dismiss();
     }
@@ -22,10 +97,12 @@ export class ConstService {
     }
 
     private loader: Loading;
+    /**GLOBAL VARS**/
     accessToken: string;
     nbOfRetry: number = 5; //How many times the application should retry a failed request?
     delayOfRetry: number = 1000; //The delay between each retries request
     user: any; //Contains user data
+    currency: any; //Contains all data about the currency use
 
     /***URL***/
     addCommentDir = "/add_comment";
@@ -52,6 +129,7 @@ export class ConstService {
     notificationDir = "http://www.bizztofly.com/modules/sld_notification/mobile-notification.php";
     modifyUserDir = "/modify_user";
     orderDir = "/orders";
+    orderStates = "/order_states";
     paymentDir = "/payments";
     productDetail = "/product_detail";
     productDir = "/products";
@@ -96,6 +174,7 @@ export class ConstService {
     /***Filters***/
     filterActive = "&filter[active]=";
     filterIdCart = "&filter[id_cart]=";
+    filterIdCurrency = "&filter[id_currency]=";
     filterIdCustomer = "&filter[id_customer]=";
     filterDeleted = "&filter[deleted]=";
     filterNeedRange = "&filter[need_range]=";

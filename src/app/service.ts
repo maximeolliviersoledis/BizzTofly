@@ -44,4 +44,18 @@ export class Service {
     getRequest(request: HttpRequest<any>){
         return this.httpClient.request(request);
     }
+
+    getCurrency(currencyId): any{
+        var urlDir;
+        if(currencyId == 0)
+            urlDir = this.constService.baseDirApiSoledis + "/get_default_currency/" + currencyId + this.constService.keyDir + this.constService.formatDir;
+        else
+            urlDir = this.constService.baseDir + "/currencies/" + currencyId + this.constService.keyDir + this.constService.formatDir;
+        return this.httpClient.get(urlDir);
+    }
+
+    getCountryByIsoCode(iso_code): any{
+        var urlDir = this.constService.baseDir + '/countries' + this.constService.keyDir + this.constService.formatDir;
+        return this.httpClient.get(urlDir);
+    }
 }

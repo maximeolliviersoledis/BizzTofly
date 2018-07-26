@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, AlertController } from 'ionic-angular';
 import { ReductionListService } from './reduction-list.service';
-import {Service} from '../../app/service';
+import { Service } from '../../app/service';
 import { Storage } from '@ionic/storage';
+import { ConstService } from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -23,7 +24,8 @@ export class ReductionListPage {
   			  private storage:Storage,
   			  public reductionListService:ReductionListService,
   			  public alertCtrl:AlertController,
-          public service:Service) {
+          public service:Service,
+          private constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'My reductions'};        
 
   }

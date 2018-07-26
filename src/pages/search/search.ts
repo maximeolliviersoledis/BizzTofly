@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { SearchService } from './search.service';
+import { ConstService } from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -16,7 +17,7 @@ export class SearchPage {
   items: any[] = [];
   nbOfItemToLoad: number = 8; //Charge les items 5 par 5, ce chiffre peut-être défini par le module de paramtrage
 
-  constructor(public navCtrl: NavController, public navParams: NavParams, private searchService:SearchService) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private searchService:SearchService, public constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Search results'};  	
         this.searchResults = this.navParams.get('results');
         this.maxItem = this.searchResults.length;

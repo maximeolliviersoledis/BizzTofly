@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController, IonicPage, LoadingController, Platform} from 'ionic-angular';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
-import {ToastController} from 'ionic-angular';
 import {Facebook} from '@ionic-native/facebook';
 import {GooglePlus} from '@ionic-native/google-plus';
 import {TwitterConnect} from '@ionic-native/twitter-connect';
@@ -20,7 +19,6 @@ export class RegistrationPage {
     user: FormGroup;
 
     constructor(public navCtrl: NavController,
-                public toastCtrl: ToastController,
                 public fb: FormBuilder,
                 public facebook: Facebook,
                 public googlePlus: GooglePlus,
@@ -82,7 +80,7 @@ export class RegistrationPage {
                          this.constService.accessToken = data;
                      })
 
-                     this.displayToast("Votre compte a bien été enregistré", 2000);
+                     this.constService.createToast({message: "Your account has been successfully registered"});
                      this.storage.set('user', connect);
                      localStorage.setItem('userLoggedIn', "true");
                      this.navCtrl.setRoot("HomePage");
@@ -96,17 +94,10 @@ export class RegistrationPage {
         })
     }
 
-    displayToast(message, duration) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: duration
-        });
-        toast.present();
-    }
-
     ngOnInit(): any {
         console.log("Registration Page on init");
-        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+        //var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+        var emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
         var userRegex = "^[a-zA-Z- ]+";
         //On peut également appliquer des patterns au mot de passe
         this.user = this.fb.group({

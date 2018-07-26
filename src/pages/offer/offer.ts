@@ -1,7 +1,8 @@
 import {Component, ViewChild} from '@angular/core';
-import {NavController, NavParams, Slides,IonicPage,LoadingController, Events} from 'ionic-angular';
+import {NavController, NavParams, Slides,IonicPage, Events} from 'ionic-angular';
 import { OfferService } from './offer.service'; 
 import { Storage } from '@ionic/storage';
+import { ConstService } from '../../providers/const-service';
 
 
 @IonicPage()
@@ -17,25 +18,22 @@ export class OfferPage {
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
-                private loadingCtrl:LoadingController,
                 private offerService:OfferService,
                 private storage:Storage,
-                private events:Events) {
+                private events:Events,
+                private constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Offers'};        
     }
 
     ngOnInit() {
-      let loader= this.loadingCtrl.create({
-        content:'please wait..'
-      })
-      loader.present();
+      this.constService.presentLoader();
       this.storage.get('user').then(userData => {
         var customerId = userData && userData.id_customer ? userData.id_customer : null;
         this.offerService.getAllProducts(customerId).subscribe(data => {
           this.productsInPromo = data;
         })
       })
-      loader.dismiss();
+      this.constService.dismissLoader();
     }
 
     ionViewWillLeave(){

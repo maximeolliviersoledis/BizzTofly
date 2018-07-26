@@ -97,6 +97,6 @@ export class FavouritePage {
     }
 
     home() {
-        this.navCtrl.push("HomePage");
+        this.navCtrl.setRoot("HomePage");
     }
 }

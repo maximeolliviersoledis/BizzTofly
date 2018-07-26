@@ -67,6 +67,28 @@ page-checkout {
           margin: 0 8px;
       }
     } 
+
+
+     .inline-item{
+      display: inline-flex;
+      width: 100% !important;
+     }
+
+     .inline-item > :first-child{
+      width: 50% !important;
+     }
+
+     .inline-item > :nth-child(2){
+      width: 90% !important;
+     }
+
+     .inline-item > :last-child{
+      width: 85% !important;
+     }
+
+     #cvv{
+        border-left:1px solid #d4d4d4!important;
+     }
     .form-half{
       .item{
         border:0;

@@ -3,6 +3,7 @@ import {NavController, NavParams, IonicPage,LoadingController, Platform, Events,
 import {Service} from '../../app/service';
 import {OrderDetailsService} from './order-details.service';
 import {Storage} from '@ionic/storage';
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -26,7 +27,8 @@ export class OrderDetailsPage {
                 private platform:Platform,
                 private events:Events,
                 private alertCtrl:AlertController,
-                private storage:Storage) {
+                private storage:Storage,
+                private constService:ConstService) {
 
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Order details'};
     }
@@ -171,6 +173,12 @@ export class OrderDetailsPage {
             }
         }
 
+    }
+
+    checkOrderStatus(){
+        this.navCtrl.push("OrderStatusPage", {
+            order: this.orderDetails
+        })
     }
 
     private objectToArray(object){

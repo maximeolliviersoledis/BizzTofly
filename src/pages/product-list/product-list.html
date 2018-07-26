@@ -13,13 +13,8 @@
               <p class="item-name">{{menuItem.name}}</p>
               <p class="item-detail" text-wrap><span class="trim-info">{{menuItem.name}}</span></p>
               <p class="item-detail">{{"Price:" | translate}}
-                <span class="item-reduction" *ngIf="priceIsReduced(menuItem)">{{menuItem.prices.normal_price}} €</span>
-                 <span class="item-price">{{menuItem.prices.specific_price | number:'.2-2'}} €</span>
-                <!--<span class="item-reduction" *ngIf="menuItem.prices.specific_price!=menuItem.prices.normal_price">${{menuItem.prices.specific_price}}</span>
-                <span class="item-price">
-                ${{menuItem.price | number:'.2-2'}}</span>-->
-              <!--<span *ngIf="!menuItem.price[0].specialPrice" class="item-price">${{menuItem.price[0].value}}</span>
-              <span *ngIf="menuItem.price[0].specialPrice" class="item-price">${{menuItem.price[0].specialPrice}}</span>-->
+                <span class="item-reduction" *ngIf="priceIsReduced(menuItem)">{{menuItem.prices.normal_price | currencyPipe:constService.currency}}</span>
+                <span class="item-price">{{menuItem.prices.specific_price | currencyPipe:constService.currency}}</span>
           </p>
           <ion-row *ngIf="menuItem.avg_grade">
             <div class="product-rating">

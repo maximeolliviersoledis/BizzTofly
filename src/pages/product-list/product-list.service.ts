@@ -10,12 +10,14 @@ export class ProductListService {
     }
 
     getMenuItems(categoryId, customerId = 0) : any{
-        var urlDir = this.constService.baseDirApiSoledis+this.constService.categoriesListing+"/"+categoryId+ this.constService.keyDir+ this.constService.formatDir + this.constService.filterUser + customerId;
+        var urlDir = this.constService.baseDirApiSoledis+this.constService.categoriesListing+"/"+categoryId+ this.constService.keyDir+ this.constService.formatDir + this.constService.filterUser + customerId 
+        + this.constService.filterIdCurrency + this.constService.currency.id;
         return this.http.get(urlDir);
     }
 
-    getProduct(productId) : any{
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+    getProduct(productId, customerId = 0) : any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir +  this.constService.filterUser + customerId 
+        + this.constService.filterIdCurrency + this.constService.currency.id;
         return this.http.get(urlDir);
     }
 

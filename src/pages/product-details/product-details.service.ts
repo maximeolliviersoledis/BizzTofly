@@ -9,7 +9,7 @@ export class ProductDetailsService {
     constructor(public http: HttpClient, public constService: ConstService) {}
 
     getProductDetails(productId, customerId = null) : any{
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productDetail + "/" + productId + this.constService.keyDir + this.constService.formatDir + this.constService.filterUser + customerId + this.constService.filterIdCurrency + this.constService.currency.id;
         return this.http.get(urlDir);
     }
 
@@ -76,7 +76,8 @@ export class ProductDetailsService {
 
 
      getFamilyProducts(productId) : any{
-         var urlDir = this.constService.baseDirApiSoledis + this.constService.familyProductDir + "/" + productId + this.constService.keyDir + this.constService.formatDir;
+         var urlDir = this.constService.baseDirApiSoledis + this.constService.familyProductDir + "/" + productId + this.constService.keyDir + this.constService.formatDir 
+         + this.constService.filterIdCurrency + this.constService.currency.id;
          return this.http.get(urlDir);
      }
 

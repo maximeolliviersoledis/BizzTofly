@@ -54,4 +54,9 @@ export class CartService {
             }).take(this.constService.nbOfRetry).concat(Observable.throw({error: 'Sorry, there was an error after 5 retries'}));
         });
     }
+
+    getImageUrl(productId, imageId) : any{
+        var urlDir = this.constService.baseDir + this.constService.imageDir + this.constService.productDir + "/" + productId + "/" + imageId + this.constService.keyDir;
+        return urlDir;
+    }
 }

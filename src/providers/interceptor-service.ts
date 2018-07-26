@@ -16,7 +16,7 @@ export class ResponseInterceptor implements HttpInterceptor{
 
 	intercept(req: HttpRequest<any>, next:HttpHandler){
 		var newRequest;
-		if(this.constService.accessToken && this.constService.user && this.constService.user.id_customer){
+		if(this.constService.accessToken && this.constService.user && this.constService.user.id_customer && !(req.url.search('api.stripe') != -1)){
 			newRequest = req.clone({
 				setParams: {
 					'JWT': this.jwt.encode({

@@ -16,7 +16,7 @@
                <ion-label *ngIf="payment.name == 'bankwire'"><img src="assets/img/bank-transfer.png" alt="bankwire"> {{'Bankwire payment' | translate}}</ion-label>
                <ion-label *ngIf="payment.name == 'cheque'"><img src="assets/img/check.png" alt="cheque"> {{'Cheque payment' | translate}}</ion-label>
                <ion-label *ngIf="payment.name == 'paypal'"><img src="assets/img/paypal.png" alt="paypal"> {{'Pay with PayPal' | translate}}</ion-label>
-               <ion-label *ngIf="payment.name == 'stripe'"><img src="assets/img/payment-stripe.png" alt="stripe">{{'Pay with Stripe' | translate}}</ion-label>
+               <ion-label *ngIf="payment.name == 'stripe_official'"><img src="assets/img/payment-stripe.png" alt="stripe">{{'Pay with Stripe' | translate}}</ion-label>
                <ion-radio item-left value="{{payment.id_module}}" 
                      (ionSelect)="choosePaymentType(payment)"></ion-radio>
                      <!--<img *ngIf="payment.name == 'bankwire'" src="../assets/img/credit-card.png" alt="bankwire">
@@ -31,50 +31,101 @@
 
 
     <h6 class="form-title"></h6>
-        <section class="payment" *ngIf="orderData.paymentOption.name =='stripe'">
-        <form #f="ngForm">
-    <ion-list class="form-data">
-    <ion-item>
-      <ion-input type="number" name="cardNumber" id="cardNumber" placeholder="Card Number"
-          [(ngModel)]=cardInfo.cardNumber required></ion-input>
-          <ion-icon name="card" item-right></ion-icon>
-    </ion-item>
+    <section class="payment" *ngIf="orderData.paymentOption.name =='stripe_official'">
+      <form #f="ngForm">
+        <ion-list class="form-data">
+          <ion-item>
+            <ion-input type="number" name="cardNumber" id="cardNumber" placeholder="Card Number"
+            [(ngModel)]=cardInfo.cardNumber required></ion-input>
+            <ion-icon name="card" item-right></ion-icon>
+          </ion-item>        
+          <div class="inline-item">        
+            <ion-item>
+                <ion-input type="number" name="month" id="month" placeholder="MM"
+                [(ngModel)]=cardInfo.expiryMonth required></ion-input>
+            </ion-item>
+            <ion-item>
+                  <ion-input type="number" name="year" id="year" placeholder="YYYY"
+                  [(ngModel)]=cardInfo.expiryYear required></ion-input>
+                  <ion-icon name="calendar" item-right></ion-icon>
+            </ion-item>
+            <ion-item>
+                  <ion-input type="number" name="cvv" id="cvv" placeholder="Card Code"
+                  [(ngModel)]=cardInfo.cvc required></ion-input>
+                  <ion-icon name="code" item-right></ion-icon>
+            </ion-item>
+          </div>
+          <!--<ion-row class="form-half">
+            <ion-col col-2>
+              <ion-item >
+                <ion-input type="number" name="month" id="month" placeholder="MM"
+                [(ngModel)]=cardInfo.expiryMonth required></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col col-4>
+              <ion-item>
+                <ion-input type="number" name="year" id="year" placeholder="YYYY"
+                [(ngModel)]=cardInfo.expiryYear required></ion-input>
+                <ion-icon name="calendar" item-right></ion-icon>
+              </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item class="right">
+                <ion-input type="number" name="cvv" id="cvv" placeholder="Card Code"
+                [(ngModel)]=cardInfo.cvc required></ion-input>
+                <ion-icon name="code" item-right></ion-icon>
+              </ion-item>
+            </ion-col>
+          </ion-row>-->
+          <ion-item>
+            <ion-input type="text" name="cardName" id="cardName" placeholder="Card Holder's Name" required></ion-input>
+            <ion-icon name="person" item-right></ion-icon>
+          </ion-item>
+        </ion-list>
+      </form>
+      <!--<form #f="ngForm">
+        <ion-list class="form-data">
+          <ion-item>
+            <ion-input type="number" name="cardNumber" id="cardNumber" placeholder="Card Number"
+            [(ngModel)]=cardInfo.cardNumber required></ion-input>
+            <ion-icon name="card" item-right></ion-icon>
+          </ion-item>
 
-   <ion-row class="form-half">
-    <ion-col col-2>
-    <ion-item >
-      <ion-input type="number" name="month" id="month" placeholder="MM"
-           [(ngModel)]=cardInfo.expiryMonth required></ion-input>
-    </ion-item>
-    </ion-col>
-    <ion-col col-4>
-    <ion-item>
-      <ion-input type="number" name="year" id="year" placeholder="YYYY"
-            [(ngModel)]=cardInfo.expiryYear required></ion-input>
-            <ion-icon name="calendar" item-right></ion-icon>
-    </ion-item>
-    </ion-col>
-    <ion-col col-6>
-    <ion-item class="right">
-      <ion-input type="number" name="cvv" id="cvv" placeholder="Card Code"
-            [(ngModel)]=cardInfo.cvc required></ion-input>
-             <ion-icon name="code" item-right></ion-icon>
-    </ion-item>
-    </ion-col>
-   </ion-row>
-    <ion-item>
-      <ion-input type="text" name="cardName" id="cardName" placeholder="Card Holder's Name" required></ion-input>
-          <ion-icon name="person" item-right></ion-icon>
-    </ion-item>
-</ion-list>
-</form>
- </section>
- <div class="btn-wrapper">
+          <ion-row class="form-half">
+            <ion-col col-2>
+              <ion-item >
+                <ion-input type="number" name="month" id="month" placeholder="MM"
+                [(ngModel)]=cardInfo.expiryMonth required></ion-input>
+              </ion-item>
+            </ion-col>
+            <ion-col col-4>
+              <ion-item>
+                <ion-input type="number" name="year" id="year" placeholder="YYYY"
+                [(ngModel)]=cardInfo.expiryYear required></ion-input>
+                <ion-icon name="calendar" item-right></ion-icon>
+              </ion-item>
+            </ion-col>
+            <ion-col col-6>
+              <ion-item class="right">
+                <ion-input type="number" name="cvv" id="cvv" placeholder="Card Code"
+                [(ngModel)]=cardInfo.cvc required></ion-input>
+                <ion-icon name="code" item-right></ion-icon>
+              </ion-item>
+            </ion-col>
+          </ion-row>
+          <ion-item>
+            <ion-input type="text" name="cardName" id="cardName" placeholder="Card Holder's Name" required></ion-input>
+            <ion-icon name="person" item-right></ion-icon>
+          </ion-item>
+        </ion-list>
+      </form>-->
+    </section>
+    <div class="btn-wrapper">
       <button ion-button full  type="button" 
-         [disabled]="orderData.paymentOption =='stripe' && (!cardInfo.cardNumber || !cardInfo.expiryMonth || !cardInfo.expiryYear || !cardInfo.cvc)" 
-          (click)="checkoutTest()">
-            {{"Pay Now" | translate}}
-      </button>
+      [disabled]="orderData.paymentOption =='stripe_official' && (!cardInfo.cardNumber || !cardInfo.expiryMonth || !cardInfo.expiryYear || !cardInfo.cvc)" 
+      (click)="checkout()">
+      {{"Pay Now" | translate}}
+    </button>
   </div>
 </ion-list>
 

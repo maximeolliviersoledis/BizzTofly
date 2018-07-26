@@ -22,7 +22,7 @@
 		</ul>-->
 		<p> {{'Please send us a cheque with' | translate}} :</p>
 		<ul>
-			<li> {{'Payment amount' | translate}} : {{totalPaid | number:'.2-2'}} €</li>
+			<li> {{'Payment amount' | translate}} : {{totalPaid | currencyPipe:constService.currency}}</li>
 			<li> {{'Payable to the order of' | translate}} : {{paymentDetails.details.owner_name}}</li>
 			<li> {{'Mail to' | translate}} : {{paymentDetails.details.address}}</li>
 			<li> {{'Do not forget to insert your order reference' | translate}} {{paymentDetails.details.order_reference}}</li>
@@ -44,7 +44,7 @@
 		</ul>-->
 		<p> {{'Please send us a bank wire with' | translate}} :</p>
 		<ul>
-			<li> {{'Amount' | translate}} : {{totalPaid | number:'.2-2'}} €</li>
+			<li> {{'Amount' | translate}} : {{totalPaid | currencyPipe:constService.currency}}</li>
 			<li> {{'Name of account owner' | translate}} : {{paymentDetails.details.owner_name}}</li>
 			<li> {{'Include these details' | translate}} : {{paymentDetails.details.details}}</li>
 			<li> {{'Bank name' | translate}} : {{paymentDetails.details.address}}</li>

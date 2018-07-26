@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, AlertController, PopoverController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { CarrierService } from './carrier.service';
-import {Storage} from '@ionic/storage';
-import {CgvPage} from '../cgv/cgv';
+import { Storage } from '@ionic/storage';
+import { CgvPage } from '../cgv/cgv';
+import { ConstService } from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -26,10 +27,9 @@ export class CarrierPage {
   constructor(public navCtrl: NavController, 
   			  public navParams: NavParams,
   			  public carrierService: CarrierService,
-    		  public alertCtrl:AlertController,
           private storage:Storage,
-          public popoverCtrl:PopoverController,
-          private events:Events
+          private events:Events,
+          private constService:ConstService
   			  ) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Carrier'};        
         this.order_header_data = {currentStep: 2, pageName: "Carrier"};
@@ -41,24 +41,11 @@ export class CarrierPage {
     console.log(this.orderData);
     console.log(this.cartData);
     this.storage.get('user').then((customer)=>{
-     /* this.carrierService.getAllCarriers(customer.id_customer,this.cartData.cart.id).subscribe(data => {
-        console.log(data);
-        console.log(this.objectToArray(data));
-        for(var carrier of this.objectToArray(data)){
-          console.log(carrier);
-          if(this.objectToArray(carrier.carrier_list)[0].logo)
-            carrier.image = this.carrierService.getCarrierImageUrl(this.objectToArray(carrier.carrier_list)[0].logo);
-          else
-            carrier.image = false;
-          this.carriers.push(carrier);
-        }
-        console.log(this.carriers);      
-      });*/
       this.carrierService.getAllCarriers(customer.id_customer, this.cartData.cart.id).subscribe(data => {
         for(var i of this.objectToArray(data)){
           for(var carrier of this.objectToArray(i)){
             if(this.objectToArray(carrier.carrier_list)[0].logo)
-            carrier.image = this.carrierService.getCarrierImageUrl(this.objectToArray(carrier.carrier_list)[0].logo);
+              carrier.image = this.carrierService.getCarrierImageUrl(this.objectToArray(carrier.carrier_list)[0].logo);
             else
               carrier.image = false;
             this.carriers.push(carrier);
@@ -87,25 +74,13 @@ export class CarrierPage {
         })
       });
   	}else if(!this.acceptCGV){
-  		this.showAlert('Veuillez accepter les cgv !');
+      this.constService.createAlert({message: 'You have to accept the cgv'});
   	}else{
-      this.showAlert('Veuillez sélectionner un transporteur !');
+     this.constService.createAlert({message: 'You have to select a carrier'});
     }
   }
 
-  private showAlert(message) {
-    let alert = this.alertCtrl.create({
-      subTitle: message,
-      buttons: ['OK']
-    });
-    alert.present();
-  }
-
-  showCGV($event){
-    /*let popover = this.popoverCtrl.create(CgvPage);
-    popover.present({
-      ev: $event
-    });*/
+  showCGV(){
     this.navCtrl.push("CgvPage");
   }
 
@@ -141,7 +116,7 @@ export class CarrierPage {
                 id_address_delivery: this.orderData.shippingAddress.address.id,
                 id_address_invoice: this.orderData.shippingAddress.address.id,
                 id_carrier: this.objectToArray(this.carrier.carrier_list)[0].instance.id,
-                id_currency: 1,
+                id_currency: this.constService.currency.id,
                 id_customer: cart.cart.id_customer,
                 delivery_option: this.formatDeliveryOption(this.objectToArray(this.carrier.carrier_list)[0].instance.id),
                 id_lang: 1,

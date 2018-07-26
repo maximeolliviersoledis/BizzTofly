@@ -3,37 +3,6 @@
 </ion-header>
 
 <ion-content>
-    <!--<ion-row>
-        <ion-slides class="full-slide" *ngIf="productsInPromo && productsInPromo.length > 0" initialSlide=0 speed=1000 loop=true autoplay="3000">
-            <ion-slide *ngFor="let product of productsInPromo">
-                <div class="overlay">
-                    <img src="{{product.image}}" class="slider-img">
-                    <div class="offer-label">
-                        <span class="square text-center light assertive-bg ng-binding">{{product.percent_off | number:'.0-0'}}% OFF</span>
-                        <i class="triangle"></i>
-                    </div>
-                    <ion-row class="card-title">
-                        <ion-col col-2>
-                            <div class="arrow">
-                                <ion-icon name="arrow-dropleft" (click)="gotoPrevSlide()"></ion-icon>
-                            </div>
-                        </ion-col>
-                        <ion-col col-8>
-                            {{product.name}}
-                        </ion-col>
-                        <ion-col col-2 class="arrow">
-                            <ion-icon name="arrow-dropright" (click)="gotoNextSlide()"></ion-icon>
-                        </ion-col>
-                    </ion-row>
-                </div>
-
-                <p class="price"><b>{{'Original Price :' | translate}} </b> <span class="total line"> ${{product.prices.normal_price}}</span></p>
-                <p class="price"><b>{{'Offer Price :'|translate}} </b><span class="total"> ${{product.prices.specific_price}}</span></p>
-                <p class="desc"><b>{{'Product Description :'|translate}} </b><span [innerHTML]="product.description_short"></span></p>
-                <br>
-            </ion-slide>
-        </ion-slides>
-    </ion-row>-->
     <ion-row>
         <ion-slides class="full-slide" *ngIf="productsInPromo && productsInPromo.length > 0" initialSlide=0 spedd=1000 loop=true autoplay=3000>
             <ion-slide *ngFor="let product of productsInPromo">
@@ -56,8 +25,10 @@
                     </ion-row>
                 </div>
                 
-                <p class="price"><b>{{'Original Price :' | translate}} </b> <span class="total line"> ${{product.prices.normal_price}}</span></p>
-                <p class="price"><b>{{'Offer Price :'|translate}} </b><span class="total"> ${{product.prices.specific_price}}</span></p>
+                <!--<p class="price"><b>{{'Original Price :' | translate}} </b> <span class="total line"> ${{product.prices.normal_price}}</span></p>
+                <p class="price"><b>{{'Offer Price :'|translate}} </b><span class="total"> ${{product.prices.specific_price}}</span></p>-->
+                <p class="price"><b>{{'Original Price :' | translate}} </b> <span class="total line">{{product.prices.normal_price | currencyPipe:constService.currency}}</span></p>
+                <p class="price"><b>{{'Offer Price :'|translate}} </b><span class="total">{{product.prices.specific_price | currencyPipe:constService.currency}}</span></p>
                 <p class="desc"><b>{{'Product Description :'|translate}} </b><span [innerHTML]="product.description_short"></span></p>
             </ion-slide>
         </ion-slides>

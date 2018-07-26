@@ -57,6 +57,16 @@ export class SettingsService {
         });
     }
 
+    getCountries(idCountry = false): any{
+        let urlDir;
+        if(idCountry)
+            urlDir = "http://www.bizztofly.com/api/countries/"+idCountry+"?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON";
+        else
+            urlDir = "http://www.bizztofly.com/api/countries?ws_key=P67RDX29JM5ITD4JA5A56GZJSIXGXBKL&output_format=JSON&filter[active]=1";
+
+        return this.http.get(urlDir);
+    }
+
     private formatData(data) : any{
         let item = Object.keys(data);
         let ret = '';

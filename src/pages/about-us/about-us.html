@@ -5,8 +5,10 @@
     <custom-header [header]="header_data"></custom-header>
 </ion-header>
 
-
 <ion-content>
+    <div [innerHTML]="aboutUs"></div>
+</ion-content>
+<!--<ion-content>
 
     <ion-slides initialSlide=0 speed=2000 loop=true dir="rtl">
         <ion-slide>
@@ -32,7 +34,6 @@
 
     </ion-slides>
 
-    <!--about-->
     <div class="wrapper">
         <h4 class="heading">{{"About Us" | translate}} </h4>
         <p class="details">
@@ -47,7 +48,6 @@
             efficiency and profitability.
         </p>
 
-        <!--Get in touch-->
         <h4 class="heading">{{"Get In Touch" | translate}} &nbsp;<ion-icon name="arrow-dropdown"></ion-icon>
         </h4>
         <ion-card>
@@ -63,5 +63,5 @@
         </ion-card>
 
     </div>
-</ion-content>
+</ion-content>-->
 

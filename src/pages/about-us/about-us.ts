@@ -1,57 +1,46 @@
 import {Component, ViewChild} from '@angular/core';
 import {NavController, NavParams, IonicPage, Events} from 'ionic-angular';
 import {Nav, Platform} from 'ionic-angular';
-import {Slides} from 'ionic-angular';
-import {CallNumber} from '@ionic-native/call-number';
-import {EmailComposer} from '@ionic-native/email-composer';
-
+import {AboutUsService} from './about-us-service';
 
 @IonicPage()
 @Component({
     selector: 'page-about-us',
     templateUrl: 'about-us.html',
-    providers: [CallNumber, EmailComposer]
+    providers: [AboutUsService]
 })
 export class AboutUsPage {
-
-    @ViewChild(Slides) slides: Slides;
-
     @ViewChild(Nav) nav: Nav;
-    contactNo: any = 7376421282;
     header_data:any;
+    aboutUs: any;
 
     constructor(public platform: Platform,
                 public navCtrl: NavController,
                 public navParams: NavParams,
-                public callNumber: CallNumber,
-                public emailComposer: EmailComposer,
-                private events:Events) {
+                private events:Events,
+                private aboutService:AboutUsService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'About Us'};        
+    }
+
+    ionViewDidLoad(){
+        this.aboutService.getAboutUs().subscribe((data) => {
+            this.aboutUs = data.content.content[0].value;
+        })
     }
 
     ionViewWillLeave(){
         this.events.publish("hideSearchBar");
     }
 
-    goToSlide() {
-        this.slides.slideTo(2, 500);
+    getCmsImage(){
+        
     }
 
-    callUs() {
-        this.callNumber.callNumber(this.contactNo, true)
-            .then(() => console.log('Launched dialer!'))
-            .catch(() => console.log('Error launching dialer'));
+    /*goToSlide() {
+        this.slides.slideTo(2, 500);
     }
 
     gotogoogleMap() {
         this.navCtrl.push("LocationPage");
-    }
-
-    contact() {
-        let email = {
-            to: 'san10694@gmail.com',
-            isHtml: true
-        };
-        this.emailComposer.open(email);
-    }
+    }*/
 }

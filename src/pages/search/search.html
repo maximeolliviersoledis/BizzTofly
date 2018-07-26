@@ -28,8 +28,8 @@
 				<ion-item (click)="goToProductPage(item.id)">
 					<h2 class="item-name">{{item.name}}</h2>
 					<p class="item-prices">
-						<span class="item-reduction" *ngIf="item.prices.specific_price < item.prices.normal_price">{{item.prices.normal_price}} €</span>
-	                 	<span class="item-price">{{item.prices.specific_price | number:'.2-2'}} €</span>
+						<span class="item-reduction" *ngIf="item.prices.specific_price < item.prices.normal_price">{{item.prices.normal_price | currencyPipe:constService.currency}}</span>
+	                 	<span class="item-price">{{item.prices.specific_price | currencyPipe:constService.currency}}</span>
 	                </p>
 				</ion-item>
 			</ion-col>

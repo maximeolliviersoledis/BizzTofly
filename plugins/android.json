@@ -7,16 +7,10 @@
     "files": {}
   },
   "installed_plugins": {
-    "call-number": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
     "com.paypal.cordova.mobilesdk": {
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
     "com.telerik.plugins.nativepagetransitions": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
-    "cordova-plugin-email": {
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
     "cordova-plugin-facebook4": {
@@ -37,9 +31,6 @@
       "MAX_STORE": "2",
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
-    "cordova-plugin-local-notification": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
     "cordova-plugin-network-information": {
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
@@ -51,16 +42,13 @@
       "TWITTER_KEY": "ConsumerKey",
       "TWITTER_SECRET": "ConsumerSecret",
       "PACKAGE_NAME": "com.soledis.bizzToFly"
+    },
+    "call-number": {
+      "PACKAGE_NAME": "com.soledis.bizzToFly"
     }
   },
   "dependent_plugins": {
     "card.io.cordova.mobilesdk": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
-    "cordova-plugin-badge": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
-    "cordova-plugin-device": {
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
     "cordova-plugin-splashscreen": {
@@ -70,12 +58,6 @@
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     },
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
-    "es6-promise-plugin": {
-      "PACKAGE_NAME": "com.soledis.bizzToFly"
-    },
-    "cordova-plugin-x-socialsharing": {
       "PACKAGE_NAME": "com.soledis.bizzToFly"
     }
   }

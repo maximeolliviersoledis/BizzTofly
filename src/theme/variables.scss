@@ -47,6 +47,9 @@ $toolbar-order-ios: (
   buttons-right: 6,
   menu-toggle-end: 7,);
 
+$alert-ios-title-font-size: 16px !important;
+
+
 
 // App Material Design Variables
 // --------------------------------------------------
@@ -61,6 +64,9 @@ $toolbar-order-md: (
   buttons-end: 5,
   buttons-right: 6,
   menu-toggle-end: 7,);
+
+$alert-md-title-font-size: 16px !important;
+$alert-md-message-text-color: #000 !important;
 
 // App Windows Variables
 // --------------------------------------------------

@@ -25,6 +25,12 @@
           <ion-option  *ngFor="let option of options" value="{{option.value}}"> {{option.language | translate}}</ion-option>
         </ion-select>
       </ion-item>
+      <ion-item *ngIf="countries && countries.length != 0">  
+        <ion-label>{{'Select a country' | translate}}</ion-label>
+        <ion-select [(ngModel)]="country" (ionChange)="changeCountry()">
+          <ion-option *ngFor="let c of countries" value="{{c.country.id}}"> {{c.country.name[0].value}} </ion-option>
+        </ion-select>
+      </ion-item>
       <ion-item>
         <ion-label class="other-label">{{'Notifications' | translate}}</ion-label>
         <ion-toggle [(ngModel)]="notification" name="notification" id="notification" (ionChange)="changeSetting()">

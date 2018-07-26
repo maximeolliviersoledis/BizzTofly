@@ -4,6 +4,7 @@ import { ProductListPage } from './product-list';
 import { TranslaterModule } from '../../app/translate.module';
 import { Ionic2RatingModule } from 'ionic2-rating';
 import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
     IonicPageModule.forChild(ProductListPage),
     TranslaterModule,
     Ionic2RatingModule,
-    CustomHeaderPageModule    
+    CustomHeaderPageModule,
+    PipesModule
   ],
   exports: [
     ProductListPage

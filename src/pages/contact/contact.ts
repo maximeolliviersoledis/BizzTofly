@@ -1,7 +1,6 @@
 import {Component} from '@angular/core';
 import {NavController, NavParams, IonicPage, ToastController} from 'ionic-angular';
 import {NgForm, FormBuilder, Validators, FormGroup} from "@angular/forms";
-import {EmailComposer} from '@ionic-native/email-composer';
 import {ContactService} from './contact.service';
 import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
 import {Storage} from '@ionic/storage';
@@ -11,7 +10,7 @@ import {Storage} from '@ionic/storage';
 @Component({
     selector: 'page-contact',
     templateUrl: 'contact.html',
-    providers: [EmailComposer, ContactService, NativePageTransitions]
+    providers: [ContactService, NativePageTransitions]
 })
 export class ContactPage {
     user: FormGroup;
@@ -23,7 +22,6 @@ export class ContactPage {
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
                 public toastCtrl: ToastController,
-                public emailComposer: EmailComposer,
                 public contactService: ContactService,
                 public formBuilder: FormBuilder,
                 public pageTransition:NativePageTransitions,
@@ -65,25 +63,6 @@ export class ContactPage {
 
             this.pageTransition.drawer(options);
     }
-    /*onSend(user: NgForm) {
-        this.emailComposer.open({
-                // You just need to change this Email address to your own email where you want to receive email.
-                to: 'ionicfirebaseapp@gmail.com',
-                subject: this.user.value.name,
-                body: this.user.value.message,
-                isHtml: true
-            },
-            function (callback) {
-                console.log('email view dismissed');
-            });
-       //this.user = '';
-    }*/
-
-    /*onSend(user: NgForm){
-        this.contactService.postMessage("0").subscribe(data => {
-            console.log(data);
-        })
-    }*/
 
     select(){
         this.contactService.getProductsForOrder(this.order).subscribe(data => {

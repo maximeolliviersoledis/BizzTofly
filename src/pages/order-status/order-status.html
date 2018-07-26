@@ -1,9 +1,6 @@
 <ion-header>
-    <ion-navbar>
-        <ion-title>{{"Order Status" | translate}}</ion-title>
-    </ion-navbar>
+    <custom-header [header]="header_data"></custom-header>
 </ion-header>
-
 
 <ion-content>
     <ion-row>
@@ -13,76 +10,14 @@
     </ion-row>
 
     <ion-list class="status-block">
-        <ion-item *ngFor="let notification of status.userNotification; let i=index ">
-            <ion-row>
-            <ion-col col-1 
-              *ngIf="notification.status=='Your order is cancelled,sorry for inconvenience.';else checked">
-            <ion-icon class="cancelled" name="close-circle"></ion-icon>
-            </ion-col>
-            <ng-template #checked>
-            <ion-col col-1>
-                <ion-icon class="checked" name="checkmark-circle"></ion-icon>
-            </ion-col>
-            </ng-template>
-                <ion-col col-11>
-                    <p class="time">
-                        <ion-icon name="time"></ion-icon>
-                        {{notification.time| date}}
-                    </p>
-                    <p> {{notification.status}}</p>
+      <ion-item *ngIf="currentStateDetails && currentStateDetails.order_state">
 
-                    <div *ngIf="i<=0">
-                        <p>Shipping Address:- {{status.shippingAddress.userName}}</p>
-                        <p>{{status.shippingAddress.contactNumber}}<br>{{status.shippingAddress.apartmentName}},{{status.shippingAddress.city}},{{status.shippingAddress.pincode}}
-                        </p>
-                    </div>
-                </ion-col>
-            </ion-row>
-        </ion-item>
-        <!-- <ion-item>
-         <ion-row>
-          <ion-col col-1>
-            <ion-icon class="checked" name="checkmark-circle"></ion-icon>
-          </ion-col>
-          <ion-col col-11>
-            <p class="time"><ion-icon name="time"></ion-icon>  10:12 am</p>
-           <p> Order is in process. </p>
-          </ion-col>
-          </ion-row>
-        </ion-item>
-        <ion-item>
-         <ion-row>
-          <ion-col col-1>
-            <ion-icon class="checked" name="checkmark-circle"></ion-icon>
-          </ion-col>
-          <ion-col col-11>
-            <p class="time"><ion-icon name="time"></ion-icon>  10:12 am</p>
-           <p>Item has been packed.Will be out for delivery shortly. </p>
-          </ion-col>
-          </ion-row>
-        </ion-item>
-        <ion-item>
-         <ion-row>
-          <ion-col col-1>
-            <ion-icon class="checked" name="checkmark-circle"></ion-icon>
-          </ion-col>
-          <ion-col col-11>
-            <p class="time"><ion-icon name="time"></ion-icon>  10:12 am</p>
-           <p>Out for delivery.Will reach you in 20 min. </p>
-          </ion-col>
-          </ion-row>
-        </ion-item>
-        <ion-item>
-         <ion-row>
-          <ion-col col-1>
-            <ion-icon class="checked" name="checkmark-circle"></ion-icon>
-          </ion-col>
-          <ion-col col-11>
-            <p class="time"><ion-icon name="time"></ion-icon>  10:12 am</p>
-           <p>Item Delivered. </p>
-          </ion-col>
-          </ion-row>
-        </ion-item> -->
+        <p *ngIf="orderIsPaid()">{{'This order has been paid' | translate}}</p>
+        <p *ngIf="!orderIsPaid()">{{'We are currently waiting the payment' | translate}}</p>
+        <br>
+        <p *ngIf="orderWillBeSoonDelivered()">{{'Your order is shipped or will be shipped soon' | translate}}</p>
+        <br>
+        <p class="order-state">{{'Your currently state order is' | translate}}: <strong>{{currentStateDetails.order_state.name[0].value}}</strong></p>
+      </ion-item>
     </ion-list>
-    <!--  <p class="thanx"><ion-icon name="thumbs-up"></ion-icon> Thanx for shopping with us.</p> -->
 </ion-content>

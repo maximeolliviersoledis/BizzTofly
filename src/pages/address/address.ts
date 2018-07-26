@@ -1,7 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams,LoadingController } from 'ionic-angular';
+import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { AddressService } from './address.service';
 import { Storage } from '@ionic/storage';
+import { ConstService } from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -32,12 +33,9 @@ export class AddressPage {
 
       constructor(public navCtrl: NavController,
         public navParams: NavParams,
-        public loadingCtrl:LoadingController,
         public addressService:AddressService,
-        private storage:Storage) {
-
-        //this.orderData=this.navParams.get('orderData');
-      }
+        private storage:Storage,
+        private constService:ConstService) {}
 
       ngOnInit() {
         this.selectedAddress = this.navParams.get('address');
@@ -58,10 +56,7 @@ export class AddressPage {
       }
 
       onSubmitAddress(){
-        let loader =this.loadingCtrl.create({
-          content:'please wait'
-        })
-        loader.present();
+        this.constService.presentLoader();
         let addressList = this.navParams.get('addressList');
         if(this.navParams.get('address')){
           this.addressService.putAddress(this.address.address.id, this.address).subscribe(data => {
@@ -73,7 +68,7 @@ export class AddressPage {
               }
             }
             console.log(addressList);
-            loader.dismiss();
+            this.constService.dismissLoader();
             this.navCtrl.push('AddressListPage',{
               amountDetails:this.navParams.get('amountDetails'),
               cartData: this.navParams.get('cartData'),
@@ -87,8 +82,8 @@ export class AddressPage {
             console.log(this.address);
             this.addressService.addAddress(this.address).subscribe(data => {
               addressList.push(data);
-              loader.dismiss();
-              this.navCtrl.push('AddressListPage',{
+              this.constService.dismissLoader();
+               this.navCtrl.push('AddressListPage',{
                 amountDetails:this.navParams.get('amountDetails'),
                 cartData: this.navParams.get('cartData'),
                 addressList: addressList,
@@ -98,38 +93,5 @@ export class AddressPage {
           })
 
         }
-
-        /*let loader =this.loadingCtrl.create({
-          content:'please wait'
-        })
-        loader.present();
-        if(this.navParams.get('selectedAddress')){
-          this.addressService.updateAddress(this.selectedAddress._id,this.address)
-          .subscribe(response=>{
-            loader.dismiss();
-            this.navCtrl.push("CheckoutConfirmPage",
-              { selectedAddress:response,
-                orderData:this.orderData 
-              });
-          },(error)=>{
-            loader.dismiss();
-          }) 
-        } else {
-          this.addressService.addAddress(this.address)
-          .subscribe(response=>{
-            loader.dismiss();
-            this.navCtrl.push("AddressListPage",{
-              amountDetails:this.navParams.get('amountDetails')
-            });
-
-          },(error)=>{
-            loader.dismiss();
-          })
-        }*/
-      }
-
-
-      confirm() {
-        this.navCtrl.push("CheckoutConfirmPage");
       }
     }

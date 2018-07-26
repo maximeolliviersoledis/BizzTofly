@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController,Events, AlertController, NavParams, IonicPage, LoadingController, Platform, ToastController} from 'ionic-angular';
+import {NavController,Events, AlertController, NavParams, IonicPage, LoadingController, Platform} from 'ionic-angular';
 import {FormGroup, FormBuilder, Validators} from '@angular/forms';
 import {Facebook} from '@ionic-native/facebook';
 import {GooglePlus} from '@ionic-native/google-plus';
@@ -30,10 +30,7 @@ export class LoginPage {
         public platform: Platform,
         public loginService: LoginService,
         private storage:Storage,
-        public toastCtrl:ToastController,
-        private constService:ConstService) {
-
-    }
+        private constService:ConstService) {}
 
     onLogin() {
         this.constService.presentLoader();
@@ -55,20 +52,15 @@ export class LoginPage {
                    else
                        this.navCtrl.setRoot("HomePage");
                 }else if(user.error){
-                    let alert = this.alertCtrl.create({
-                        title: "Erreur login",
-                        subTitle: "Noms d'utilisateurs ou mot de passe incorrect",
-                        buttons: ['OK']
+                    this.constService.createAlert({
+                        title: "Login error",
+                        message: "Incorrect user name or password"
                     });
-                    alert.present();
                 }else{
-                    console.log("Une erreur inconnue est survenue");
-                    let alert = this.alertCtrl.create({
-                        title: "Erreur!",
-                        subTitle: "Une erreur inconnue est survenue",
-                        buttons: ['OK']
-                    });
-                    alert.present();
+                    this.constService.createAlert({
+                        title: "Error",
+                        message: "An unknown error occurs"
+                    });   
                 }
                 this.constService.dismissLoader();                
             }, error => {
@@ -80,7 +72,8 @@ export class LoginPage {
     }
 
     ngOnInit(): any {
-        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+        var emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
+       // var emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
         //Possibilité de se connecter que lorsque l'utilisateur saisit une adresse mail conforme à la regex si dessus
         //De plus, le mot de passe saisit doit faire au minimum 5 caractères (se mettre en accord avec la page d'inscription)
         
@@ -91,22 +84,7 @@ export class LoginPage {
                 [Validators.required, Validators.minLength(5)])],
 
         });
-        /*this.user = this.fb.group({
-            email: ['info@ionicfirebaseapp.com', Validators.required],
-            password: ['123456', Validators.required],
-
-        });*/
     }
-
-    private renderImage(){
-        /*this.userService.getUser()
-        .subscribe(user=>{
-            this.events.publish('imageUrl',user.imageUrl);
-        })*/
-
-        
-    }
-
 
     doFbLogin() {
         let permissions = new Array();
@@ -133,18 +111,24 @@ export class LoginPage {
     googleLogin() {
         this.googlePlus.login({
             'scopes': '',
-            'webClientId': '557859355960-r2petg57jjsomcvkbs0bc4401n57l9ja.apps.googleusercontent.com',
+            //'webClientId': '557859355960-r2petg57jjsomcvkbs0bc4401n57l9ja.apps.googleusercontent.com',
+            'webClientId': '383564956806-k68pt32sl2hp1ofom2t128tb0m9qkl1a.apps.googleusercontent.com',
             'offline': true
         })
         .then((success) => {
             console.log("you have been successfully logged in by googlePlus!" + JSON.stringify(success));
                     //here post data to Api
-                    localStorage.setItem('user', success.userId);
+                   // localStorage.setItem('user', success.userId);
+                   alert(JSON.stringify(success));
+
                     this.navCtrl.setRoot("HomePage");
                 },
                 (error) => {
                     console.log('error' + JSON.stringify(error));
 
+                }).catch(error => {
+                    console.log(error);
+                    alert(JSON.stringify(error));
                 })
     }
 
@@ -161,6 +145,9 @@ export class LoginPage {
                         (onError) => {
                             console.log("user" + JSON.stringify(onError));
                         })
+                }, error => {
+                    console.log(error);
+                    alert(JSON.stringify(error));
                 })
             }
         })
@@ -181,7 +168,7 @@ export class LoginPage {
             //Récupères le dernier panier s'il n'est pas vide et n'a pas été commandé
             //if(data.carts && data.carts[0].id){//&& data.carts[0].id_address_invoice == 0 && data.carts[0].associations
             if(data && data.id){
-                let alert = this.alertCtrl.create({
+                /*let alert = this.alertCtrl.create({
                     title: "Panier trouvé",
                     subTitle: "Un panier à votre nom a été trouvé en ligne.\n Souhaitez vous le chargez ? (Attention, si vous aviez déjà un panier d'enregistré celui-ci sera perdu)",
                     buttons: [
@@ -203,7 +190,29 @@ export class LoginPage {
                     }
                     ]
                 });
-                alert.present();
+                alert.present();*/
+                this.constService.createAlert({
+                    title: "Cart found",
+                    message: "A cart has been found online. Do you want to load it? (If you already have an existing cart it will be lost)",
+                    buttons: [
+                    {
+                        text: 'Yes',
+                        handler: () => {
+                            console.log('Oui clicked');
+                            //cartId = data.carts[0].id;
+                            cartId = data.id;
+                            this.getExistingCart(cartId);
+                        }
+                    },
+                    {
+                        text: 'No',
+                        handler: () => {
+                            console.log('Non clicked');
+                            localStorage.removeItem('id_cart');
+                        }
+                    }
+                    ]
+                });
             }
         })
 
@@ -226,25 +235,43 @@ export class LoginPage {
                 }
             }else{
                 console.log("Le panier trouvé est vide");
-                let alert = this.alertCtrl.create({
-                    title: "Panier trouvé",
-                    subTitle: "Le panier trouvé est vide. Souhaitez-vous tout de même le charger? (Attention, si un panier est en cours ceci le supprimera)",
+                /*let alert = this.alertCtrl.create({
+                    title: "Cart found",
+                    message: "The cart found is empty. Do you still want to load it? (This action will remove the current cart on the device)",
                     buttons: [
                     {
-                        text: 'Oui',
+                        text: 'Yes',
                         handler: () => {
                             console.log('Oui clicked');
                             this.storage.remove('cart');
                         }
                     },
                     {
-                        text: 'Non',
+                        text: 'No',
                         handler: () => {
                         }
                     }
                     ]
                 });
-                alert.present();
+                alert.present();*/
+                this.constService.createAlert({
+                    title: "Cart found",
+                    message: "The cart found is empty. Do you still want to load it? (This action will remove the current cart on the device)",
+                    buttons: [
+                    {
+                        text: 'Yes',
+                        handler: () => {
+                            console.log('Oui clicked');
+                            this.storage.remove('cart');
+                        }
+                    },
+                    {
+                        text: 'No',
+                        handler: () => {
+                        }
+                    }
+                    ]
+                });
             }
        })
     }
@@ -329,27 +356,18 @@ export class LoginPage {
         console.log(this.emailForPassword.value);
         this.loginService.resetPassword(this.emailForPassword.value.email).subscribe((data:any) => {
             if(data == 1){
-                this.createToaster("Votre mot de passe a été réinitialisé. Un email a été envoyé à l'adresse indiqué",3000);
+                this.constService.createToast({message: "Your password has been resetted. A mail has been sent to your account", duration: 3000});
                 this.passwordReset = false;
             }else if(data == -1){
-                this.createToaster("Vous devez attendre 360 minutes entre chaque réinitialisation de mot de passe",3000);
+                this.constService.createToast({message: "You have to wait 360 minutes between each password reset", duration: 3000});
                 this.passwordReset = false;
             }else if(data == -2){
-                this.createToaster("Aucun compte correspondant à cette adresse mail n'a été trouvé",3000);
+                this.constService.createToast({message: "No account found for this email address", duration: 3000});
             }else {
-                this.createToaster("Votre mot de passe n'a pas pu être réinitialiser",3000);
+                this.constService.createToast({message: "Your password hasn't been reset", duration: 3000});
             }
         })
-    }
-
-    createToaster(message, duration) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: duration
-        });
-        toast.present();
-    }
-        
+    }        
 
     /**
     * Méthode permettant de cast un object en array

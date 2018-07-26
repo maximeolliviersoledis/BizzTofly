@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { OrderStatusPage } from './order-status';
 import { TranslaterModule } from '../../app/translate.module';
+import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
 
 @NgModule({
   declarations: [
@@ -9,7 +10,8 @@ import { TranslaterModule } from '../../app/translate.module';
   ],
   imports: [
     IonicPageModule.forChild(OrderStatusPage),
-    TranslaterModule
+    TranslaterModule,
+    CustomHeaderPageModule
   ],
   exports: [
     OrderStatusPage

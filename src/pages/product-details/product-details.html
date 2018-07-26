@@ -39,10 +39,9 @@
         <h1>{{productDetails.name}}</h1>
         <div class="desc" [innerHTML]="productDetails.description_short"></div>
         <div class="price-container">
-            <!-- <span>{{'Price' | translate}} : </span> -->
-            <span class="price">{{price | number:'.2-2'}} €</span>
+           <span class="price">{{price | currencyPipe:constService.currency}}</span>
         </div>
-        <div class="info-container">{{'Selected quantity' | translate}}: {{count}} | {{'Total price' | translate}}: {{totalPrice | number:'.2-2'}} €</div>
+        <div class="info-container">{{'Selected quantity' | translate}}: {{count}} | {{'Total price' | translate}}: {{totalPrice | currencyPipe:constService.currency}} <!--{{totalPrice | number:'.2-2'}} €--></div>
         <ion-item>
             <ion-label>{{'Combination' | translate}} :</ion-label>            
             <ion-select [(ngModel)]="id_declinaisons" (ionChange)="getCorrespondingCombination()" placeholder="{{'Select a combination' | translate}}">
@@ -50,74 +49,9 @@
             </ion-select>
         </ion-item>
 
-        <p *ngIf="displayNumberOfProductsInStock">{{'In stock' | translate}} :  {{quantity}}</p>    
-            <!--<div *ngIf="quantity>0;then thenBlock else elseBlock"></div>
-            <ng-template #thenBlock>{{'In stock' | translate}} : {{quantity}}</ng-template>
-            <ng-template #elseBlock>{{'Total in stock' | translate}} : {{productDetails.quantity}}</ng-template>-->
-        
-       <!-- <span *ngIf="productDetails.available_now == 'En stock'">Produit disponible</span>-->
-        
+        <p *ngIf="displayNumberOfProductsInStock">{{'In stock' | translate}} :  {{quantity}}</p>            
     </ion-row>
-    <!-- <ion-row>
-        <ion-col col-6>
-            <a (click)="addToCart(productDetails.id)" ion-button icon-left full class="btn-add-to-cart">
-                <ion-icon name="cart"></ion-icon>
-                {{'CHECKOUT' | translate}}
-            </a>
-        </ion-col>
-        <ion-col col-6>
-            <a (click)="home()" ion-button icon-left full class="btn-add-to-cart">
-                <ion-icon name="basket"></ion-icon>
-                {{'KEEP SHOPPING' |translate}}
-            </a>
-        </ion-col>
-    </ion-row> -->
-
-
-   <!-- <ion-row>
-        <ion-slides initialSlide=0 speed="3000" loop="true" pager="true" dir="rtl">
-            <ion-slide *ngFor="let img of productDetails.images">
-                <div class="overlay">
-                    <img src={{img}} class="slider-img">
-                </div>
-            </ion-slide>
-        </ion-slides>
-    </ion-row>-->
     <button class="comment-button" ion-button (click)="goToCommentsPage()">Voir les avis</button>
-    <!--<div *ngIf="comments && comments.length > 0">
-        <ion-label>{{'Comments' | translate}}</ion-label>
-        <ion-list>
-            <ion-item *ngFor="let comment of comments">
-                <rating class="test" name="rating" id="rating"
-                [(ngModel)]="comment.grade" readOnly="true"
-                max="5"
-                emptyStarIconName="star-outline"
-                halfStarIconName="star-half"
-                starIconName="star"
-                nullable="false"
-                ></rating>
-                <div  class="comment-customer-info">
-                    <p class="comment-title">{{comment.customer_name}}</p>
-                    <p class="comment-content">{{comment.date_add | date:'dd-MM-yyyy'}}</p>
-                </div>
-                <div class="comment">
-                    <p class="comment-title">{{comment.title}}</p>
-                    <p class="comment-content">{{comment.content}}</p>
-                </div>
-            </ion-item>
-        </ion-list>
-    </div>-->
-
-   <!--<ion-list>
-        <ion-label>{{'Similar products'  | translate}}:</ion-label>
-        <ion-row>
-            <ion-col *ngFor="let simp of similarProducts">
-                <ion-item (click)="goToProductPage(simp)">
-                    <img src={{simp.image}}>
-                </ion-item>
-            </ion-col>
-        </ion-row>
-    </ion-list>-->
     <ion-row>
         <ion-col col-12>
             <ion-label class="similar-products">{{'Similar products'  | translate}}:</ion-label>
@@ -127,30 +61,6 @@
     <ion-row>
          <ion-slides #similarProduct class="slides-similar-product" *ngIf="similarProducts && similarProducts.length > 0" speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10" (ionSlideTap)="goToProductPage()" (ionSlideNextStart)="onChange()" (ionSlidePrevStart)="onChange()">
                 <ion-slide *ngFor="let simp of similarProducts" activeSlide="true">
-                      <!-- <div class="overlay">
-                            <img src={{simp.image}} class="slider-img">
-                        </div>
-                        <div class="card-title">{{simp.name}}</div>
-                         <div *ngIf="simp.nb_comment > 0" class="card-rating">
-                            <rating name="rating" id="rating"
-                            [(ngModel)]="simp.avg_grade" readOnly="true"
-                            max="5"
-                            emptyStarIconName="star-outline"
-                            halfStarIconName="star-half"
-                            starIconName="star"
-                            nullable="false"
-                            ></rating>
-                          </div>
-                          <div *ngIf="simp.nb_comment == 1 " class="card-info-comment">{{simp.nb_comment}} {{'people comment out this product' | translate}}</div>
-                          <div *ngIf="simp.nb_comment > 1 " class="card-info-comment">{{simp.nb_comment}} {{'peoples comment out this product' | translate}}</div>
-                        <div class="card-price">{{simp.price}} €</div>-->
-                       <!-- <ion-row>
-                            <ion-col col-12>
-                                <div class="overlay-test">
-                                    <img src={{simp.image}} class="slider-img">
-                                </div>
-                            </ion-col>
-                        </ion-row >-->
                         <div class="overlay-test">
                             <img src={{simp.image}} class="slider-img">
                         </div>
@@ -183,7 +93,8 @@
                                 </ion-row>
                                 <ion-row>
                                     <ion-col col-12>
-                                        <div class="test">{{simp.price}} €</div>
+                                        <!--<div class="test">{{simp.price}} €</div>-->
+                                        <div class="test">{{simp.price | currencyPipe:constService.currency}}</div>
                                     </ion-col>
                                 </ion-row>
                             </ion-col>

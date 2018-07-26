@@ -91,8 +91,14 @@ page-settings {
     background-color: $primary !important;
   }
 
-  //Permet d'enlever la couleur grise des labels
+  //Permet d'enlever la couleur grise des labels pour android
   .item-input .label-md, .item-select .label-md, .item-datetime .label-md, .other-label{
+    color: #273960;
+    font-size: 1em;
+  }
+
+  //Permet d'enlever la couleur grise des labels pour ios
+  .item-input .label-ios, .item-select .label-ios, .item-datetime .label-ios, .other-label{
     color: #273960;
     font-size: 1em;
   }

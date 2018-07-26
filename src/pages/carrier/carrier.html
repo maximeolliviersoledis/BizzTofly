@@ -15,7 +15,8 @@
 					<ion-col col-9>
 					<p><strong>{{objectToArray(carrier.carrier_list)[0].instance.name}}</strong></p>
 					<p>{{'Delivery delay' | translate}} : {{objectToArray(objectToArray(carrier.carrier_list)[0].instance.delay)[0]}}</p>
-					<p>{{'Prix' |  translate}} : {{carrier.total_price_with_tax | number:'.2-2'}}€</p>
+					<!--<p>{{'Prix' |  translate}} : {{carrier.total_price_with_tax | number:'.2-2'}}€</p>-->
+					<p>{{'Prix' |  translate}} : {{carrier.total_price_with_tax | currencyPipe:constService.currency}}</p>
 					<p *ngIf="carrier.is_best_price && carrier.is_best_grade">{{'Best price and delivery delay' | translate}} !</p>
 					<p *ngIf="carrier.is_best_price && !carrier.is_best_grade">{{'Best price' | translate}} !</p>
 					<p *ngIf="!carrier.is_best_price && carrier.is_best_grade">{{'Best delivery delay' | translate}} !</p>

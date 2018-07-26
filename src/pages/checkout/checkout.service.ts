@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {ConstService} from "../../providers/const-service";
 import {URLSearchParams} from '@angular/http';
-import {HttpClient} from '@angular/common/http';
+import {HttpClient, HttpHeaders} from '@angular/common/http';
 import {Observable} from 'rxjs';
 
 @Injectable()
@@ -39,19 +39,34 @@ export class CheckoutService {
         });
     }
 
-    chargeStripe(token, currency, amount, stripe_secret_key) {
-       /* let secret_key = stripe_secret_key;
-        var headers = new Headers();
-        var params = new URLSearchParams();
-        headers.append('Content-Type', 'application/x-www-form-urlencoded');
-        headers.append('Authorization', 'Bearer ' + secret_key);
-        params.append("currency", currency);
+    chargeStripe(token, currency, amount, stripe_secret_key) : any {
+        let secret_key = stripe_secret_key;
+        /*params.append("currency", currency);
         params.append("amount", amount);
         params.append("description", "description");
         params.append("source", token);
-        console.log("params-"+JSON.stringify(params));
-        
-        return new Promise(resolve => {
+        console.log("params-"+JSON.stringify(params));*/
+
+        /*let params = {
+            currency: currency,
+            amount: amount,
+            description: "description",
+            source: token
+        };*/
+        let params = "&currency="+currency+"&amount="+amount+"&description=description&source="+token;
+        console.log(params);
+        var urlDir = 'https://api.stripe.com/v1/charges';
+        return new Promise<any>(resolve => {
+            this.http.post(urlDir, params, {
+                headers: new HttpHeaders({
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'Authorization': 'Bearer ' + secret_key
+                })
+            }).subscribe(data => {
+                resolve(data);
+            });
+        });
+        /*return new Promise(resolve => {
             this.http.post('https://api.stripe.com/v1/charges', params, {
                 headers: headers
             }).map(res => res.json())

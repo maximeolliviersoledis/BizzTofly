@@ -1,5 +1,5 @@
 import {Component} from "@angular/core";
-import {IonicPage, AlertController, NavParams, NavController, PopoverController, ToastController, Events} from "ionic-angular";
+import {IonicPage, NavParams, NavController, Events} from "ionic-angular";
 import {CartService} from './cart.service';
 import {Storage} from '@ionic/storage';
 import {NativePageTransitions, NativeTransitionOptions} from '@ionic-native/native-page-transitions';
@@ -30,9 +30,6 @@ export class CartPage {
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
-                public alertCtrl: AlertController,
-                public popoverCtrl: PopoverController,
-                public toastCtrl: ToastController,
                 private cartService:CartService,
                 private storage:Storage,
                 private event:Events,
@@ -194,15 +191,8 @@ export class CartPage {
             this.event.publish("updateCartBadge",  this.noOfItems);
             this.calculatePrice();
         }else{
-            let alert = this.alertCtrl.create({
-                title: "Quantity error!",
-                subTitle: "Your are trying to get more than you can",
-                buttons: ['OK']
-            });
-            alert.present();
+            this.constService.createAlert({title: "Quantity error", message: "You can't get more quantity of this product. You have reached the maximum stock for this product"});
         }
-        //this.applyCoupon();
-       // this.applyReduction();
     }
 
     remove(data) {
@@ -226,20 +216,12 @@ export class CartPage {
         //this.applyReduction();
     }
 
-    createToaster(message, duration) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: duration
-        });
-        toast.present();
-    }
-
     isCart(): boolean {
         return this.cartItems == null || this.cartItems.length == 0 ? false : true;
     }
 
     gotoHome() {
-        this.navCtrl.push("HomePage");
+        this.navCtrl.setRoot("HomePage");
     }
 
     deleteAllItem(){
@@ -268,7 +250,7 @@ export class CartPage {
                         id_address_delivery: null,
                         id_address_invoice: null,
                         id_carrier: 0,
-                        id_currency: 1,
+                        id_currency: this.constService.currency.id,
                         id_customer: customerId,
                         id_guest: null,
                         id_lang: 1,
@@ -310,7 +292,7 @@ export class CartPage {
                         id_address_delivery: null,
                         id_address_invoice: null,
                         id_carrier: 0,
-                        id_currency: 1,
+                        id_currency: this.constService.currency.id,
                         id_customer: customerId,
                         id_guest: null,
                         id_lang: 1,
@@ -352,19 +334,19 @@ export class CartPage {
                     this.cartService.applyReduction(this.user.id_customer, localStorage.getItem('id_cart'), availableReduction.id_cart_rule).subscribe(data => {
                         console.log(data);
                         if(data == true)
-                            this.createToaster("Bon de réduction appliqué avec succès !",3000);
+                            this.constService.createToast({message: 'Reduction successfully applied', duration: 3000});
                         else
-                            this.createToaster("Vous ne pouvez pas appliquer la même réduction 2 fois pour la même commande !",3000);              
+                           this.constService.createToast({message: "You can't apply the same coupon twice for the same order", duration: 3000});      
                     })
                     reductionMatch = true;
                     break;
                 }
             }
             if(!reductionMatch){
-                this.createToaster("Aucune réduction correspondant à ce code n'a été trouvée !",3000);
+                this.constService.createToast({message: "No matching reduction found for this coupon", duration: 3000});
             }
         }else{
-            this.createToaster("Veuillez saisir un code de réduction",3000);
+            this.constService.createToast({message: "You have to provide a reduction code", duration: 3000});
         }
     }
 }

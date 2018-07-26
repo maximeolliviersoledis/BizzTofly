@@ -4,6 +4,7 @@ import { RecapPage } from './recap';
 import { TranslaterModule } from '../../app/translate.module';
 import { CustomHeaderPageModule } from '../../pages/custom-header/custom-header.module';
 import { CustomOrderHeaderPageModule } from '../custom-order-header/custom-order-header.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -13,7 +14,8 @@ import { CustomOrderHeaderPageModule } from '../custom-order-header/custom-order
     IonicPageModule.forChild(RecapPage),
     TranslaterModule,
     CustomHeaderPageModule,
-    CustomOrderHeaderPageModule
+    CustomOrderHeaderPageModule,
+    PipesModule
   ],
 })
 export class RecapPageModule {}

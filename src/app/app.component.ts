@@ -4,7 +4,6 @@ import {StatusBar} from '@ionic-native/status-bar';
 import {SplashScreen} from '@ionic-native/splash-screen';
 import {Service} from '../app/service';
 import {OneSignal} from '@ionic-native/onesignal';
-import {SocialSharing} from '@ionic-native/social-sharing';
 import {SocketService } from '../providers/socket-service';
 import {TranslateService} from 'ng2-translate';
 import {Storage} from '@ionic/storage';
@@ -18,7 +17,7 @@ import {ConstService} from '../providers/const-service';
 @Component({
     templateUrl: 'app.html',
     selector: 'MyApp',
-    providers: [Service,SocialSharing,CategoryService, FCM, UniqueDeviceID, NativePageTransitions, Network]
+    providers: [Service,CategoryService, FCM, UniqueDeviceID, NativePageTransitions, Network]
 
 })
 export class MyApp {
@@ -35,7 +34,6 @@ export class MyApp {
                 public socketService:SocketService,
                 statusBar: StatusBar,
                 splashScreen: SplashScreen,
-                public socialSharing:SocialSharing,
                 public events:Events,
                 public translateService:TranslateService,
                 private storage:Storage,
@@ -49,6 +47,27 @@ export class MyApp {
                 private alertCtrl:AlertController) {
 
         platform.ready().then((res) => {
+            if(!localStorage.getItem('lang')){
+                let lang = window.navigator.language;
+                //Indique la langue dans le bon format (Même nom que les fichiers json)
+                if(lang.search('-')  != -1){
+                    lang = lang.split('-')[0];
+                }
+                platform.setLang(lang, true);
+            }
+
+            /*if(!localStorage.getItem('country')){
+                let country = window.navigator.language;
+                if(country.search('-') != -1){
+                    country = country.split('-')[1];
+                }
+                this.service.getCountryByIsoCode(country).subscribe(countryData => {
+                    if(countryData && country.length !=0){
+
+                    }
+                })
+            }*/
+            this.useTranslateService();
             /*A tester, doit permettre au page d'activer l'animation quand elles sont pop*/
             //Marche mais augmenter le délai pour que ce soit plus beau
             platform.registerBackButtonAction(() => {
@@ -73,8 +92,9 @@ export class MyApp {
             if (res == 'cordova') {
                 //Si l'appli perd la connexion envoie vers la page prévu à cet effet
                 this.network.onDisconnect().subscribe(data => {
-                    alert('Vous avez été déconnecté');
+                    //alert('Vous avez été déconnecté');
                     //alert(this.nav.getActive().name);
+                    this.constService.createAlert({message: 'You have been disconnected. Please check your network connection'})                 
 
                     if(this.rootPage != null)
                         this.nav.setRoot('NoNetworkPage',{
@@ -129,7 +149,7 @@ export class MyApp {
                             })
                         }
                 }else{
-                    alert("Data wasn't tapped!");
+                  //  alert("Data wasn't tapped!");
                 }
             })
                 //this.oneSignal.startInit('230d3e93-0c29-49bd-ac82-ecea8612464e', '714618018341');
@@ -175,12 +195,12 @@ export class MyApp {
                 this.renderImage();
                 this.listenEvents();
             }
-
+            this.getCurrency();
             localStorage.setItem('appli_settings', JSON.stringify(this.appliSettings));
             console.log(this.appliSettings);
         })
         
-        this.useTranslateService();        
+      //  this.useTranslateService();        
     }
 
     private enableNotification(){
@@ -195,10 +215,14 @@ export class MyApp {
     }
 
     private useTranslateService(){
-      let value= localStorage.getItem('language');
+      let language = this.platform.lang() != null ? this.platform.lang() : 'en';
+      console.log("language", language);
+      language == 'ar' ? this.platform.setDir('rtl', true) : this.platform.setDir('ltr', true);
+      this.translateService.use(language);
+      /*let value= localStorage.getItem('language');
       let language = value!=null ? value:'en';
       language=='ar'?this.platform.setDir('rtl', true):this.platform.setDir('ltr', true);
-      this.translateService.use(language);
+      this.translateService.use(language);*/
     }
     
    private renderImage(){
@@ -220,6 +244,9 @@ export class MyApp {
         this.events.subscribe('notification:changed', () => {
             if(this.platform.is('cordova'))
                 this.enableNotification()
+        });
+        this.events.subscribe('get:currency', () => {
+            this.getCurrency();
         });
     }
 
@@ -407,5 +434,58 @@ export class MyApp {
 
  goToReductionPage(){
     this.nav.push("ReductionListPage");
+ }
+
+ getCurrency(){
+     var country = JSON.parse(localStorage.getItem('country'));
+     if(country && country.id_currency != 0){
+         this.service.getCurrency(country.id_currency).subscribe((currencyData) => {
+             this.constService.currency = currencyData.currency;
+             this.updateCartPrice();
+            // localStorage.setItem('currency', JSON.stringify(currencyData.currency));
+         });
+     }else{
+         //Get the default currency
+         this.service.getCurrency(0).subscribe((currencyData) => {
+             this.constService.currency = currencyData;
+             this.updateCartPrice();
+            // localStorage.setItem('currency', JSON.stringify(currencyData));
+         });
+     }
+ }
+
+ updateCartPrice(){
+     console.log('UPDATE PRICE APPELE');
+     this.storage.get('cart').then(cartData => {
+         if(cartData){
+             const currency = JSON.parse(localStorage.getItem('currency'));
+             console.log(currency);
+             for(var product of cartData){
+                 console.log(product);
+                 if(currency && currency.id != product.id_currency)
+                     console.log("product last currency doesn't match the last currency");
+                 if(product.id_currency != this.constService.currency.id){
+                     if(this.constService.currency.conversion_rate != 1)
+                         product.price *= this.constService.currency.conversion_rate;
+                     else if(currency && currency.conversion_rate){
+                         console.log("rate == 1", currency.conversion_rate);
+                         product.price = product.price / currency.conversion_rate;
+                     }
+
+                     for(var dec of product.declinaison){
+                         if(this.constService.currency.conversion_rate != 1)
+                             dec.endPrice *=  this.constService.currency.conversion_rate;
+                         else if(currency && currency.conversion_rate)
+                             dec.endPrice = dec.endPrice / currency.conversion_rate;
+                     }
+                     product.id_currency = this.constService.currency.id;
+                 }
+             }
+
+             console.log('update price', cartData);
+             this.storage.set('cart', cartData);
+             localStorage.setItem('currency', JSON.stringify(this.constService.currency));
+         }
+     })
  }
 }

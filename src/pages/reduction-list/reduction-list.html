@@ -10,29 +10,6 @@
 			<ion-col col-4><ion-label class="tab-header">Name</ion-label></ion-col>
 			<ion-col col-4><ion-label class="tab-header"></ion-label></ion-col>
 		</ion-row>
-		<!--<ion-row>
-			<!--<ion-item *ngFor="let reduc of reductions">
-				<ion-col col-4>
-					{{reduc.code}}
-				</ion-col>
-				<ion-col col-4>
-					{{reduc.name}}
-				</ion-col>
-				<ion-col col-4>
-				 	<button ion-button (click)="showInfos(reduc)">Visualiser</button>
-				</ion-col>
-			</ion-item>-->
-			<!--<div *ngFor="let reduc of reductions">
-				<ion-col col-4>
-					{{reduc.code}}
-				</ion-col>
-				<ion-col col-4>
-					{{reduc.name}}
-				</ion-col>
-				<ion-col col-4>
-				 	<button ion-button (click)="showInfos(reduc)">Visualiser</button>
-				</ion-col>
-			</div>-->
 		<ion-row *ngFor="let reduc of reductions">
 			<ion-col col-4><ion-label class="reduction-item">{{reduc.code}}</ion-label></ion-col>
 				<ion-col col-4>
@@ -47,7 +24,7 @@
 	<div *ngIf="showInfo">
 		<p>{{'Informations about the coupon' | translate}} {{selectedReduction.code}}</p>
 		<p>{{'The value of this coupon is' | translate}} {{selectedReduction.value}} {{currency}}</p>
-		<p>{{'The coupon is usable' | translate}} {{selectedReduction.quantity}} {{'time(s) when the amount is greater than' | translate}} {{selectedReduction.minimum_amount}} €</p>
+		<p>{{'The coupon is usable' | translate}} {{selectedReduction.quantity}} {{'time(s) when the amount is greater than' | translate}} {{selectedReduction.minimum_amount | currencyPipe:constService.currency}}</p>
 		<p>{{'The expiracy date of this coupon is' | translate}} : {{selectedReduction.date_to}}</p>
 	</div>
 

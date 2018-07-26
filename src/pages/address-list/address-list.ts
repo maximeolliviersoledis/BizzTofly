@@ -1,8 +1,10 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams,LoadingController,AlertController, ToastController, Events } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, Events } from 'ionic-angular';
 import { AddressListService } from './address-list.service';
 import { UserService } from '../../providers/user-service';
-import {Storage} from '@ionic/storage';
+import { Storage } from '@ionic/storage';
+import { ConstService } from '../../providers/const-service';
+
 @IonicPage()
 @Component({
   selector: 'page-address-list',
@@ -23,12 +25,10 @@ export class AddressListPage {
 
   constructor(public navCtrl: NavController,
     public navParams: NavParams,
-    public loadingCtrl:LoadingController,
-    public alertCtrl:AlertController,
     private addressListService:AddressListService,
     private storage:Storage,
-    public toastCtrl: ToastController,
-    private events:Events) {
+    private events:Events,
+    private constService:ConstService) {
 
     this.amountDetails=this.navParams.get('amountDetails');
     this.orderData.grandTotal=this.amountDetails.grandTotal;
@@ -51,11 +51,7 @@ export class AddressListPage {
   }
 
   ngOnInit() {
-    let loader =this.loadingCtrl.create({
-      content:'please wait'
-    })
-    loader.present();
-
+    this.constService.presentLoader();
     var list = this.navParams.get('addressList');
     if(!list){
       this.storage.get('user').then((data)=>{
@@ -70,13 +66,13 @@ export class AddressListPage {
               })
             }
           }
-          loader.dismiss();
+          this.constService.dismissLoader();
         })
       })
     }else{
       this.addressList = list;
       console.log("addressList already loaded !");
-      loader.dismiss();
+      this.constService.dismissLoader();
     }
 
       this.orderData.status='pending';
@@ -113,7 +109,7 @@ export class AddressListPage {
           })
         })
       }else{
-        this.showAlert('Please select address.');
+        this.constService.createAlert({title: 'No address selected', message: 'You have to select an address before continuing'});
       }
     }
 
@@ -126,7 +122,7 @@ export class AddressListPage {
                 id_shop: 1,
                 id_address_delivery: this.orderData.shippingAddress.address.id,
                 id_address_invoice: this.orderData.shippingAddress.address.id,
-                id_currency: 1,
+                id_currency: this.constService.currency.id,
                 id_customer: cart.cart.id_customer,
                 id_lang: 1,
                 associations: {
@@ -184,7 +180,7 @@ export class AddressListPage {
           manageAddress : this.navParams.get('manageAddress')
         })
       }else{
-        this.showAlert("Vous devez sélectionner une adresse afin de pouvoir la modifier");
+        this.constService.createAlert({title: "No address selected", message: "You have to select an address before modifying it"});
       }
     }
 
@@ -197,21 +193,13 @@ export class AddressListPage {
               this.addressList.splice(i,1);
               this.selectedAddress = null;
               this.orderData.shippingAddress = null;
-              this.createToaster("Votre adresse a bien été supprimée", 2000);
+              this.constService.createToast({message: 'Your address has been successfully deleted'});
             }
           }
         })
       }else{
-        this.showAlert("Vous devez sélectionner une adresse afin de pouvoir la supprimer");
+        this.constService.createAlert({title: "No address selected", message: "You have to select an address before deleting it"});
       }
-    }
-
-    private showAlert(message) {
-      let alert = this.alertCtrl.create({
-        subTitle: message,
-        buttons: ['OK']
-      });
-      alert.present();
     }
 
     private objectToArray(object){
@@ -221,13 +209,5 @@ export class AddressListPage {
         array.push(object[i]);
       }
       return array;
-    }
-
-    createToaster(message, duration) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: duration
-        });
-        toast.present();
     }
   }

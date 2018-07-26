@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-import {Storage} from '@ionic/storage';
+import { Storage } from '@ionic/storage';
+import { ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -16,7 +17,7 @@ export class RecapPage {
   totalPriceWithCarrier: number = 0;
   header_data: any;
   order_header_data: any;
-  constructor(public navCtrl: NavController, public navParams: NavParams, private storage:Storage) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private storage:Storage, private constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Summary'};        
         this.order_header_data = {currentStep: 3, pageName: "Recap"};
   }

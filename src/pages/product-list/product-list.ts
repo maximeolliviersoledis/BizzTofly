@@ -3,6 +3,7 @@ import {NavController, NavParams, ToastController, LoadingController, IonicPage,
 import {Service} from '../../app/service';
 import {ProductListService} from './product-list.service';
 import {Storage} from '@ionic/storage';
+import {ConstService} from '../../providers/const-service';
 
 @IonicPage()
 @Component({
@@ -31,7 +32,8 @@ export class ProductListPage {
                 public navParams: NavParams,
                 public toastCtrl: ToastController,
                 public storage: Storage,
-                private events:Events) {
+                private events:Events,
+                private constService:ConstService) {
 
         this.menuId = navParams.get('MenuId');
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Product list'};

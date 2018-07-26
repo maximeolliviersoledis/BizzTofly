@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { SearchPage } from './search';
 import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
 import { TranslaterModule } from '../../app/translate.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import { TranslaterModule } from '../../app/translate.module';
   imports: [
     IonicPageModule.forChild(SearchPage),
     CustomHeaderPageModule,
-    TranslaterModule
+    TranslaterModule,
+    PipesModule
   ],
 })
 export class SearchPageModule {}

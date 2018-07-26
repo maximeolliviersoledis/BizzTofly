@@ -7,7 +7,6 @@ import {Vibration} from '@ionic-native/vibration';
 import {ConstService} from '../../providers/const-service';
 import {TranslateService} from 'ng2-translate/ng2-translate';
 
-
 @IonicPage()
 @Component({
     selector: 'page-product-details',
@@ -134,12 +133,16 @@ export class ProductDetailsPage {
 
        if(!this.declinaison){
            /**Affiche un message d'erreur indiquant qu'il faut sélectionner une déclinaison avant d'ajouter un produit au panier**/
-           let alert = this.alertCtrl.create({
+           /*let alert = this.alertCtrl.create({
                title: "Please!",
                subTitle: "Veuillez sélectionner une déclinaison avant de passer commande",
                buttons: ['OK']
            });
-           alert.present();
+           alert.present();*/
+           this.constService.createAlert({
+               title: "Please!",
+               subTitle: "Veuillez sélectionner une déclinaison avant de passer commande"
+           });
        }else{
            var id = this.declinaison.combination.id;
            var index =  this.productDetails.declinaisons.findIndex(function(elem){
@@ -165,8 +168,14 @@ export class ProductDetailsPage {
 
                    this.declinaison.selectedQuantity = this.count;
                    this.noOfItems += this.count;
+                   if(this.declinaison.combination.associations && this.declinaison.combination.associations.images)
+                     this.declinaison.imageUrl = this.productDetailsService.getImageUrl(this.product.productId, this.declinaison.combination.associations.images[0].id);
+                   else
+                     this.declinaison.imageUrl = this.product.imageUrl;
                    this.product.declinaison.splice(0,this.product.declinaison.length);
                    this.product.declinaison.push(this.declinaison);
+                   this.product.id_currency = this.constService.currency.id;
+                   this.product.id_currency = this.constService.currency.id;
                    this.itemInCart.splice(0,this.itemInCart.length);
                    this.itemInCart.push(this.product);
 
@@ -184,7 +193,8 @@ export class ProductDetailsPage {
                 }
                 
                 this.event.publish("updateCartBadge", this.noOfItems);                
-                this.createToaster("Successfully added to cart!",2000);
+                //this.createToaster("Successfully added to cart!",2000);
+                this.constService.createToast({message: 'Successfully added to cart!'});
                 this.vibration.vibrate(200);
             }else{
                 /**Sinon on récupère l'item seulement l'item qui nous intéresse àcl'intérieur du panier**/
@@ -258,7 +268,12 @@ export class ProductDetailsPage {
                         }
                     }  
                     this.noOfItems += this.count;
+                    if(this.declinaison.combination.associations && this.declinaison.combination.associations.images)
+                      this.declinaison.imageUrl = this.productDetailsService.getImageUrl(this.product.productId, this.declinaison.combination.associations.images[0].id);
+                    else
+                      this.declinaison.imageUrl = this.product.imageUrl;
                     this.product.declinaison.push(this.declinaison);
+                    this.product.id_currency = this.constService.currency.id;
 
                     this.Cart.push(this.product);
                     this.storage.set('cart',this.Cart);
@@ -274,15 +289,20 @@ export class ProductDetailsPage {
                     }
                     console.log(this.noOfItems);
                     this.event.publish("updateCartBadge", this.noOfItems);
-                    this.createToaster("Successfully added to cart!",2000);
+                    //this.createToaster("Successfully added to cart!",2000);
+                    this.constService.createToast({message: 'Successfully added to cart!'});
                     this.vibration.vibrate(200);
                 }else{
-                    let alert = this.alertCtrl.create({
+                   /* let alert = this.alertCtrl.create({
                         title: 'Quantity error',
                         subTitle: 'Available quantity is '+this.declinaison.combination.quantity+", and you are currently asking for a quantity of "+decQuantity,
                         buttons: ['OK']
                     });
-                    alert.present();
+                    alert.present();*/
+                    this.constService.createAlert({
+                        title: 'Quantity error',
+                        subTitle: 'We are currently out of stock for this product'
+                    });
                 }
             }
         })
@@ -301,7 +321,7 @@ export class ProductDetailsPage {
                         id_address_delivery: null,
                         id_address_invoice: null,
                         id_carrier: 0,
-                        id_currency: 1,
+                        id_currency: this.constService.currency.id,
                         id_customer: customerId,
                         id_guest: null,
                         id_lang: 1,
@@ -349,7 +369,7 @@ export class ProductDetailsPage {
                         id_address_delivery: null,
                         id_address_invoice: null,
                         id_carrier: 0,
-                        id_currency: 1,
+                        id_currency: this.constService.currency.id,
                         id_customer: customerId,
                         id_guest: null,
                         id_lang: 1,
@@ -453,9 +473,11 @@ export class ProductDetailsPage {
                     console.log(data);
                 })
                 this.like = true;  
-                this.createToaster('Produit bien ajouté aux favoris', 1000, 'top');
+               // this.createToaster('Produit bien ajouté aux favoris', 1000, 'top');
+               this.constService.createToast({message: 'Product successfully add to your favourites', position: 'top'});
             }else{
-                this.createToaster('Please login first!', 3000);
+                //this.createToaster('Please login first!', 3000);
+                this.constService.createToast({message: 'Please login first!', duration: 3000});
             }
     }
 
@@ -466,9 +488,11 @@ export class ProductDetailsPage {
                     console.log(data);
                 })
                 this.like = false;  
-                this.createToaster('Produit supprimé des favoris', 1000, 'top');
+                //this.createToaster('Produit supprimé des favoris', 1000, 'top');
+                this.constService.createToast({message: 'Product successfully removre from your favourites', position: 'top'});
             }else{
-                this.createToaster('Please login first!', 3000);
+                //this.createToaster('Please login first!', 3000);
+                this.constService.createToast({message: 'Please login first!', duration: 3000});
             }
     }
 
@@ -488,14 +512,14 @@ export class ProductDetailsPage {
         })
     }
 
-    createToaster(message, duration, position = "bottom") {
+   /* createToaster(message, duration, position = "bottom") {
         let toast = this.toastCtrl.create({
             message: message,
             duration: duration,
             position: position
         });
         toast.present();
-    }
+    }*/
 
     @ViewChild('productImage') productImage:Slides;
     changerImagePrincipale(image){

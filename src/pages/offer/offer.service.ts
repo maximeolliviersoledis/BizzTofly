@@ -11,7 +11,8 @@ export class OfferService {
     }
 
     getAllProducts(customerId = null) : any{
-        var urlDir = this.constService.baseDirApiSoledis + this.constService.productsInPromoDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId;
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.productsInPromoDir + "/0" + this.constService.keyDir + this.constService.formatDir + this.constService.filterIdCustomer + customerId
+        + this.constService.filterIdCurrency + this.constService.currency.id;
         return this.http.get(urlDir);
     }
 

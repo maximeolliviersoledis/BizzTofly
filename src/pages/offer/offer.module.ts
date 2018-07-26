@@ -3,6 +3,7 @@ import { IonicPageModule } from 'ionic-angular';
 import { OfferPage } from './offer';
 import { TranslaterModule } from '../../app/translate.module';
 import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
+import { PipesModule } from '../../pipes/pipes.module';
 
 @NgModule({
   declarations: [
@@ -11,7 +12,8 @@ import { CustomHeaderPageModule } from '../custom-header/custom-header.module';
   imports: [
     IonicPageModule.forChild(OfferPage),
     TranslaterModule,
-    CustomHeaderPageModule
+    CustomHeaderPageModule,
+    PipesModule
   ],
   exports: [
     OfferPage

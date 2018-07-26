@@ -9,7 +9,9 @@
                 <ion-slide *ngFor="let product of slideProducts" activeSlide="true">
                         <div class="card-title">{{product.name}}</div>
                         <div class="card-description" [innerHTML]="product.description_short"></div>
-                        <div class="card-price">{{product.prices.specific_price}} €</div>
+                        <!--<div class="card-price">{{product.prices.specific_price}} €</div>-->
+                        <div class="card-price">{{product.prices.specific_price | currencyPipe:constService.currency}}</div>
+
                         <div class="overlay">
                             <img src={{product.image}} class="slider-img">
                         </div>

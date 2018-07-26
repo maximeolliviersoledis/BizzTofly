@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {NavController, Events , IonicPage,ToastController,LoadingController,Platform, AlertController} from 'ionic-angular';
+import {NavController, Events , IonicPage,Platform} from 'ionic-angular';
 import {NgForm, FormBuilder, Validators, FormGroup} from "@angular/forms";
 import {TranslateService} from 'ng2-translate';
 import {UserService} from '../../providers/user-service';
@@ -60,26 +60,28 @@ export class Settings {
     public events:Events,
     public fb: FormBuilder,
     public platform:Platform,
-    private loadingCtrl:LoadingController,
-    private toastCtrl:ToastController,
     public translate: TranslateService,
     private userService: UserService,
     private settingService:SettingsService,
     private storage:Storage,
-    private constService:ConstService,
-    private alertCtrl:AlertController) {
+    private constService:ConstService) {
 
-    let value= localStorage.getItem('language');
-    this.value = value!=null ? value : 'en';
+    /*let value= localStorage.getItem('language');
+    this.value = value!=null ? value : 'en';*/
     let notification = localStorage.getItem('notification');
     this.notification = notification!=null ? notification : true;
-    this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Settings'};                
+    this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Settings'};    
+    platform.ready().then(() => {
+      this.value = platform.lang();
+    })            
   }
 
 
     ngOnInit() {
       this.constService.presentLoader();
-      var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+      this.getAllCountries();
+     // var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9-]+\.[a-z]{2,4}$";
+       var emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/;
       var userRegex = "^[a-zA-Z- ]+";
       this.newUserInfo = this.fb.group({
             firstName: ['', Validators.pattern(userRegex)],
@@ -104,8 +106,9 @@ export class Settings {
             this.user = userData;
             this.firstname = userData.firstname;
             this.lastname = userData.lastname;
-            this.newsletter = userData.newsletter;
-            this.optin = userData.optin;
+           this.loadUserSettings();
+            this.newsletter = userData.newsletter == '1' || this.user.newsletter == 1? true : false;
+            this.optin = userData.optin == '1' || this.user.optin == 1? true : false;
           }, (error) => {
             console.log(error);
             /*this.events.subscribe('PendingRequestExecuted', (userData)=>{
@@ -130,6 +133,19 @@ export class Settings {
         this.events.publish("hideSearchBar");
     }
 
+    loadUserSettings(){
+      this.newUserInfo.setValue({
+        firstName: this.user.firstname,
+        lastName: this.user.lastname,
+        email: this.user.email,
+        birthday: this.user.birthday || null,
+        password: '',
+        passwordConfirmation: '',
+        newsletter: this.user.newsletter == '1' || this.user.newsletter == 1? true : false,
+        optin: this.user.optin == '1' || this.user.optin == 1 ? true : false
+      });
+    }
+
     checkBirthDate(control: FormGroup){
       if(control.controls['birthday'].value == null || control.controls['birthday'].value == '')
         return null;
@@ -142,62 +158,6 @@ export class Settings {
     passwordMatch(control: FormGroup){
         return control.controls['password'].value === control.controls['passwordConfirmation'].value ? null : {'mismatch': true};
     }
-
-   /* onSubmit(user: NgForm){
-    let loader = this.loadingCtrl.create({
-      content:'please wait...'
-    })
-    loader.present();
-    console.log(this.newUserInfo);
-    if(this.checkIfFieldsAreEmpty()){
-      loader.dismiss();
-      console.log("form vide");
-    }else{
-      if(this.newUserInfo.value.firstName)
-        this.user.customer.firstname = this.newUserInfo.value.firstName;
-
-      if(this.newUserInfo.value.lastName)
-        this.user.customer.lastname = this.newUserInfo.value.lastName;
-
-      if(this.newUserInfo.value.email)
-        this.user.customer.email = this.newUserInfo.value.email;
-
-      if(this.newUserInfo.value.password && this.newUserInfo.value.passwordConfirmation)
-        this.user.customer.passwd = this.newUserInfo.value.password;
-
-      if(this.newUserInfo.value.birthday)
-        this.user.customer.birthday = this.newUserInfo.value.birthday;
-
-      if(this.newsletter != this.newUserInfo.value.newsletter)
-        this.user.customer.newsletter = this.newUserInfo.value.newsletter;
-
-      if(this.optin != this.newUserInfo.value.optin)
-        this.user.customer.optin = this.newUserInfo.value.optin;
-
-      console.log(this.user);
-
-      //var customerGroups = this.user.customer.associations.groups;
-
-      //this.user.customer.associations.groups = [];
-      this.user.customer.associations.groups = {group :[]};
-
-      for(var g of this.groups){
-        this.user.customer.associations.groups.group.push({id:g.id});
-      }
-      //this.user.customer.associations.groups.group = this.groups;
-      console.log(this.user);
-      this.settingService.putUser(this.user.customer.id,this.user).subscribe(data => {
-        if(data && !data.error){
-          this.createToaster("Vos modifications ont bien été prise en compte", 2000);
-        }else{
-          alert(data.error);
-        }
-
-        loader.dismiss();
-      })
-    }
-
-    }*/
 
   onSubmit(user: NgForm){
     console.log(this.newUserInfo);
@@ -216,13 +176,9 @@ export class Settings {
               id_customer: data.id
             }
             this.storage.set('user', response);
-            this.createToaster("Vos modifications ont bien été enregistré", 2000);
+            this.constService.createToast({message: "Your saves have been applied"});
           }else{
-            this.alertCtrl.create({
-              title: "Erreur",
-              subTitle: data.error,
-              buttons: ['OK']
-            }).present();
+            this.constService.createAlert({title: 'Error', message: data.error});
           }
           this.constService.dismissLoader();
         }, () => {
@@ -284,31 +240,24 @@ export class Settings {
         if (this.value == 'fr') {
             console.log("Selected language is French");
             this.translate.use('fr');
+            this.platform.setLang('fr', true);
             this.platform.setDir('ltr', true);
         } else if (this.value == 'ar') {
             this.platform.setDir('rtl', true);
+            this.platform.setLang('ar', true);
             this.translate.use('ar');
-        }
-           else {
+        } else {
             console.log("Selected language is English");
             this.translate.use('en');
+            this.platform.setLang('en', true);
             this.platform.setDir('ltr', true);
         }
-        localStorage.setItem('language',this.value);
-
+        localStorage.setItem('lang',this.value);
     }
 
     changeSetting(){
       localStorage.setItem('notification',this.notification);
       this.events.publish('notification:changed', this.notification); //Le paramètre est pris en compte maintenant pas besoin de redémarrage
-    }
-
-    createToaster(message, duration) {
-        let toast = this.toastCtrl.create({
-            message: message,
-            duration: duration
-        });
-        toast.present();
     }
 
     goToAddressList(){
@@ -326,6 +275,41 @@ export class Settings {
 
     navcart(){
       this.navCtrl.push("CartPage");
+    }
+
+    countries: any[] = [];
+    country: any = '';
+
+    getAllCountries(){
+      this.country = JSON.parse(localStorage.getItem('country'));
+      this.country = this.country ? this.country.id : '';
+      this.settingService.getCountries().subscribe((countriesData) =>{
+        console.log(countriesData);
+        for(var c of countriesData.countries){
+          this.settingService.getCountries(c.id).subscribe((countryData) => {
+            this.countries.push(countryData);
+          })
+        }
+      })
+    }
+
+    changeCountry(){
+      console.log(this.country);
+      console.log(this.countries);
+      var index = this.countries.findIndex(elem => {
+        return elem.country.id == this.country;
+      });
+      localStorage.setItem('country', JSON.stringify(this.countries[index].country));
+      this.events.publish('get:currency');
+    }
+
+    private objectToArray(object){
+      let item = Object.keys(object);
+      let array = [];
+      for(var i of item){
+        array.push(object[i]);
+      }
+      return array;
     }
 
 }

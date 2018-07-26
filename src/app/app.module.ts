@@ -16,6 +16,7 @@ import {CgvPageModule} from '../pages/cgv/cgv.module';
 import {HTTP_INTERCEPTORS, HttpClientModule} from '@angular/common/http';
 import {ResponseInterceptor} from '../providers/interceptor-service';
 import {JWT} from '../providers/jwt-service';
+
 export function createTranslateLoader(http: Http) {
     return new TranslateStaticLoader(http, './assets/i18n', '.json');
 }
@@ -58,7 +59,7 @@ export function createTranslateLoader(http: Http) {
         UserService,
         GoogleMaps,
         JWT,
-        {provide: HTTP_INTERCEPTORS, useClass: ResponseInterceptor, multi:true}
+        {provide: HTTP_INTERCEPTORS, useClass: ResponseInterceptor, multi:true},
     ]
 })
 export class AppModule {

@@ -15,7 +15,8 @@
       <ion-row *ngFor="let order of orders">
         <ion-col col-9>
           <p class="item-name"><strong>{{"Order Id:" | translate}} {{order.order.id}}</strong></p>
-          <p class="item-price">{{"Grandtotal:" | translate}}  {{order.order.total_paid_tax_incl | number:'.2-2'}} €</p>
+          <!--<p class="item-price">{{"Grandtotal:" | translate}}  {{order.order.total_paid_tax_incl | number:'.2-2'}} €</p>-->
+          <p class="item-price">{{"Grandtotal:" | translate}}  {{order.order.total_paid_tax_incl | currencyPipe:constService.currency}}</p>
           <!--Sur IOS le format de la date est invalide-->
           <!--<p class="date">{{"Date:" | translate}} {{order.order.date_add | date}}</p>-->
           <p *ngIf="platform.is('ios')" class="date">{{'Date:' | translate}} {{order.order.date_add}}</p>
