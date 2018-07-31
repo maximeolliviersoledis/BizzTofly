@@ -24,7 +24,7 @@ export class SettingsService {
     modifyUser(userId, userInfo, key) : any{
         var urlDir = this.constService.baseDirApiSoledis + this.constService.modifyUserDir + "/" + userId + this.constService.keyDir + this.constService.formatDir;
         if(userInfo.password && userInfo.passwordConfirmation)
-            userInfo.passwd = Md5.hashStr(key, userInfo.password);
+            userInfo.passwd = Md5.hashStr(key + userInfo.password);
         delete userInfo.password;
         delete userInfo.passwordConfirmation;
         var data = this.formatData(userInfo);

@@ -121,9 +121,9 @@ export class CheckoutPage {
                         PayPalEnvironmentSandbox: payPalEnvironmentSandbox
                     }).then(() => {
                         this.payPal.prepareToRender('PayPalEnvironmentSandbox', new PayPalConfiguration({})).then(() => {
-                            let payment = new PayPalPayment(this.navParams.get('totalPrice'), 'EUR', 'Description', 'Sale');
+                            let payment = new PayPalPayment(this.navParams.get('totalPrice').toString(), 'EUR', 'Description', 'Sale');
                             this.payPal.renderSinglePaymentUI(payment).then((success) => {
-                                this.showAlert(JSON.stringify(success));
+                              //  this.showAlert(JSON.stringify(success));
                                 this.paymentDetails.transactionId = success.response.id;
                                 this.checkoutService.payOrder(this.navParams.get('cartData').cart.id, this.orderData.paymentOption.name).subscribe(data =>{
                                     if(data != false){
@@ -137,15 +137,15 @@ export class CheckoutPage {
                                 });
                             }, (error) => {
                                 console.error(error);
-                                this.showAlert("Error: Type = 3 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paiement = pas un succès
+                                //this.showAlert("Error: Type = 3 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paiement = pas un succès
                             });
                         }, (error) => {
                             console.error(error);
-                            this.showAlert("Error: Type = 2 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> pb config
+                            //this.showAlert("Error: Type = 2 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> pb config
                         })
                     }, (error) => {
                         console.error(error);
-                        this.showAlert("Error: Type = 1 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paypal non supporté
+                        //this.showAlert("Error: Type = 1 - "+JSON.stringify(error)); //Si une erreur survient à ce niveau ==> paypal non supporté
                     })
             }else if(this.orderData.paymentOption.name === "stripe_official"){ //Pas encore implémenté
                 console.log("Méthode de paiement = stripe");

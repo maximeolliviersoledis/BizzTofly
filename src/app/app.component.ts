@@ -47,6 +47,7 @@ export class MyApp {
                 private alertCtrl:AlertController) {
 
         platform.ready().then((res) => {
+            //Récupère la langue par défaut du système, si celle-ci n'a pas été définie 
             if(!localStorage.getItem('lang')){
                 let lang = window.navigator.language;
                 //Indique la langue dans le bon format (Même nom que les fichiers json)
@@ -56,17 +57,23 @@ export class MyApp {
                 platform.setLang(lang, true);
             }
 
-            /*if(!localStorage.getItem('country')){
+            //s'il n'y a pas de pays par défaut déjà enregistré, alors on le déduit à partir de la langue du système 
+            if(!localStorage.getItem('country')){
                 let country = window.navigator.language;
                 if(country.search('-') != -1){
                     country = country.split('-')[1];
                 }
                 this.service.getCountryByIsoCode(country).subscribe(countryData => {
+                    console.log(countryData);
                     if(countryData && country.length !=0){
-
+                        this.service.getCountryById(countryData.countries[0].id).subscribe(data => {
+                            if(data)
+                                localStorage.setItem('country', JSON.stringify(data.country));
+                        })
                     }
                 })
-            }*/
+            }
+            console.log(window.navigator);
             this.useTranslateService();
             /*A tester, doit permettre au page d'activer l'animation quand elles sont pop*/
             //Marche mais augmenter le délai pour que ce soit plus beau
@@ -312,7 +319,7 @@ export class MyApp {
     **/
 
     gotoCart() {
-        let options: NativeTransitionOptions = {
+        /*let options: NativeTransitionOptions = {
             direction: 'left', //up, left, right, down
             duration: 500,
             slowdownfactor: 3,
@@ -322,8 +329,10 @@ export class MyApp {
             fixedPixelsTop: 54,
             fixedPixelsBottom: 0
         };
-        this.nativeTransition.slide(options); //Pas trop mal
-        this.nav.push("CartPage");
+        this.nativeTransition.slide(options); //Pas trop mal*/
+        this.nav.push("CartPage", {
+            test: 3
+        });
     }
 
     yourOrders() {

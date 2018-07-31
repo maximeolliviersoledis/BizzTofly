@@ -6,11 +6,15 @@ page-home {
   .grid {
     padding: 0px;
     .slides {
-      background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
-      .overlay {
+      .background-slide{
         background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+      }
+      //background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
+      .overlay {
+       // background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4));
         display: inline-flex;
         z-index: 1;
+        //background-color: blue;
       }
       .slider-img {
         /*height: 220px;*/

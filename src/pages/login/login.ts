@@ -339,7 +339,7 @@ export class LoginPage {
 
     resetPassword(){
         this.passwordReset = true;
-        var emailRegex = "^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$"; //Problème dans la regex (pas besoin de mettre .com pour qu'elle soit valide)
+        var emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/; //Problème dans la regex (pas besoin de mettre .com pour qu'elle soit valide)
         this.emailForPassword = this.fb.group({
             email: ['', Validators.compose(
                 [Validators.required,Validators.pattern(emailRegex)])]

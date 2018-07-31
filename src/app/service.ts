@@ -55,7 +55,12 @@ export class Service {
     }
 
     getCountryByIsoCode(iso_code): any{
-        var urlDir = this.constService.baseDir + '/countries' + this.constService.keyDir + this.constService.formatDir;
+        var urlDir = this.constService.baseDir + '/countries' + this.constService.keyDir + this.constService.formatDir + "&filter[iso_code]=" + iso_code;
+        return this.httpClient.get(urlDir);
+    }
+
+    getCountryById(id): any{
+        var urlDir = this.constService.baseDir + '/countries/' + id + this.constService.keyDir + this.constService.formatDir;
         return this.httpClient.get(urlDir);
     }
 }

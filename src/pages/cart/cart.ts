@@ -74,7 +74,7 @@ export class CartPage {
     }
 
     ionViewWillEnter(){
-        let options: NativeTransitionOptions = {
+        /*let options: NativeTransitionOptions = {
             direction: 'left', //up, left, right, down
             duration: 100,
             slowdownfactor: 3,
@@ -84,7 +84,7 @@ export class CartPage {
             fixedPixelsTop: 0,
             fixedPixelsBottom: 60
         };
-        this.nativeTransition.slide(options); //Pas trop mal
+        this.nativeTransition.slide(options); //Pas trop mal*/
     }
 
     deleteItem(data){

@@ -53,7 +53,7 @@
   "Order Status":"Statut de la commande",
   "Your Order Status":"Votre statut de commande",
   "Thanks for shopping with us.":"Merci d'avoir acheté chez nous.",
-  "Order Details":"Détails de la commande",
+  "Order details":"Détails de la commande",
   "Order Id:":"Numéro de commande:",
   "Order reference": "Réference commande",
   "Amount Paid:":"Montant payé:",
@@ -61,7 +61,7 @@
   "Your Review":"Votre avis",
   "BUY AGAIN":"ACHETER ENCORE",
   "Rate Product":"Évaluer le produit",
-  "Orders":"Ordres",
+  "Orders":"Mes commandes",
   "Type message...":"Tapez le message ...",
   "Settings":"Paramètres",
   "Language:":"La langue:",
@@ -113,7 +113,7 @@
   "Name on card:":"Nom sur carte:",
   "CVV:":"CVV:",
   "Date of expiry:":"Date d'expiration:",
-  "Save":"sauvegarder",
+  "Save":"Sauvegarder",
   "Offers":"Offres",
   "Original Price :":"Prix d'origine :",
   "Offer Price :":"Prix de l'offre :",
@@ -294,5 +294,9 @@
   "This order has been paid": "Cette commande a été payée",
   "We are currently waiting the payment": "Nous sommes dans l'attente de la réception du paiement",
   "Your order is shipped or will be shipped soon": "Votre commande va bientôt vous êtes livré",
-  "Your currently state order is": "L'état actuel de votre commande est"
+  "Your currently state order is": "L'état actuel de votre commande est",
+  "Select a country": "Pays",
+  "French": "Français",
+  "English": "Anglais",
+  "Back": "Retour"
 }

@@ -103,4 +103,12 @@ page-settings {
     font-size: 1em;
   }
 
+  //Bug du mot de passe causé par ça
+  /*.scroll-content {
+        -webkit-overflow-scrolling: auto;
+    }*/
+
+    input{
+      transform: translateZ(0px);
+    }
 }

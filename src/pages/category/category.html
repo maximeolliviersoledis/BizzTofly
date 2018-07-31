@@ -48,7 +48,7 @@
 
 <ion-content>
     <button ion-button (click)=goBack() *ngIf="level > 2"><ion-icon name='arrow-back'></ion-icon>
-       &nbsp; Back
+       &nbsp; {{'Back' | translate}}
     </button>
     <ion-card *ngFor="let category of categories">
         <ion-list>

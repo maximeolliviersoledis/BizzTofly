@@ -49,7 +49,7 @@ export class ContactPage {
     }
 
     ionViewWillLeave(){
-            let options: NativeTransitionOptions = {
+            /*let options: NativeTransitionOptions = {
                 action: "close",
                 origin: "left",
                 duration: 500,
@@ -61,7 +61,7 @@ export class ContactPage {
                 fixedPixelsBottom: 0
                };
 
-            this.pageTransition.drawer(options);
+            this.pageTransition.drawer(options);*/
     }
 
     select(){

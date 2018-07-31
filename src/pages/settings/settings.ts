@@ -31,11 +31,11 @@ export class Settings {
 
     options = [
         {
-            "language": "ENGLISH",
+            "language": "English",
             "value": "en"
         },
         {
-            "language": "FRENCH",
+            "language": "French",
             "value": "fr"
         }
     ];
