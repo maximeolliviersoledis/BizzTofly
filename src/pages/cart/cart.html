@@ -16,7 +16,6 @@
             <ion-item class="cart-item" *ngFor="let item of cartItem.declinaison">
                 <ion-row>
                     <ion-col col-6>
-                        <!--<img src={{cartItem.imageUrl}} alt={{item.name}}>-->
                         <img src={{item.imageUrl}} alt={{item.name}}>
                     </ion-col>
                     <ion-col col-6>
@@ -24,7 +23,6 @@
                         <p class="item-declinaison" text-wrap  >{{item.name}}</p>
                         <p class="item-detail" text-wrap>{{"Quantity:" | translate}} {{item.selectedQuantity}}</p>
                         <p class="item-detail">{{"Price:" | translate}}
-                            <!--<span class="item-price">{{item.endPrice | number:'.2-2'}} €</span>-->
                             <span class="item-price">{{item.endPrice | currencyPipe:constService.currency}}</span>
                         </p>
                     </ion-col>
@@ -47,35 +45,14 @@
         
         <ion-row class="price-details">
             <ion-col col-12 class="calculate">
-                <!--<p class="bill-detail">{{'Price Subtotal' | translate}} <span> {{subTotalPrice | number:'.2-2'}} €</span></p>
-                <div *ngIf="deductedPrice">
-                    <p class="bill-detail">{{'Deducted Price' | translate}} <span> - {{deductedPrice | number:'.2-2'}} €</span></p>
-                </div>
-                <p class="bill-detail">{{"Total VAT" | translate}}(20%) <span> {{taxAmount | number:'.2-2'}} €</span></p>-->
                 <p class="bill-detail">{{'Price Subtotal' | translate}} <span> {{subTotalPrice | currencyPipe:constService.currency}}</span></p>
                 <div *ngIf="deductedPrice">
                     <p class="bill-detail">{{'Deducted Price' | translate}} <span> - {{deductedPrice | currencyPipe:constService.currency}}</span></p>
                 </div>
                 <p class="bill-detail">{{"Total VAT" | translate}}(20%) <span> {{taxAmount | currencyPipe:constService.currency}}</span></p>
                 <hr>
-                <!--<ion-row *ngIf="user">
-                    <ion-col col-12>
-                            <ion-label class="reduction-lbl">{{"If you have reduction code, enter it below" | translate}}</ion-label>
-                    </ion-col>
-                </ion-row>-->
             </ion-col>
         </ion-row>
-                <!--<ion-row *ngIf="user">
-                    <ion-item>
-                        <ion-input type="text" [(ngModel)]="reductionInput" placeholder="{{'Enter your reduction code' | translate}}"></ion-input>
-                        <button ion-button item-right class="reduction-btn" (click)="checkReduction()">{{'Submit' | translate}}</button>
-                    </ion-item>
-                </ion-row>
-                <p class="cart-total"><strong>{{'Order Total' | translate}} </strong><span
-                        class="price">{{grandTotal | number:'.2-2'}} €</span>
-                </p>
-            </ion-col>
-        </ion-row>-->
         <!--L'input est en dehors de toute balise <ion-row> et <ion-col> pour éviter le bug du clavier qui recouvre le champ de saisie-->
         <div *ngIf="user">
             <ion-item>
@@ -84,7 +61,15 @@
                 <!--Mieux avec ce changement, le bug apprait un coup de temps en temps-->
                 <!--Voir comment mieux placer le bouton sans utiliser de col-->
             </ion-item>
+            <div *ngIf="cartReductions && cartReductions.length">
+                <p *ngFor="let reduc of cartReductions" class="reduction-applied">{{'A voucher of' | translate}}  
+                    <span *ngIf="reduc.reduction_percent != 0">{{reduc.reduction_percent}} %</span>
+                    <span *ngIf="reduc.reduction_amount != 0">{{reduc.reduction_amount | currencyPipe:constService.currency}}</span>
+                    {{'has been applied for this cart' | translate}}
+                </p>
+            </div>
         </div>
+
         <ion-row>
             <ion-col col-12>
                 <p class="cart-total"><strong>{{'Order Total' | translate}} </strong>

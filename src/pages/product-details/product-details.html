@@ -17,17 +17,15 @@
 
 <ion-content >
     <ion-row>
-        <ion-slides #productImage class="image-slide" *ngIf="productDetails.images && productDetails.images.length" id="productImage"  speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="-10">
+        <ion-slides #productImage class="image-slide" *ngIf="productDetails.images && productDetails.images.length" id="productImage"  speed="300" loop="true" autoplay="3000" pager="true" spaceBetween="20">
             <ion-slide *ngFor="let img of productDetails.images" activeSlide="true">
-                <div class="overlay">
-                        <img src={{img}} class="main-image">
+                <div class="overlay-product-image">
+                    <img src={{img}} class="main-image">
                 </div>
             </ion-slide>
         </ion-slides>
-            <ion-icon class="fav" name="heart" *ngIf="like"
-                      (click)="removeFromFavourite(productId)"></ion-icon>
-            <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like"
-                      (click)="addToFavourite(productId)"></ion-icon>
+        <ion-icon class="fav" name="heart" *ngIf="like" (click)="removeFromFavourite(productId)"></ion-icon>
+        <ion-icon class="fav heart-clicked" name="heart" *ngIf="!like" (click)="addToFavourite(productId)"></ion-icon>
     </ion-row>
 
     <ion-row>

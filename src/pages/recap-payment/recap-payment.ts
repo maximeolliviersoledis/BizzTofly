@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
-
+import { ConstService } from '../../providers/const-service';
 @IonicPage()
 @Component({
   selector: 'page-recap-payment',
@@ -12,7 +12,7 @@ export class RecapPaymentPage {
   totalPaid: number = 0;
   header_data: any;
 
-  constructor(public navCtrl: NavController, public navParams: NavParams) {
+  constructor(public navCtrl: NavController, public navParams: NavParams, private constService:ConstService) {
         this.header_data = {ismenu: false , isHome:false, isCart: false, enableSearchbar: true, title: 'Recap Payment'};
 
   }

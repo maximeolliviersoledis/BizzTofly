@@ -23,6 +23,8 @@ export class LocationPage {
       for(var i=0; i<this.shops.length;i++){
         this.shops[i].latitude = parseFloat(this.shops[i].latitude);
         this.shops[i].longitude = parseFloat(this.shops[i].longitude);
+        if(this.shops[i].id_image)
+          this.shops[i].imageUrl = this.locationService.getImageUrl(this.shops[i].id_image);
       }
     });
 
@@ -30,6 +32,12 @@ export class LocationPage {
 
   ionViewWillLeave(){
     this.events.publish("hideSearchBar");
+  }
+
+  goToStorePage(shop){
+    this.navCtrl.push('ShopDetailsPage', {
+      shop: shop
+    })
   }
 
   /*ionViewWillLeave(){

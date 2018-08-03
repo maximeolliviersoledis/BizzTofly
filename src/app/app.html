@@ -100,6 +100,10 @@
       <ion-icon name="call" item-left></ion-icon>
       {{'Contact' | translate}}
     </button>
+    <button *ngIf="appliSettings.show_chat_page" menuClose class="menu-item" ion-item (click)="goToChatPage()">
+      <ion-icon name="chatboxes" item-left></ion-icon>
+      {{'Chat' | translate}}
+    </button>
     <button *ngIf="appliSettings.show_about_us_page" menuClose class="menu-item" ion-item
                      (click)="aboutUs()">
       <ion-icon name="contacts" item-left></ion-icon>

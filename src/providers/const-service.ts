@@ -9,6 +9,9 @@ export class ConstService {
                 private translateService:TranslateService,
                 private toastCtrl:ToastController){}
 
+    //Display the alert message to prevent the user this is just a demo application
+    DEBUG_ALERT = true;
+
     /**
     * Use this method if you want translated alert
     * @param options The alert option (see ionic doc for more informations)
@@ -112,6 +115,7 @@ export class ConstService {
     baseDir = "http://www.bizztofly.com/api";
     baseDirApiSoledis = "http://www.bizztofly.com/api-soledis";
     cartDir = "/carts";
+    cartReductionDir = "/cart_reduc";
     carrierDir = "/carriers";
     carrierDetailsDir = "/carrier_details";
     categoryDir = "/categories";
@@ -121,6 +125,9 @@ export class ConstService {
     commentUsefulnessDir = "/comment_usefulness";
     contactDir = "/contacts";
     customerDir = "/customers";
+    customerThreadDir = "/customer_threads";
+    customerMessageDir = "/customer_messages";
+    employeeDir = "/employees";
     familyProductDir = "/family_product";
     favouriteDir = "/favourite";
     getAccessToken = "/get_access_token";

@@ -1,7 +1,17 @@
 page-location {
 
-    .sebm-google-map-container {
-        height: 100%;
-        }
+	.sebm-google-map-container {
+		height: 100%;
+	}
+
+	.shop-name{
+		color: $primary;
+		font-weight: bold;
+	}
+
+	.shop-address{
+		color: $dark-grey;
+
+	}
 
 }

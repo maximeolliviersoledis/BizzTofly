@@ -142,9 +142,11 @@ export class MyApp {
                         //Doit commencer par une majuscule et se finir par le mot "Page"
                         var url = params[0].endsWith("Page") ? params[0] : params[0] + "Page";
                         url = url[0].toUpperCase() + url.substring(1,url.length);
+                        console.log(params);
+                        console.log(url);
                         if(!data.type){
                             this.nav.setRoot(url,{
-                                productId: params[1]
+                                id: params[1]
                             });
                         } else if(data.type == "Product"){
                             this.nav.setRoot("ProductDetailsPage",{
@@ -406,6 +408,10 @@ export class MyApp {
         this.nav.setRoot("LoginPage");
     }
 
+    goToChatPage(){
+        this.nav.push("ChatPage");
+    }
+    
     logout() {
         this.storage.remove('user');
         this.storage.remove('cart');

@@ -1,0 +1,79 @@
+<!--
+  Generated template for the ShopDetailsPage page.
+
+  See http://ionicframework.com/docs/components/#navigation for more info on
+  Ionic pages and navigation.
+-->
+<ion-header>
+	<custom-header [header]="header_data"></custom-header>
+</ion-header>
+
+
+<ion-content padding>
+	<div *ngIf="shop">
+		<p class="shop-name">{{shop.name}}</p>
+		<p class="shop-address">{{shop.address1}}</p>
+		<p class="shop-phone"><ion-icon name="call"></ion-icon>&nbsp;:&nbsp;&nbsp;{{shop.phone}}</p>
+		<p>{{'Fax number' | translate}} : {{shop.fax}}</p>
+		<div class="table-class">
+			<p class="shop-hours">{{'Hours' | translate}}:</p>
+			<table>
+				<tr>
+					<th>{{'Monday' | translate}}: </th>
+					<td>{{shop.hours[0]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Tuesday' | translate}}: </th>
+					<td>{{shop.hours[1]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Wednesday' | translate}}: </th>
+					<td>{{shop.hours[2]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Thursday' | translate}}: </th>
+					<td>{{shop.hours[3]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Friday' | translate}}: </th>
+					<td>{{shop.hours[4]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Saturday' | translate}}: </th>
+					<td>{{shop.hours[5]}}</td>
+				</tr>
+				<tr>
+					<th>{{'Sunday' | translate}}: </th>
+					<td>{{shop.hours[6]}}</td>
+				</tr>
+			</table>
+		</div>
+		<div class="table-class-landscape">
+			<p class="shop-hours">{{'Hours' | translate}}:</p>
+			<table>
+				<tr>
+					<th>{{'Monday' | translate}}: </th>
+					<th>{{'Tuesday' | translate}}: </th>
+					<th>{{'Wednesday' | translate}}: </th>
+					<th>{{'Thursday' | translate}}: </th>
+					<th>{{'Friday' | translate}}: </th>
+					<th>{{'Saturday' | translate}}: </th>
+					<th>{{'Sunday' | translate}}: </th>
+				</tr>
+				<tr>
+					<td>{{shop.hours[0]}}</td>
+					<td>{{shop.hours[1]}}</td>
+					<td>{{shop.hours[2]}}</td>
+					<td>{{shop.hours[3]}}</td>
+					<td>{{shop.hours[4]}}</td>
+					<td>{{shop.hours[5]}}</td>
+					<td>{{shop.hours[6]}}</td>
+				</tr>
+			</table>
+		</div>
+		<br>
+		<div class="shop-image">
+			<img src={{shop.imageUrl}}>
+		</div>
+	</div>
+</ion-content>

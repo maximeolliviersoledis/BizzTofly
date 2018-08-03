@@ -73,6 +73,15 @@ export class HomePage {
            this.getAccueilProducts(customerId);
        })
        this.constService.dismissLoader();
+       if(this.constService.DEBUG_ALERT){
+           this.constService.createAlert({
+               title: "DEMO APPLICATION",
+               message: "This application is a demo application. That mean you cannot proceed to some payment and you cannot receive any products",
+               enableBackdropDismiss: false,
+               cssClass: 'debug-alert'
+           });
+           this.constService.DEBUG_ALERT = false;
+       }
     }
 
     ionViewWillLeave(){

@@ -59,4 +59,9 @@ export class CartService {
         var urlDir = this.constService.baseDir + this.constService.imageDir + this.constService.productDir + "/" + productId + "/" + imageId + this.constService.keyDir;
         return urlDir;
     }
+
+    getCartInReduction(cartId): any{
+        var urlDir = this.constService.baseDirApiSoledis + this.constService.cartReductionDir + "/" + cartId + this.constService.keyDir + this.constService.formatDir;
+        return this.http.get(urlDir);
+    }
 }

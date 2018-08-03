@@ -1,0 +1,69 @@
+<ion-header>
+	<custom-header [header]="header_data"></custom-header>
+</ion-header>
+
+
+<ion-content #content padding>
+	<!--<div *ngIf="displayAllThreads">-->
+		<ion-card *ngFor="let thread of customerThreads" (click)="selectThread(thread)">
+			<ion-card-header>
+				<span *ngIf="thread.customer_thread.status == 'open'" class="message-open-status">
+					<span style="color:black;">{{'Status' | translate}}:&nbsp;</span>
+					{{thread.customer_thread.status}}
+				</span>
+				<span *ngIf="thread.customer_thread.status != 'open'" class="message-closed-status">
+					<span style="color:black;">{{'Status' | translate}}:&nbsp;</span>
+					{{thread.customer_thread.status}}
+				</span>
+				{{'Chat number' | translate}}: {{thread.customer_thread.id}}
+				<br>
+				<span class="message_date">{{thread.customer_thread.date_add}}</span>
+			</ion-card-header>
+			<ion-card-content>
+				<div *ngIf="thread.customer_thread.id_order != 0">
+					{{'About order number:' | translate}} {{thread.customer_thread.id_order}}
+					<span *ngIf="thread.customer_thread.id_product != 0">
+						<br>
+						{{'About product number:' | translate}} {{thread.customer_thread.id_product}}
+					</span>
+				</div>
+				<div *ngIf="thread.customer_thread.id_order == 0">{{'No order concerned by this chat' | translate}}</div>
+			</ion-card-content>
+		</ion-card>
+		<div *ngIf="!customerThreads || customerThreads.length == 0" class="no-thread">
+			<ion-icon name="chatboxes"></ion-icon>
+			<p>{{'You have never post any message' | translate}}</p>
+			<button ion-button *ngIf="displayRedirectButton" (click)="goToContactPage()">{{'Send a message' | translate}}</button>
+		</div>
+	<!--</div>
+	<div *ngIf="!displayAllThreads">
+		<button ion-button id="back-button" (click)="GoBack()"><ion-icon name="arrow-back"></ion-icon></button>
+		<div *ngFor="let message of customerMessages">
+			<ion-card *ngIf="message.customer_message.id_employee != 0" class="employee-message">
+				<ion-card-header>
+					{{getEmployeeInfo(message.customer_message.id_employee)}} <span class="message-send">{{'has responded' | translate}}</span>
+					<span class="message-date">{{'at' | translate}}&nbsp;{{message.customer_message.date_add | customDatePipe}}</span>
+				</ion-card-header>
+				<ion-card-content>
+					{{message.customer_message.message}}
+				</ion-card-content>
+			</ion-card>
+			<ion-card *ngIf="message.customer_message.id_employee == 0" class="customer-message">
+				<ion-card-header>
+					{{'You' | translate}} <span class="message-send">{{'sent' | translate}}</span>
+					<span class="message-date">{{'at' | translate}}&nbsp;{{message.customer_message.date_add | customDatePipe}}</span>
+				</ion-card-header>
+				<ion-card-content>
+					{{message.customer_message.message}}
+				</ion-card-content>
+			</ion-card>
+		</div>
+	</div>
+</ion-content>
+
+<ion-footer *ngIf="!displayAllThreads">
+	<ion-item *ngIf="selectedThread.customer_thread.status == 'open'">
+		<button ion-button clear class="send-button" item-start (click)="sendResponse()"><ion-icon name="send"></ion-icon></button>
+		<ion-input type="text" autocomplete="on" autocorrect="on" [(ngModel)]="response" class="message-input" placeholder="{{'Your message' | translate}}"></ion-input>
+	</ion-item>
+</ion-footer>-->

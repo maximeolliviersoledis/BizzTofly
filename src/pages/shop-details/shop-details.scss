@@ -1,0 +1,68 @@
+page-shop-details {
+	.shop-name{
+		color: $primary;
+		font-weight: bold;
+		text-align: center;
+	}
+
+	.shop-address{
+		color: $dark-grey;
+		text-align: center;
+	}
+
+	.shop-phone{
+		& > ion-icon {
+			color: $primary;
+			font-size: 1.5em;
+		}
+	}
+
+	.shop-hours{
+		color: $black !important;
+		font-weight: bold;
+	}
+
+	table{
+		text-align: left;
+	}
+
+
+	td{
+		padding-left: 1em;
+	}
+
+
+	@media screen and (orientation: portrait){
+		.table-class{
+			margin-left: 0px;
+		}
+		.table-class-landscape{
+			display: none;
+		}
+	}
+
+	@media screen and (orientation: landscape){
+		.table-class{
+			display: none;
+		}
+
+		.table-class-landscape{
+			text-align: center;
+			& > table{
+				text-align: center;
+			}
+
+			& > td {
+				text-align: center;
+			}
+		}
+	}
+
+	.shop-image{
+		text-align: center;
+		& > img {
+			width: 100%;
+			height: 100%;
+		}
+	}
+}

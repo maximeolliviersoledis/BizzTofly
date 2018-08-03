@@ -311,6 +311,12 @@ export class LoginPage {
                         product.productId = productId;
                         product.quantity += parseInt(quantity);
                         product.imageUrl = data.image;
+
+                        //Ajoute l'image de la déclinaison dans le panier
+                       if(declinaison.combination.associations && declinaison.combination.associations.images)
+                         declinaison.imageUrl = this.loginService.getImageUrl(productId, declinaison.combination.associations.images[0].id);
+                       else
+                         declinaison.imageUrl = product.imageUrl;
                         var decli = this.objectToArray(data.declinaisons);
                         for(var dec of decli){
                             if(dec.id == declinaisonId)

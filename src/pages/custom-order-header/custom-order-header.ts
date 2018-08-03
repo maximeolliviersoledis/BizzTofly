@@ -9,7 +9,10 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 export class CustomOrderHeaderPage {
       order_header_data: any;
       nbOfStep: any[] = ['1','2','3','4'];
-      pages: any[] = ["AddressList","Carrier","Recap","Checkout"];
+      //nbOfStep: any[] = ['Address','Carrier','Recap','Payment'];
+     // pages: any[] = ["AddressList","Carrier","Recap","Checkout"];
+     pages: any[] = ['Address', 'Carrier', 'Recap', 'Payment'];
+     icons: any[] = ['home', 'boat', 'list' , 'card'];
   constructor(public navCtrl: NavController, public navParams: NavParams) {
   }
 

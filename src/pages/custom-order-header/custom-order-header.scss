@@ -1,18 +1,33 @@
 page-custom-order-header {
 	.currentStep{
-	  color: $white;
-	  font-weight: bold;
-	  text-align:center;
-	  border: 1px solid $black;
-	  border-top-right-radius: 25px;
-	  border-bottom-right-radius: 25px;
+		color: $white;
+		font-weight: bold;
+		text-align:center;
+		border: 1px solid $black;
+		border-top-right-radius: 25px;
+		border-bottom-right-radius: 25px;
+		font-size: 17px;
 	}
+
 	.step{
-	  color: $white;
-	  font-weight: normal;
-	  text-align:center;
-	  border: 1px solid $black;
-	  border-top-right-radius: 25px;
-	  border-bottom-right-radius: 25px;
+		color: $white;
+		font-weight: normal;
+		text-align:center;
+		border: 1px solid $black;
+		border-top-right-radius: 25px;
+		border-bottom-right-radius: 25px;
+		font-size: 15px;
+	}
+
+	@media screen and (orientation: portrait) { 
+		.step{
+			color: #000;
+			font-weight: normal;
+			text-align:center;
+			border: 1px solid $black;
+			border-top-right-radius: 25px;
+			border-bottom-right-radius: 25px;
+			font-size: 15px;
+		}
 	}
 }

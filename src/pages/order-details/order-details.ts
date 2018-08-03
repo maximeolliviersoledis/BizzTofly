@@ -47,7 +47,7 @@ export class OrderDetailsPage {
                })
             }
             this.loader.dismiss();
-
+            console.log(this.orderDetails);
     }
 
     ionViewWillLeave(){
@@ -72,8 +72,22 @@ export class OrderDetailsPage {
         })
     }
 
-    getImage(productId){
+    getCombinationById(productId, combinationId){
+        var product = this.getProductById(productId);
+        if(!product)
+            return null;
+
+        return this.objectToArray(product.declinaisons).find(elem => {
+            return elem.id == combinationId;
+        });
+    }
+
+    getImage(productId, combinationId = null){
       var product = this.getProductById(productId);
+      var combination = this.getCombinationById(productId, combinationId);
+      console.log(combination);
+      if(combination && combination.image.length != 0)
+          return this.orderDetailsService.getImageUrlForProduct(productId, combination.image[0].id);
       return product ? product.image : null;
     }
 
@@ -127,7 +141,11 @@ export class OrderDetailsPage {
                     declinaison.selectedQuantity = parseInt(product.product_quantity);
                     declinaison.endPrice = this.getProductById(product.product_id).declinaisons[product.product_attribute_id].price;
                     declinaison.name = this.getProductById(product.product_id).declinaisons[product.product_attribute_id].name;
-
+                    //Get the combination image      
+                    if(declinaison.combination.associations && declinaison.combination.associations.images)
+                        declinaison.imageUrl = this.orderDetailsService.getImageUrlForProduct(product.product_id, declinaison.combination.associations.images[0].id);
+                    else
+                        declinaison.imageUrl = product.imageUrl;
                     this.orderDetailsService.getCombination(product.product_attribute_id).toPromise().then((combinationData) => {
                         this.nbResponceReceived++;
                         declinaison.combination = combinationData.combination;        
@@ -161,7 +179,13 @@ export class OrderDetailsPage {
                 this.orderDetailsService.getCombination(product.product_attribute_id).toPromise().then((combinationData) => {
                     this.nbResponceReceived++;
 
-                    declinaison.combination = combinationData.combination;        
+                    declinaison.combination = combinationData.combination;  
+
+                    //Get the combination image      
+                   if(declinaison.combination.associations && declinaison.combination.associations.images)
+                     declinaison.imageUrl = this.orderDetailsService.getImageUrlForProduct(declinaison.combination.id_product, declinaison.combination.associations.images[0].id);
+                   else
+                     declinaison.imageUrl = productForCart.imageUrl;
 
                     productForCart.declinaison.push(declinaison);
                     cart.push(productForCart);     

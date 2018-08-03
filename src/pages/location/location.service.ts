@@ -11,4 +11,14 @@ export class LocationService {
     	var urlDir = this.constService.baseDirApiSoledis + this.constService.storesDir + "/0" + this.constService.keyDir + this.constService.formatDir;
     	return this.http.get(urlDir);
     }
+
+    getImageUrl(imageId){
+    	var urlDir = this.constService.baseDir + this.constService.imageDir + this.constService.storesDir + "/" + imageId +this.constService.keyDir + this.constService.formatDir;
+    	return urlDir;
+    }
+
+    getShop(shopId): any {
+    	var urlDir = this.constService.baseDirApiSoledis + this.constService.storesDir + "/" + shopId + this.constService.keyDir + this.constService.formatDir;
+    	return this.http.get(urlDir);
+    }
 }

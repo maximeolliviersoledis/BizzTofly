@@ -157,3 +157,77 @@ a {
   .alert-style .alert-title {
     font-weight: 600;
   }
+
+  .triangle {
+    display: block;
+    width: 0px;
+    border-left: 20px solid black;
+    border-bottom: 20px solid transparent;
+    border-top: 20px solid transparent;
+  }
+    .square {
+    display: block;
+    width: 40px;
+    line-height: 36px;
+    font-size: .8em;
+    background-color: $danger;
+    color: $white;
+    text-align: center;
+  }
+
+    @media screen and (orientation: portrait) { 
+      .step{
+        display: none;
+      }
+      .currentStep{
+        display: none;
+      }
+      .step_icon{
+        color: $white;
+        font-weight: normal;
+        text-align:center;
+        border: 1px solid $black;
+        border-top-right-radius: 25px;
+        border-bottom-right-radius: 25px;
+        font-size: 15px;
+      }
+      .currentStep_icon{
+        color: $white;
+        font-size: 1.2em;
+        font-weight: bold;
+        text-align:center;
+        border: 1px solid $black;
+        border-top-right-radius: 25px;
+        border-bottom-right-radius: 25px;
+      }
+  }
+
+  @media screen and (orientation: landscape) {
+    .currentStep{
+      color: $white;
+      font-weight: bold;
+      font-size: 1.2em;
+      text-align:center;
+      border: 1px solid $black;
+      border-top-right-radius: 25px;
+      border-bottom-right-radius: 25px;
+    }
+    .step{
+      color: $white;
+      font-weight: normal;
+      font-size: 1.0em;
+      text-align:center;
+      border: 1px solid $black;
+      border-top-right-radius: 25px;
+      border-bottom-right-radius: 25px;
+    }
+
+    .step_icon{
+      display: none;
+    }
+
+    .currentStep_icon{
+      display: none;
+    }
+  }
+

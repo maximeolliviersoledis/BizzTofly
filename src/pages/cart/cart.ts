@@ -27,6 +27,7 @@ export class CartPage {
     cartData: any = {};
     user: any = {};
     header_data: any;
+    cartReductions: any[] = [];
 
     constructor(public navCtrl: NavController,
                 public navParams: NavParams,
@@ -36,7 +37,7 @@ export class CartPage {
                 private nativeTransition:NativePageTransitions,
                 private constService:ConstService) {
 
-        this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart', hideBackButton: true};        
+        this.header_data = {ismenu: false , isHome:false, isCart: true, enableSearchbar: true, title: 'Cart', hideBackButton: true}; 
     }
 
     ngOnInit(){
@@ -58,6 +59,14 @@ export class CartPage {
                         }, error => {
                             this.constService.dismissLoader();
                         })
+                        if(localStorage.getItem('id_cart')){
+                            console.log("GET CART IN REDUCTION");
+                            this.cartService.getCartInReduction(JSON.parse(localStorage.getItem('id_cart'))).subscribe(data => {
+                                for(var d of data)
+                                    this.cartReductions.push(d);
+                                this.applyReduction();
+                            })
+                        }
                     }
                 }).catch(() => {
                     this.constService.dismissLoader();
@@ -164,8 +173,19 @@ export class CartPage {
         }
         /*this.taxAmount = Number(((5 / 100) * this.subTotalPrice).toFixed(2));
         this.grandTotal = Number((this.subTotalPrice + this.taxAmount).toFixed(2));*/
+        this.applyReduction();
         this.grandTotal = this.subTotalPrice;
         this.taxAmount = Number((this.grandTotal - this.grandTotal * 0.80).toFixed(2));    //A voir pour récupérer la taxe
+    }
+
+    applyReduction(){
+        for(var reduc of this.cartReductions){
+            if(reduc.reduction_percent != 0)
+                this.subTotalPrice = this.subTotalPrice - this.subTotalPrice * (reduc.reduction_percent / 100);
+            else if(reduc.reduction_amount != 0)
+                this.subTotalPrice -= reduc.reduction_amount; 
+        }
+        this.grandTotal = this.subTotalPrice;
     }
 
 
@@ -333,10 +353,15 @@ export class CartPage {
                 if(this.reductionInput === availableReduction.code){
                     this.cartService.applyReduction(this.user.id_customer, localStorage.getItem('id_cart'), availableReduction.id_cart_rule).subscribe(data => {
                         console.log(data);
-                        if(data == true)
+                        if(data == true){
+                            localStorage.setItem("Reduction", JSON.stringify({
+                                'id_cart': localStorage.getItem('id_cart'),
+                                'id_reduction': availableReduction.id_cart_rule                                
+                            }));
                             this.constService.createToast({message: 'Reduction successfully applied', duration: 3000});
-                        else
+                        }else{
                            this.constService.createToast({message: "You can't apply the same coupon twice for the same order", duration: 3000});      
+                        }
                     })
                     reductionMatch = true;
                     break;

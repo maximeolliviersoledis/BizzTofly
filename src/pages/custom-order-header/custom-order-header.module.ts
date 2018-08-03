@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { CustomOrderHeaderPage } from './custom-order-header';
+import { TranslaterModule } from '../../app/translate.module';
 
 @NgModule({
   declarations: [
@@ -8,6 +9,7 @@ import { CustomOrderHeaderPage } from './custom-order-header';
   ],
   imports: [
     IonicPageModule.forChild(CustomOrderHeaderPage),
+    TranslaterModule
   ],
   exports: [
   	CustomOrderHeaderPage

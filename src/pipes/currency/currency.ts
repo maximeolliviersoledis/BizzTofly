@@ -49,7 +49,7 @@ export class CurrencyPipe implements PipeTransform {
 	* @param space Adding a space between the number and the currency sign. Default is 'true'
 	*/
 	proccessTransform(value: number, precision:number = 2, currency: string = "€", side: string = "right", space: boolean = true){
-		console.log('value : ', value);
+		//console.log('value : ', value);
 		var formattedString = '';
 		var setSpace = space == true ? ' ' : '';
 		if(side == "right"){
@@ -61,8 +61,8 @@ export class CurrencyPipe implements PipeTransform {
 	}
 
 	transform(value:number, vars: any = null){
-		console.log('value : ', value);
-		console.log(typeof value);
+		/*console.log('value : ', value);
+		console.log(typeof value);*/
 		if(typeof value == 'string')
 			value = parseFloat(value);
 		
@@ -71,11 +71,11 @@ export class CurrencyPipe implements PipeTransform {
 			value = 0;
 
 		if(vars){
-			console.log('vars not null');
+			//console.log('vars not null');
 			var side = vars.format == 1 || vars.format == 3 ? 'left' : 'right';
 			return this.proccessTransform(value, vars.decimals, vars.sign, side, vars.blank == '1' ? true : false);
 		}else{
-			console.log('vars null');
+			//console.log('vars null');
 			return this.proccessTransform(value);
 		}
 	}

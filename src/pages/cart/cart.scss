@@ -160,4 +160,14 @@ page-cart {
     color: #424242;
   }
 
+  .reduction-applied{
+    font-size: 1.1em;
+    text-align:center;
+    padding: 7px 0px;
+    color: #666;
+  }
+  .reduction-applied > span {
+    color: $primary;
+    font-weight: 600;
+  }
 }

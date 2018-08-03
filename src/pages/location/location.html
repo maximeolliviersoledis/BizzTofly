@@ -21,7 +21,14 @@
  <!--<agm-map [latitude]="lat" [longitude]="lng" [zoom]= "zoom">-->
 <agm-map *ngIf="shops && shops.length >0" [latitude]="shops[0].latitude" [longitude]="shops[0].longitude" [zoom]="zoom">
   <div *ngFor="let shop of shops">
-  	<agm-marker [latitude]="shop.latitude" [longitude]="shop.longitude"></agm-marker>
+  	<agm-marker [latitude]="shop.latitude" [longitude]="shop.longitude">
+  		<agm-info-window>
+  			<p class="shop-name">{{shop.name}}</p>
+  			<p class="shop-address">{{shop.address1}}</p>
+  			<p (click)="goToStorePage(shop)">{{'Plus de détails' | translate}}</p>
+  			<img src={{shop.imageUrl}}>
+  		</agm-info-window>
+  	</agm-marker>
   </div>
 </agm-map>
 

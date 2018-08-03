@@ -67,4 +67,8 @@ export class LoginService {
         return this.http.get(urlDir);
     }
 
+    getImageUrl(productId, imageId) : any{
+        var urlDir = this.constService.baseDir + this.constService.imageDir + this.constService.productDir + "/" + productId + "/" + imageId + this.constService.keyDir;
+        return urlDir;
+    }
 }

@@ -2,10 +2,16 @@
 	<ion-row>
 		<ion-col *ngFor="let step of nbOfStep">
 			<div *ngIf="order_header_data.currentStep == step" class="currentStep">
-				{{step}}
+				{{pages[step-1] | translate}}
+			</div>
+			<div *ngIf="order_header_data.currentStep == step" class="currentStep_icon">
+					<!--<ion-icon name="{{icons[step-1]}}"></ion-icon>-->{{step}}
 			</div>
 			<div *ngIf="order_header_data.currentStep != step" class="step" (click)="goToSelectedPage(step)">
-				{{step}}
+				{{pages[step-1] | translate}}
+			</div>
+			<div *ngIf="order_header_data.currentStep != step" class="step_icon" (click)="goToSelectedPage(step)">
+				<!--<ion-icon name="{{icons[step-1]}}"></ion-icon>-->{{step}}
 			</div>
 		</ion-col>
 	</ion-row>

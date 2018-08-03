@@ -58,7 +58,6 @@ page-order-details {
    }
    .btn-add-to-cart {
    background-color: $primary !important;
-   
 }
 .product-rating{
     ul {
@@ -85,5 +84,13 @@ page-order-details {
     font-size: 1.8rem;
     border-radius: 0;
     margin-top: 1em;
+}
+
+.btn-order{
+  background-color: $primary !important;
+  white-space: normal;
+  margin: auto;
+  padding: 5px 0px 5px 0px;
+  height: 100%;
 }
 }

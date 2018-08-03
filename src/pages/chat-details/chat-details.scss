@@ -1,0 +1,80 @@
+page-chat-details {
+	.employee-message{
+		width: 80%;
+		float: right;
+	}
+
+	ion-card-header > span {
+		color: $grey;
+		font-size: 12px;
+	}
+
+	.customer-message{
+		width: 80%;
+		float: left;
+	}
+
+	.status{
+		color: black;
+		float: right;
+	}
+
+	.message-open-status{
+		float:right;
+		color: $green;
+	}
+
+	.message-closed-status{
+		float:right;
+		color: $danger;
+	}
+
+	.send-button {
+		background-color: $primary !important;
+		color: black;
+		font-weight: bold;
+		border: 0;
+	}
+
+	#back-button{
+		background-color: $primary !important;
+	}
+
+	ion-icon[name='send']{
+		color: $white;
+	}
+
+	ion-icon[name='chatboxes']{
+		display: block;
+		font-size: 10em;
+		color: $primary;
+		margin-bottom: 10px;
+	}
+
+	.item{
+		background-color: $primary;
+		color: $white;
+	}
+
+	.message-input .item-inner{
+		::placeholder{
+			color: #fff;
+		}
+	}
+
+	.message-date{
+		white-space: pre-wrap;
+	}
+
+	.no-thread{
+		text-align:center;
+		& > button {
+			background-color: $primary !important;
+		}
+
+		& > p {
+			color: #000;
+			font-weight: bold;
+		}
+	}
+}

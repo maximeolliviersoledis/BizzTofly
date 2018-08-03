@@ -244,25 +244,6 @@ page-product-details {
       background-color: $primary;
     }
 
-  /*.productImage{
-    .overlay{
-     //margin: auto;
-      display: inline-flex;
-    }
-    .fav{
-      color: $danger;
-      font-size: 40px;
-      position: absolute;
-      top: 0.5em;
-      right: 0.5em;
-      z-index: 1;
-    }
-    .heart-clicked{
-      color:$primary;
-      z-index: 1;
-    }
-  }*/
-
   .main-image{
     display: inline-flex;
   }
@@ -307,11 +288,6 @@ page-product-details {
          padding: 0px !important;
           background: none;
           color: $primary;
-       
-         /* ion-icon {
-            height: 20px;
-            width: 15px;
-          }*/
         }
       }
   }
@@ -322,5 +298,10 @@ page-product-details {
     max-height: 220px;
     max-width: 200px;
     display: inline-flex;
+  }
+
+  .overlay-product-image{
+    text-align: center;
+    width:100vw;
   }
 }
